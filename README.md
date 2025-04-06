@@ -7,23 +7,23 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ## 🔕️ Project Timeline
 **Total Duration:** 2 Weeks  
 **Team:**
-- 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments)
+- 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments, Discord Bot)
 - 👨‍💻 Allan (AR Logic, Anchoring, Persistence)
 - 👨‍💻 Matt (Full Stack Integration, Prefab Logic, UI Implementation)
-- 🎨 Gabe (Wireframes, Visual Design, Branding)
+- 🎨 Gabe (Wireframes, Visual Design, Branding, UI Implementation)
 
 ---
 
 ## 🚀 Milestones & Workflow
 
 ### ✅ Milestone 1: Core Setup (Day 1–2)
-- Set up GitHub repository, and branching strategy *Ramon*
+- Set up GitHub repository, branching strategy, and discord bot *Ramon*
 - Set up valid `.gitignore` Unity git needs *(Matt)*
 - Initialize Unity Project with AR Foundation *(Allan - with Matt assisting on input validation and project scaffolding)*
-- Create low-fi wireframes, color palette *(Gabe)*
+- Create mockups, wireframes and color palette  *(Ramon & Gabe)*
 
 ### 🔧 Milestone 2: Anchoring & UI (Day 2–5)
-- Implement plane detection + anchor placement *(Allan)*
+- Implement wall plane detection + anchor placement *(Allan)*
 - Create sticky note prefab + interaction flow *(Matt)*
 - Finalize mockups & branding guidelines *(Gabe)*
 
@@ -62,15 +62,15 @@ ProjectSettings/       # Unity project configuration
 - **Unity** (2022.3+ LTS)
 - **AR Foundation** (ARCore & ARKit backend)
 - **C#** for development
-- **GitHub Projects** for task tracking
-- **Figma** for UI/UX wireframes (by Gabe)
+- **GitHub Projects** for code task tracking
+- **Draw.io** for UI/UX wireframes (by Gabe)
 
 ---
 
 ## 🎯 MVP Goals
-- Place sticky notes via AR on detected surfaces
-- Store note location + text for future sessions
-- Manage notes (view, delete)
+- Place sticky notes via AR on walls ONLY
+- Store note location + text on app exists for future sessions
+- Manage notes on location and on a list (view, delete)
 - Responsive and polished UI
 - Release builds for iOS & Android
 
@@ -96,7 +96,7 @@ $ cd ar-sticky-notes
 ## 👥 Contribution Guidelines
 - Use feature branches (`feature/your-name-description`)
 - Submit Pull Requests to `dev`, never `main`
-- Include test notes and screenshots in PRs
+- Include test notes, upload screenshots to PR, and demo submitted PR at weekly sessions before PR approval
 
 ---
 
