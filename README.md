@@ -40,7 +40,7 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 
 ---
 
-## 📁 Repository Structure
+## 📁 Repository Structure !!ask Allan & Matt>
 ```
 📆ARStickyNotes/
 👤 Assets/
@@ -77,12 +77,12 @@ ProjectSettings/       # Unity project configuration
 ---
 
 ## 🧪 Testing Devices
-- Android: <ask devs>
-- iOS: <ask devs>
+- Android: !!ask devs>
+- iOS: !!ask devs>
 
 ---
 
-## 📆 Installation (For Developers) <ask Matt>
+## 📆 Installation (For Developers) !!ask Matt>
 ```bash
 # Clone the repo
 $ git clone https://github.com/your-org/ar-sticky-notes.git
