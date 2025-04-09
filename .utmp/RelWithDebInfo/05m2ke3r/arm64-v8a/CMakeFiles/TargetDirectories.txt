@@ -1,0 +1,5 @@
+C:/Users/adjlp/Documents/Repos/ar-sticky-notes/.utmp/RelWithDebInfo/05m2ke3r/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/adjlp/Documents/Repos/ar-sticky-notes/.utmp/RelWithDebInfo/05m2ke3r/arm64-v8a/CMakeFiles/rebuild_cache.dir
+C:/Users/adjlp/Documents/Repos/ar-sticky-notes/.utmp/RelWithDebInfo/05m2ke3r/arm64-v8a/GameActivity/CMakeFiles/game.dir
+C:/Users/adjlp/Documents/Repos/ar-sticky-notes/.utmp/RelWithDebInfo/05m2ke3r/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+C:/Users/adjlp/Documents/Repos/ar-sticky-notes/.utmp/RelWithDebInfo/05m2ke3r/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir
