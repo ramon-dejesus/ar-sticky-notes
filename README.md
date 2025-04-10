@@ -8,7 +8,7 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 **Total Duration:** 2 Weeks  
 **Team:**
 - 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments, Discord Bot)
-- 👨‍💻 Allan (AR Logic, Anchoring, Persistence)
+- 👨‍💻 Allan D (AR Logic, Anchoring, Persistence)
 - 👨‍💻 Matt (Full Stack Integration, Prefab Logic, UI Implementation)
 - 🎨 Gabe (Wireframes, Visual Design, Branding, UI Implementation)
 
