@@ -43,17 +43,18 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ## 📁 Repository Structure !!ask Allan & Matt>
 ```
 📆ARStickyNotes/
-👤 Assets/
-🔜 ARFoundation/       # Core AR Foundation setup
-📈 Prefabs/            # Sticky note prefab
-📃 Scripts/            # C# scripts (AR logic, UI, persistence)
-📋 UI/                 # Buttons, canvases, text inputs
-📄 Docs/                # Wireframes, visual assets
-📄 Builds/              # Android/iOS test builds
+📄 AR-Unity-Setup/       # Unity Root folder
+👤 AR-Unity-Setup/Assets/
+📈 AR-Unity-Setup/Prefabs/            # Sticky note prefab
+📄 AR-Unity-Setup/ProjectSettings/    # Unity project configuration
+📃 AR-Unity-Setup/Scripts/            # C# scripts (AR logic, UI, persistence)
+📋 AR-Unity-Setup/UI/                 # Buttons, canvases, text inputs
+📄 AR-Unity-Setup/Builds/             # Android/iOS test builds
+📄 Docs/               # Wireframes, visual assets
 README.md              # Project overview
 LICENSE.md             # Open-source license (MIT)
 .gitignore             # Unity-specific ignores
-ProjectSettings/       # Unity project configuration
+
 ```
 
 ---
