@@ -77,15 +77,15 @@ ProjectSettings/       # Unity project configuration
 ---
 
 ## 🧪 Testing Devices
-- Android: !!ask devs>
-- iOS: !!ask devs>
+- Android: Pixel 9 pro-Android 15, Oneplus-Android 12
+- iOS: iPhone 15
 
 ---
 
-## 📆 Installation (For Developers) !!ask Matt>
+## 📆 Installation (For Developers) 
 ```bash
 # Clone the repo
-$ git clone https://github.com/your-org/ar-sticky-notes.git
+$ git clone https://github.com/ramon-dejesus/ar-sticky-notes.git
 $ cd ar-sticky-notes
 
 # Open the Unity project in Unity Hub (2022.3+ LTS)
