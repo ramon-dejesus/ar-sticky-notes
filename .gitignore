@@ -104,9 +104,9 @@ crashlytics-build.properties
 # ========== IGNORE UNNECESSARY SETTINGS (OPTIONAL) ==========
 
 # Ignore Unity Learn tutorial framework settings if not used
-ProjectSettings/Packages/com.unity.learn.iet-framework/
+ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json
 
 # Ignore Unity Test Tools Code Coverage settings if not used
-ProjectSettings/Packages/com.unity.testtools.codecoverage/
+ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
 
 # ========== END ==========
