@@ -275,6 +275,7 @@ public class GoalManager : MonoBehaviour
     /// </summary>
     public void StartCoaching()
     {
+        
         if (m_OnboardingGoals != null)
         {
             m_OnboardingGoals.Clear();
