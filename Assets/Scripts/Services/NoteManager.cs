@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
-public sealed class NoteManager : MonoBehaviour
+
+public class NoteManager : MonoBehaviour
 {
+    public void Test() {
+        Debug.Log("Hello, IM the code!");
+    }
+
     private List<Note> Notes { get; set; } = null;
     private NoteManager()
     {
