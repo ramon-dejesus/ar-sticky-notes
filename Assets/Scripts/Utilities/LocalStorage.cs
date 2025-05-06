@@ -4,28 +4,34 @@ using System;
 public class LocalStorage
 {
     private string StoragePath { get; set; } = "";
-    public LocalStorage()
+    private string EncryptionPassword { get; set; } = "";
+    public LocalStorage(string locationPath = "", string password = "")
     {
-        StoragePath = Application.persistentDataPath;
+        StoragePath = locationPath;
+        EncryptionPassword = password;
     }
     private string GetFullPath(string key)
     {
+        if (string.IsNullOrEmpty(StoragePath))
+        {
+            throw new Exception("The storage path is empty.");
+        }
         if (string.IsNullOrEmpty(key))
         {
             throw new Exception("The storage key is empty.");
         }
         var fileName = key + ".dat";
-        return !string.IsNullOrEmpty(StoragePath) ? Path.Combine(StoragePath, fileName) : "";
+        return Path.Combine(StoragePath, fileName);
     }
-    public void SaveObject(string key, object value, bool encrypted = true)
+    public void SaveObject(string key, object value)
     {
         if (value != null)
         {
-            var js = JsonUtility.ToJson(value);
+            var js = new UnityConverter().ConvertObjectToJson(value);
             var pth = GetFullPath(key);
             if (pth != "")
             {
-                if (encrypted)
+                if (EncryptionPassword != "")
                 {
                     js = new UnityEncryption().Encrypt(js);
                 }
@@ -33,7 +39,7 @@ public class LocalStorage
             }
             else
             {
-                SaveValue(key, js, encrypted);
+                SaveValue(key, js);
             }
         }
         else
@@ -41,7 +47,7 @@ public class LocalStorage
             DeleteObject(key);
         }
     }
-    public void SaveValue(string key, object value, bool encrypted = true)
+    public void SaveValue(string key, object value)
     {
         if (string.IsNullOrEmpty(key))
         {
@@ -49,10 +55,10 @@ public class LocalStorage
         }
         if (value != null)
         {
-            var tmp = value.GetType().Name.ToLower() != "string" ? JsonUtility.ToJson(value) : value.ToString();
-            if (encrypted)
+            var tmp = value.GetType().Name.ToLower() != "string" ? new UnityConverter().ConvertObjectToJson(value) : value.ToString();
+            if (EncryptionPassword != "")
             {
-                tmp = new UnityEncryption().Encrypt(tmp);
+                tmp = new UnityEncryption().Encrypt(tmp, EncryptionPassword);
             }
             PlayerPrefs.SetString(key, tmp);
             PlayerPrefs.Save();
@@ -71,7 +77,10 @@ public class LocalStorage
         var pth = GetFullPath(key);
         if (pth != "")
         {
-            File.Delete(pth);
+            if (File.Exists(pth))
+            {
+                File.Delete(pth);
+            }
         }
         else
         {
@@ -87,38 +96,42 @@ public class LocalStorage
         PlayerPrefs.DeleteKey(key);
         PlayerPrefs.Save();
     }
-    public T GetObject<T>(string key, bool encrypted = true)
+    public T GetObject<T>(string key)
     {
         var pth = GetFullPath(key);
         if (pth != "")
         {
-            var js = File.ReadAllText(pth);
-            if (encrypted)
+            if (File.Exists(pth))
             {
-                js = new UnityEncryption().Decrypt(js);
+                var js = File.ReadAllText(pth);
+                if (EncryptionPassword != "")
+                {
+                    js = new UnityEncryption().Decrypt(js, EncryptionPassword);
+                }
+                return new UnityConverter().ConvertJsonToObject<T>(js);
             }
-            return JsonUtility.FromJson<T>(js);
         }
         else
         {
             return GetValue<T>(key);
         }
+        return default;
     }
-    public T GetValue<T>(string key, bool encrypted = true)
+    public T GetValue<T>(string key)
     {
         if (string.IsNullOrEmpty(key))
         {
             throw new Exception("The storage key is empty.");
         }
         object tmp = PlayerPrefs.GetString(key);
-        if (encrypted)
+        if (EncryptionPassword != "")
         {
-            tmp = new UnityEncryption().Decrypt(tmp.ToString());
+            tmp = new UnityEncryption().Decrypt(tmp.ToString(), EncryptionPassword);
         }
         if (typeof(T).Name.ToLower() == "string")
         {
             return (T)tmp;
         }
-        return JsonUtility.FromJson<T>(tmp.ToString());
+        return new UnityConverter().ConvertJsonToObject<T>(tmp.ToString());
     }
 }

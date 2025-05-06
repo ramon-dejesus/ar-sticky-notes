@@ -1,10 +1,12 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public class Note : BaseObject
-{    
-    public string Position { get; set; } = "";
-    public string Rotation { get; set; } = "";
-    public bool IsPinned { get; set; } = false;
-    public string NoteType { get; set; } = "";
+{
+    [SerializeField] public string Position = "";
+    [SerializeField] public string Rotation = "";
+    [SerializeField] public bool IsPinned = false;
+    [SerializeField] public string NoteType = "";
+    public Note() { }
 }

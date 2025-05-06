@@ -51,13 +51,17 @@ public class UnityEncryption
     private Rfc2898DeriveBytes GetEncryptionKey(string pwd)
     {
         pwd = pwd == "" ? GetUniquePassword() : pwd;
-        return new Rfc2898DeriveBytes(pwd, 20);
+        var salt1 = System.Text.Encoding.UTF8.GetBytes("9CE189F6849B4F43AA6007256C4F3CAE");
+        return new Rfc2898DeriveBytes(pwd, salt1);
     }
-    private string GetUniquePassword()
+    public string GetUniquePassword()
     {
-        var appName = Application.productName;
-        var deviceName = SystemInfo.deviceUniqueIdentifier;
-        var pwd = appName + deviceName;
+        // var pwd = Application.productName
+        // + SystemInfo.deviceUniqueIdentifier
+        // + SystemInfo.deviceName
+        // + SystemInfo.deviceModel
+        // + SystemInfo.deviceType.ToString();
+        var pwd = Application.productName + SystemInfo.deviceUniqueIdentifier;
         return pwd;
     }
 }
