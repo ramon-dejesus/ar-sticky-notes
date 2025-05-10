@@ -1,137 +1,141 @@
 using UnityEngine;
 using System.IO;
 using System;
-public class LocalStorage
+
+namespace ARStickyNotes.Utilities
 {
-    private string StoragePath { get; set; } = "";
-    private string EncryptionPassword { get; set; } = "";
-    public LocalStorage(string locationPath = "", string password = "")
+    public class LocalStorage
     {
-        StoragePath = locationPath;
-        EncryptionPassword = password;
-    }
-    private string GetFullPath(string key)
-    {
-        if (string.IsNullOrEmpty(StoragePath))
+        private string StoragePath { get; set; } = "";
+        private string EncryptionPassword { get; set; } = "";
+        public LocalStorage(string locationPath = "", string password = "")
         {
-            throw new Exception("The storage path is empty.");
+            StoragePath = locationPath;
+            EncryptionPassword = password;
         }
-        if (string.IsNullOrEmpty(key))
+        private string GetFullPath(string key)
         {
-            throw new Exception("The storage key is empty.");
-        }
-        var fileName = key + ".dat";
-        return Path.Combine(StoragePath, fileName);
-    }
-    public void SaveObject(string key, object value)
-    {
-        if (value != null)
-        {
-            var js = new UnityConverter().ConvertObjectToJson(value);
-            var pth = GetFullPath(key);
-            if (pth != "")
+            if (string.IsNullOrEmpty(StoragePath))
             {
-                if (EncryptionPassword != "")
+                throw new Exception("The storage path is empty.");
+            }
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("The storage key is empty.");
+            }
+            var fileName = key + ".dat";
+            return Path.Combine(StoragePath, fileName);
+        }
+        public void SaveObject(string key, object value)
+        {
+            if (value != null)
+            {
+                var js = new UnityConverter().ConvertObjectToJson(value);
+                var pth = GetFullPath(key);
+                if (pth != "")
                 {
-                    js = new UnityEncryption().Encrypt(js);
+                    if (EncryptionPassword != "")
+                    {
+                        js = new UnityEncryption().Encrypt(js);
+                    }
+                    File.WriteAllText(pth, js);
                 }
-                File.WriteAllText(pth, js);
+                else
+                {
+                    SaveValue(key, js);
+                }
             }
             else
             {
-                SaveValue(key, js);
+                DeleteObject(key);
             }
         }
-        else
+        public void SaveValue(string key, object value)
         {
-            DeleteObject(key);
-        }
-    }
-    public void SaveValue(string key, object value)
-    {
-        if (string.IsNullOrEmpty(key))
-        {
-            throw new Exception("The storage key is empty.");
-        }
-        if (value != null)
-        {
-            var tmp = value.GetType().Name.ToLower() != "string" ? new UnityConverter().ConvertObjectToJson(value) : value.ToString();
-            if (EncryptionPassword != "")
+            if (string.IsNullOrEmpty(key))
             {
-                tmp = new UnityEncryption().Encrypt(tmp, EncryptionPassword);
+                throw new Exception("The storage key is empty.");
             }
-            PlayerPrefs.SetString(key, tmp);
-            PlayerPrefs.Save();
-        }
-        else
-        {
-            DeleteValue(key);
-        }
-    }
-    public void DeleteObject(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-        {
-            throw new Exception("The storage key is empty.");
-        }
-        var pth = GetFullPath(key);
-        if (pth != "")
-        {
-            if (File.Exists(pth))
+            if (value != null)
             {
-                File.Delete(pth);
-            }
-        }
-        else
-        {
-            DeleteValue(key);
-        }
-    }
-    public void DeleteValue(string key)
-    {
-        if (string.IsNullOrEmpty(key))
-        {
-            throw new Exception("The storage key is empty.");
-        }
-        PlayerPrefs.DeleteKey(key);
-        PlayerPrefs.Save();
-    }
-    public T GetObject<T>(string key)
-    {
-        var pth = GetFullPath(key);
-        if (pth != "")
-        {
-            if (File.Exists(pth))
-            {
-                var js = File.ReadAllText(pth);
+                var tmp = value.GetType().Name.ToLower() != "string" ? new UnityConverter().ConvertObjectToJson(value) : value.ToString();
                 if (EncryptionPassword != "")
                 {
-                    js = new UnityEncryption().Decrypt(js, EncryptionPassword);
+                    tmp = new UnityEncryption().Encrypt(tmp, EncryptionPassword);
                 }
-                return new UnityConverter().ConvertJsonToObject<T>(js);
+                PlayerPrefs.SetString(key, tmp);
+                PlayerPrefs.Save();
+            }
+            else
+            {
+                DeleteValue(key);
             }
         }
-        else
+        public void DeleteObject(string key)
         {
-            return GetValue<T>(key);
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("The storage key is empty.");
+            }
+            var pth = GetFullPath(key);
+            if (pth != "")
+            {
+                if (File.Exists(pth))
+                {
+                    File.Delete(pth);
+                }
+            }
+            else
+            {
+                DeleteValue(key);
+            }
         }
-        return default;
-    }
-    public T GetValue<T>(string key)
-    {
-        if (string.IsNullOrEmpty(key))
+        public void DeleteValue(string key)
         {
-            throw new Exception("The storage key is empty.");
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("The storage key is empty.");
+            }
+            PlayerPrefs.DeleteKey(key);
+            PlayerPrefs.Save();
         }
-        object tmp = PlayerPrefs.GetString(key);
-        if (EncryptionPassword != "")
+        public T GetObject<T>(string key)
         {
-            tmp = new UnityEncryption().Decrypt(tmp.ToString(), EncryptionPassword);
+            var pth = GetFullPath(key);
+            if (pth != "")
+            {
+                if (File.Exists(pth))
+                {
+                    var js = File.ReadAllText(pth);
+                    if (EncryptionPassword != "")
+                    {
+                        js = new UnityEncryption().Decrypt(js, EncryptionPassword);
+                    }
+                    return new UnityConverter().ConvertJsonToObject<T>(js);
+                }
+            }
+            else
+            {
+                return GetValue<T>(key);
+            }
+            return default;
         }
-        if (typeof(T).Name.ToLower() == "string")
+        public T GetValue<T>(string key)
         {
-            return (T)tmp;
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new Exception("The storage key is empty.");
+            }
+            object tmp = PlayerPrefs.GetString(key);
+            if (EncryptionPassword != "")
+            {
+                tmp = new UnityEncryption().Decrypt(tmp.ToString(), EncryptionPassword);
+            }
+            if (typeof(T).Name.ToLower() == "string")
+            {
+                return (T)tmp;
+            }
+            return new UnityConverter().ConvertJsonToObject<T>(tmp.ToString());
         }
-        return new UnityConverter().ConvertJsonToObject<T>(tmp.ToString());
     }
 }

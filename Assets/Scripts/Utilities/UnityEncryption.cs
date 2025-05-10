@@ -3,65 +3,68 @@ using System.IO;
 using System.Security.Cryptography;
 using UnityEngine;
 
-public class UnityEncryption
+namespace ARStickyNotes.Utilities
 {
-    public string Encrypt(string plaintext, string pwd = "")
+    public class UnityEncryption
     {
-        if (string.IsNullOrEmpty(plaintext))
+        public string Encrypt(string plaintext, string pwd = "")
         {
-            return "";
-        }
-        var bts = System.Text.Encoding.UTF8.GetBytes(plaintext);
-        var encryptor = GetEncryptor(pwd);
-        using (var ms = new MemoryStream())
-        {
-            using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+            if (string.IsNullOrEmpty(plaintext))
             {
-                cs.Write(bts, 0, bts.Length);
+                return "";
             }
-            return Convert.ToBase64String(ms.ToArray());
+            var bts = System.Text.Encoding.UTF8.GetBytes(plaintext);
+            var encryptor = GetEncryptor(pwd);
+            using (var ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(bts, 0, bts.Length);
+                }
+                return Convert.ToBase64String(ms.ToArray());
+            }
         }
-    }
 
-    public string Decrypt(string cipherText, string pwd = "")
-    {
-        if (string.IsNullOrEmpty(cipherText))
+        public string Decrypt(string cipherText, string pwd = "")
         {
-            return "";
-        }
-        var bts = Convert.FromBase64String(cipherText);
-        var encryptor = GetEncryptor(pwd);
-        using (var ms = new MemoryStream())
-        {
-            using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+            if (string.IsNullOrEmpty(cipherText))
             {
-                cs.Write(bts, 0, bts.Length);
+                return "";
             }
-            return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+            var bts = Convert.FromBase64String(cipherText);
+            var encryptor = GetEncryptor(pwd);
+            using (var ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(bts, 0, bts.Length);
+                }
+                return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+            }
         }
-    }
-    private Aes GetEncryptor(string pwd)
-    {
-        var key = GetEncryptionKey(pwd);
-        var encryptor = Aes.Create();
-        encryptor.Key = key.GetBytes(32);
-        encryptor.IV = key.GetBytes(16);
-        return encryptor;
-    }
-    private Rfc2898DeriveBytes GetEncryptionKey(string pwd)
-    {
-        pwd = pwd == "" ? GetUniquePassword() : pwd;
-        var salt1 = System.Text.Encoding.UTF8.GetBytes("9CE189F6849B4F43AA6007256C4F3CAE");
-        return new Rfc2898DeriveBytes(pwd, salt1);
-    }
-    public string GetUniquePassword()
-    {
-        // var pwd = Application.productName
-        // + SystemInfo.deviceUniqueIdentifier
-        // + SystemInfo.deviceName
-        // + SystemInfo.deviceModel
-        // + SystemInfo.deviceType.ToString();
-        var pwd = Application.productName + SystemInfo.deviceUniqueIdentifier;
-        return pwd;
+        private Aes GetEncryptor(string pwd)
+        {
+            var key = GetEncryptionKey(pwd);
+            var encryptor = Aes.Create();
+            encryptor.Key = key.GetBytes(32);
+            encryptor.IV = key.GetBytes(16);
+            return encryptor;
+        }
+        private Rfc2898DeriveBytes GetEncryptionKey(string pwd)
+        {
+            pwd = pwd == "" ? GetUniquePassword() : pwd;
+            var salt1 = System.Text.Encoding.UTF8.GetBytes("9CE189F6849B4F43AA6007256C4F3CAE");
+            return new Rfc2898DeriveBytes(pwd, salt1);
+        }
+        public string GetUniquePassword()
+        {
+            // var pwd = Application.productName
+            // + SystemInfo.deviceUniqueIdentifier
+            // + SystemInfo.deviceName
+            // + SystemInfo.deviceModel
+            // + SystemInfo.deviceType.ToString();
+            var pwd = Application.productName + SystemInfo.deviceUniqueIdentifier;
+            return pwd;
+        }
     }
 }
