@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "ar-sticky-notes-1.sln"
+    "dotnet.defaultSolution": "ar-sticky-notes.sln"
 }
