@@ -15,10 +15,12 @@ namespace ARStickyNotes.Models
         /// The list of notes contained in this wrapper.
         /// </summary>
         [SerializeField] public List<Note> Items = new List<Note>();
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteList"/> class with an empty note list.
         /// </summary>
         public NoteList() { }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteList"/> class with a pre-existing list of notes.
         /// </summary>

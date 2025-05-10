@@ -144,6 +144,7 @@ namespace ARStickyNotes.Services
                 throw GetExceptionTrace(ex);
             }
         }
+
         /// <summary>
         /// Saves the current list of notes to local storage.
         /// </summary>
@@ -169,6 +170,7 @@ namespace ARStickyNotes.Services
                 throw GetExceptionTrace(ex);
             }
         }
+
         /// <summary>
         /// Deletes a note from the list by its ID and saves the updated list.
         /// </summary>
@@ -190,6 +192,7 @@ namespace ARStickyNotes.Services
                 throw GetExceptionTrace(ex);
             }
         }
+        
         /// <summary>
         /// Clears all notes from the list and resets the state.
         /// </summary>
