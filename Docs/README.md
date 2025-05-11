@@ -5,7 +5,7 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ---
 
 ## 🔕️ Project Timeline
-**Total Duration:** 20 Weeks  
+**Total Duration:** 22 Weeks  
 **Team:**
 - 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments, Discord Bot)
 - 👨‍💻 Allan D (AR Logic, Anchoring, Persistence)
