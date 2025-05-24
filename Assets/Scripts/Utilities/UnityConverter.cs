@@ -17,7 +17,15 @@ namespace ARStickyNotes.Utilities
         /// <returns>A JSON string representation of the object.</returns>
         public string ConvertObjectToJson(object item)
         {
-            return JsonUtility.ToJson(item);
+            try
+            {
+                return JsonUtility.ToJson(item);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to convert object to JSON.", ex);
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -28,7 +36,15 @@ namespace ARStickyNotes.Utilities
         /// <returns>An object of type <typeparamref name="T"/>.</returns>
         public T ConvertJsonToObject<T>(string value)
         {
-            return JsonUtility.FromJson<T>(value);
+            try
+            {
+                return JsonUtility.FromJson<T>(value);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to convert JSON to object.", ex);
+                return default;
+            }
         }
 
         /// <summary>
@@ -41,11 +57,19 @@ namespace ARStickyNotes.Utilities
         /// </returns>
         public DateTime ConvertStringToDateTime(string value, string datetimeFormat = "yyyy-MM-DDThh:mm:ss")
         {
-            if (DateTime.TryParseExact(value, datetimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtm))
+            try
             {
-                return dtm;
+                if (DateTime.TryParseExact(value, datetimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtm))
+                {
+                    return dtm;
+                }
+                return DateTime.MinValue;
             }
-            return DateTime.MinValue;
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to convert string to DateTime.", ex);
+                return DateTime.MinValue;
+            }
         }
 
         /// <summary>
@@ -56,7 +80,15 @@ namespace ARStickyNotes.Utilities
         /// <returns>A formatted date-time string.</returns>
         public string ConvertDateTimeToString(DateTime value, string datetimeFormat = "yyyy-MM-DDThh:mm:ss")
         {
-            return value.ToString(datetimeFormat);
+            try
+            {
+                return value.ToString(datetimeFormat);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to convert DateTime to string.", ex);
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -66,7 +98,15 @@ namespace ARStickyNotes.Utilities
         /// <returns>A Base64 encoded string, or empty string if input is null or empty.</returns>
         public string ConvertStringToBase64(string value)
         {
-            return !string.IsNullOrEmpty(value) ? Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(value)) : "";
+            try
+            {
+                return !string.IsNullOrEmpty(value) ? Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(value)) : "";
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to convert string to Base64.", ex);
+                return string.Empty;
+            }
         }
     }
 }
