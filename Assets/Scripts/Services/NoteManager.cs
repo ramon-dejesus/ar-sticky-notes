@@ -29,11 +29,9 @@ namespace ARStickyNotes.Services
         public void Test()
         {
             try
-            {
-                ErrorHappened("This is a test.");
-
-                //Debug.Log(PreloadNotes());
-                //Debug.Log(PreloadNotes(true));
+            {                
+                Debug.Log(PreloadNotes());
+                Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
