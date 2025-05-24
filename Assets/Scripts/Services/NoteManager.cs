@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 using ARStickyNotes.Models;
@@ -30,20 +29,18 @@ namespace ARStickyNotes.Services
         public void Test()
         {
             try
-            {
+            {                
+                // Show a toast message to indicate the test is running
+                ToastNotifier.Show("Testing NoteManager");
+                
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
-                GetExceptionTrace(ex);
+                ErrorReporter.Report("An error occurred while testing note preloading.", ex);
             }
         }
-
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public NoteManager() { }
 
         /// <summary>
         /// Unity Start method. Initializes local storage and attempts to load notes.
@@ -57,7 +54,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                GetExceptionTrace(ex);
+                ErrorReporter.Report("An error occurred while starting NoteManager.", ex);
             }
         }
 
@@ -98,9 +95,14 @@ namespace ARStickyNotes.Services
             {
                 DeleteAllNotes();
             }
+            // Ensure Notes and Notes.Items are initialized
+            if (Notes == null)
+                Notes = new NoteList();
+            if (Notes.Items == null)
+                Notes.Items = new System.Collections.Generic.List<Note>();
+
             if (Notes.Items.Count == 0)
             {
-
                 for (var x = 0; x < 5; x++)
                 {
                     var item = GetNewNote();
@@ -137,11 +139,15 @@ namespace ARStickyNotes.Services
                     Notes = Storage.GetObject<NoteList>(GetNotesFilename());
                     Notes ??= new NoteList();
                 }
+                // Ensure Notes.Items is initialized
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
                 return Notes;
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report("An error occurred while getting notes from storage.", ex);
+                return null;
             }
         }
 
@@ -163,11 +169,18 @@ namespace ARStickyNotes.Services
         {            
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 return Notes.Items.Find(x => x.Id == id);
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report($"An error occurred while getting a note by ID: {id}.", ex);
+                return null;
             }
         }
 
@@ -180,6 +193,12 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 var item = Notes.Items.Find(x => x.Id == id);
                 if (item != null)
                 {
@@ -189,7 +208,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report($"An error occurred while deleting a note with ID: {id}.", ex);
             }
         }
         
@@ -201,13 +220,19 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 Notes.Items.Clear();
                 SaveNotes();
                 Notes = new NoteList();
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report("An error occurred while deleting all notes.", ex);
             }
         }
 
@@ -224,7 +249,8 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report("An error occurred while creating a new note.", ex);
+                return null;
             }
         }
 
@@ -237,6 +263,12 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 var tmp = Notes.Items.Find(x => x.Id == item.Id);
                 if (tmp != null)
                 {
@@ -247,19 +279,10 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorReporter.Report($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
 
-        /// <summary>
-        /// Logs an exception and returns a new simplified exception with just the message.
-        /// </summary>
-        /// <param name="ex">The original exception.</param>
-        /// <returns>A new exception with the same message.</returns>
-        private Exception GetExceptionTrace(Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-            return new Exception(ex.Message);
-        }
+        
     }
 }

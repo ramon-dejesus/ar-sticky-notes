@@ -19,19 +19,27 @@ namespace ARStickyNotes.Utilities
         /// <returns>The encrypted Base64 string. Returns an empty string if input is null or empty.</returns>
         public string Encrypt(string plaintext, string pwd = "")
         {
-            if (string.IsNullOrEmpty(plaintext))
+            try
             {
-                return "";
-            }
-            var bts = System.Text.Encoding.UTF8.GetBytes(plaintext);
-            var encryptor = GetEncryptor(pwd);
-            using (var ms = new MemoryStream())
-            {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                if (string.IsNullOrEmpty(plaintext))
                 {
-                    cs.Write(bts, 0, bts.Length);
+                    return "";
                 }
-                return Convert.ToBase64String(ms.ToArray());
+                var bts = System.Text.Encoding.UTF8.GetBytes(plaintext);
+                var encryptor = GetEncryptor(pwd);
+                using (var ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(bts, 0, bts.Length);
+                    }
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to encrypt data.", ex);
+                return string.Empty;
             }
         }
 
@@ -43,19 +51,27 @@ namespace ARStickyNotes.Utilities
         /// <returns>The decrypted plain text string. Returns an empty string if input is null or empty.</returns>
         public string Decrypt(string cipherText, string pwd = "")
         {
-            if (string.IsNullOrEmpty(cipherText))
+            try
             {
-                return "";
-            }
-            var bts = Convert.FromBase64String(cipherText);
-            var encryptor = GetEncryptor(pwd);
-            using (var ms = new MemoryStream())
-            {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                if (string.IsNullOrEmpty(cipherText))
                 {
-                    cs.Write(bts, 0, bts.Length);
+                    return "";
                 }
-                return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+                var bts = Convert.FromBase64String(cipherText);
+                var encryptor = GetEncryptor(pwd);
+                using (var ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(bts, 0, bts.Length);
+                    }
+                    return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to decrypt data.", ex);
+                return string.Empty;
             }
         }
 
@@ -94,13 +110,16 @@ namespace ARStickyNotes.Utilities
         /// <returns>A consistent, device-specific password string for use in encryption.</returns>
         public string GetUniquePassword()
         {
-            // var pwd = Application.productName
-            // + SystemInfo.deviceUniqueIdentifier
-            // + SystemInfo.deviceName
-            // + SystemInfo.deviceModel
-            // + SystemInfo.deviceType.ToString();
-            var pwd = Application.productName + SystemInfo.deviceUniqueIdentifier;
-            return pwd;
+            try
+            {
+                var pwd = Application.productName + SystemInfo.deviceUniqueIdentifier;
+                return pwd;
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to generate a unique password.", ex);
+                return string.Empty;
+            }
         }
     }
 }

@@ -41,11 +41,13 @@ namespace ARStickyNotes.Utilities
         {
             if (string.IsNullOrEmpty(StoragePath))
             {
-                throw new Exception("The storage path is empty.");
+                ErrorReporter.Report("The storage path is empty.");
+                return "";
             }
             if (string.IsNullOrEmpty(key))
             {
-                throw new Exception("The storage key is empty.");
+                ErrorReporter.Report("The storage key is empty.");
+                return "";
             }
             var fileName = key + ".dat";
             return Path.Combine(StoragePath, fileName);
@@ -59,26 +61,33 @@ namespace ARStickyNotes.Utilities
         /// <param name="value">The object to serialize and store.</param>
         public void SaveObject(string key, object value)
         {
-            if (value != null)
+            try
             {
-                var js = new UnityConverter().ConvertObjectToJson(value);
-                var pth = GetFullPath(key);
-                if (pth != "")
+                if (value != null)
                 {
-                    if (EncryptionPassword != "")
+                    var js = new UnityConverter().ConvertObjectToJson(value);
+                    var pth = GetFullPath(key);
+                    if (pth != "")
                     {
-                        js = new UnityEncryption().Encrypt(js);
+                        if (EncryptionPassword != "")
+                        {
+                            js = new UnityEncryption().Encrypt(js, EncryptionPassword);
+                        }
+                        File.WriteAllText(pth, js);
                     }
-                    File.WriteAllText(pth, js);
+                    else
+                    {
+                        SaveValue(key, js);
+                    }
                 }
                 else
                 {
-                    SaveValue(key, js);
+                    DeleteObject(key);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                DeleteObject(key);
+                ErrorReporter.Report($"Failed to save object with key: {key}", ex);
             }
         }
 
@@ -89,23 +98,31 @@ namespace ARStickyNotes.Utilities
         /// <param name="value">The value to save. If null, the key is deleted.</param>
         public void SaveValue(string key, object value)
         {
-            if (string.IsNullOrEmpty(key))
+            try
             {
-                throw new Exception("The storage key is empty.");
-            }
-            if (value != null)
-            {
-                var tmp = value.GetType().Name.ToLower() != "string" ? new UnityConverter().ConvertObjectToJson(value) : value.ToString();
-                if (EncryptionPassword != "")
+                if (string.IsNullOrEmpty(key))
                 {
-                    tmp = new UnityEncryption().Encrypt(tmp, EncryptionPassword);
+                    ErrorReporter.Report("The storage key is empty.");
+                    return;
                 }
-                PlayerPrefs.SetString(key, tmp);
-                PlayerPrefs.Save();
+                if (value != null)
+                {
+                    var tmp = value.GetType().Name.ToLower() != "string" ? new UnityConverter().ConvertObjectToJson(value) : value.ToString();
+                    if (EncryptionPassword != "")
+                    {
+                        tmp = new UnityEncryption().Encrypt(tmp, EncryptionPassword);
+                    }
+                    PlayerPrefs.SetString(key, tmp);
+                    PlayerPrefs.Save();
+                }
+                else
+                {
+                    DeleteValue(key);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                DeleteValue(key);
+                ErrorReporter.Report($"Failed to save value with key: {key}", ex);
             }
         }
 
@@ -115,21 +132,29 @@ namespace ARStickyNotes.Utilities
         /// <param name="key">The key or filename of the object to delete.</param>
         public void DeleteObject(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            try
             {
-                throw new Exception("The storage key is empty.");
-            }
-            var pth = GetFullPath(key);
-            if (pth != "")
-            {
-                if (File.Exists(pth))
+                if (string.IsNullOrEmpty(key))
                 {
-                    File.Delete(pth);
+                    ErrorReporter.Report("The storage key is empty.");
+                    return;
+                }
+                var pth = GetFullPath(key);
+                if (pth != "")
+                {
+                    if (File.Exists(pth))
+                    {
+                        File.Delete(pth);
+                    }
+                }
+                else
+                {
+                    DeleteValue(key);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                DeleteValue(key);
+                ErrorReporter.Report($"Failed to delete object with key: {key}", ex);
             }
         }
 
@@ -139,12 +164,20 @@ namespace ARStickyNotes.Utilities
         /// <param name="key">The PlayerPrefs key to delete.</param>
         public void DeleteValue(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            try
             {
-                throw new Exception("The storage key is empty.");
+                if (string.IsNullOrEmpty(key))
+                {
+                    ErrorReporter.Report("The storage key is empty.");
+                    return;
+                }
+                PlayerPrefs.DeleteKey(key);
+                PlayerPrefs.Save();
             }
-            PlayerPrefs.DeleteKey(key);
-            PlayerPrefs.Save();
+            catch (Exception ex)
+            {
+                ErrorReporter.Report($"Failed to delete value with key: {key}", ex);
+            }
         }
 
         /// <summary>
@@ -155,24 +188,32 @@ namespace ARStickyNotes.Utilities
         /// <returns>The deserialized object, or default value of type <typeparamref name="T"/> if not found.</returns>
         public T GetObject<T>(string key)
         {
-            var pth = GetFullPath(key);
-            if (pth != "")
+            try
             {
-                if (File.Exists(pth))
+                var pth = GetFullPath(key);
+                if (pth != "")
                 {
-                    var js = File.ReadAllText(pth);
-                    if (EncryptionPassword != "")
+                    if (File.Exists(pth))
                     {
-                        js = new UnityEncryption().Decrypt(js, EncryptionPassword);
+                        var js = File.ReadAllText(pth);
+                        if (EncryptionPassword != "")
+                        {
+                            js = new UnityEncryption().Decrypt(js, EncryptionPassword);
+                        }
+                        return new UnityConverter().ConvertJsonToObject<T>(js);
                     }
-                    return new UnityConverter().ConvertJsonToObject<T>(js);
                 }
+                else
+                {
+                    return GetValue<T>(key);
+                }
+                return default;
             }
-            else
+            catch (Exception ex)
             {
-                return GetValue<T>(key);
+                ErrorReporter.Report($"Failed to get object with key: {key}", ex);
+                return default;
             }
-            return default;
         }
 
         /// <summary>
@@ -183,20 +224,29 @@ namespace ARStickyNotes.Utilities
         /// <returns>The value as type <typeparamref name="T"/>.</returns>
         public T GetValue<T>(string key)
         {
-            if (string.IsNullOrEmpty(key))
+            try
             {
-                throw new Exception("The storage key is empty.");
+                if (string.IsNullOrEmpty(key))
+                {
+                    ErrorReporter.Report("The storage key is empty.");
+                    return default;
+                }
+                object tmp = PlayerPrefs.GetString(key);
+                if (EncryptionPassword != "")
+                {
+                    tmp = new UnityEncryption().Decrypt(tmp.ToString(), EncryptionPassword);
+                }
+                if (typeof(T).Name.ToLower() == "string")
+                {
+                    return (T)tmp;
+                }
+                return new UnityConverter().ConvertJsonToObject<T>(tmp.ToString());
             }
-            object tmp = PlayerPrefs.GetString(key);
-            if (EncryptionPassword != "")
+            catch (Exception ex)
             {
-                tmp = new UnityEncryption().Decrypt(tmp.ToString(), EncryptionPassword);
+                ErrorReporter.Report($"Failed to get value with key: {key}", ex);
+                return default;
             }
-            if (typeof(T).Name.ToLower() == "string")
-            {
-                return (T)tmp;
-            }
-            return new UnityConverter().ConvertJsonToObject<T>(tmp.ToString());
         }
     }
 }
