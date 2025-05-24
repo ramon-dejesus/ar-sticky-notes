@@ -30,12 +30,15 @@ namespace ARStickyNotes.Services
         {
             try
             {                
+                // Show a toast message to indicate the test is running
+                ToastNotifier.Show("Testing NoteManager");
+                
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while testing note preloading.", ex);
+                ErrorReporter.Report("An error occurred while testing note preloading.", ex);
             }
         }
 
@@ -51,7 +54,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while starting NoteManager.", ex);
+                ErrorReporter.Report("An error occurred while starting NoteManager.", ex);
             }
         }
 
@@ -143,8 +146,8 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while getting notes from storage.", ex);
-                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
+                ErrorReporter.Report("An error occurred while getting notes from storage.", ex);
+                return null;
             }
         }
 
@@ -176,8 +179,8 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened($"An error occurred while getting a note by ID: {id}.", ex);
-                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
+                ErrorReporter.Report($"An error occurred while getting a note by ID: {id}.", ex);
+                return null;
             }
         }
 
@@ -205,7 +208,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened($"An error occurred while deleting a note with ID: {id}.", ex);
+                ErrorReporter.Report($"An error occurred while deleting a note with ID: {id}.", ex);
             }
         }
         
@@ -229,7 +232,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while deleting all notes.", ex);
+                ErrorReporter.Report("An error occurred while deleting all notes.", ex);
             }
         }
 
@@ -246,8 +249,8 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while creating a new note.", ex);
-                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
+                ErrorReporter.Report("An error occurred while creating a new note.", ex);
+                return null;
             }
         }
 
@@ -276,25 +279,10 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened($"An error occurred while updating a note with ID: {item?.Id}.", ex);
+                ErrorReporter.Report($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
 
-        /// <summary>
-        /// Reports an error by logging it (in the editor), showing a toast message to the user,
-        /// and throwing the provided or a new exception.
-        /// </summary>
-        /// <param name="userMessage">A user-friendly message to display in the toast. If null, falls back to the exception message.</param>
-        /// <param name="ex">The original exception. If null, a new generic exception is created.</param>
-        /// <exception cref="Exception">Always throws the provided or a new exception.</exception>
-        private void ErrorHappened(string userMessage, Exception ex = null)
-        {
-            var errorMessage = "An unknown error occurred.";
-            var exception = ex ?? new Exception(errorMessage);
-            var messageToShow = userMessage ?? exception.Message ?? errorMessage;
-
-            ARStickyNotes.Utilities.ErrorReporter.Report(messageToShow, exception);
-            throw exception;
-        }
+        
     }
 }
