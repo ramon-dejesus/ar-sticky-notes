@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.IO;
 using System;
-using ARStickyNotes.Utilities;
 
 namespace ARStickyNotes.Utilities
 {
