@@ -1,3 +1,4 @@
+using ARStickyNotes.UI;
 using UnityEngine;
 
 namespace ARStickyNotes.Utilities
@@ -20,3 +21,4 @@ namespace ARStickyNotes.Utilities
             ToastManager.Instance?.ShowToast(userMessage);
         }
     }
+}
