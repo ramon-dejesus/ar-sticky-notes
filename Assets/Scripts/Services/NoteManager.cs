@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 using ARStickyNotes.Models;
@@ -31,19 +30,16 @@ namespace ARStickyNotes.Services
         {
             try
             {
-                Debug.Log(PreloadNotes());
-                Debug.Log(PreloadNotes(true));
+                ErrorHappened("This is a test.");
+
+                //Debug.Log(PreloadNotes());
+                //Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
                 ErrorHappened("An error occurred while testing note preloading.", ex);
             }
         }
-
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public NoteManager() { }
 
         /// <summary>
         /// Unity Start method. Initializes local storage and attempts to load notes.
@@ -98,9 +94,14 @@ namespace ARStickyNotes.Services
             {
                 DeleteAllNotes();
             }
+            // Ensure Notes and Notes.Items are initialized
+            if (Notes == null)
+                Notes = new NoteList();
+            if (Notes.Items == null)
+                Notes.Items = new System.Collections.Generic.List<Note>();
+
             if (Notes.Items.Count == 0)
             {
-
                 for (var x = 0; x < 5; x++)
                 {
                     var item = GetNewNote();
@@ -137,11 +138,15 @@ namespace ARStickyNotes.Services
                     Notes = Storage.GetObject<NoteList>(GetNotesFilename());
                     Notes ??= new NoteList();
                 }
+                // Ensure Notes.Items is initialized
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
                 return Notes;
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while getting notes.", ex);
+                ErrorHappened("An error occurred while getting notes from storage.", ex);
+                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
             }
         }
 
@@ -163,11 +168,18 @@ namespace ARStickyNotes.Services
         {            
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 return Notes.Items.Find(x => x.Id == id);
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while getting a note by ID.", ex);
+                ErrorHappened($"An error occurred while getting a note by ID: {id}.", ex);
+                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
             }
         }
 
@@ -180,6 +192,12 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 var item = Notes.Items.Find(x => x.Id == id);
                 if (item != null)
                 {
@@ -189,7 +207,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while deleting a note.", ex);
+                ErrorHappened($"An error occurred while deleting a note with ID: {id}.", ex);
             }
         }
         
@@ -201,6 +219,12 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 Notes.Items.Clear();
                 SaveNotes();
                 Notes = new NoteList();
@@ -225,6 +249,7 @@ namespace ARStickyNotes.Services
             catch (Exception ex)
             {
                 ErrorHappened("An error occurred while creating a new note.", ex);
+                return null; // This method will not return after an error due to exception thrown in ErrorHappened.
             }
         }
 
@@ -237,6 +262,12 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                // Ensure Notes and Notes.Items are initialized
+                if (Notes == null)
+                    Notes = new NoteList();
+                if (Notes.Items == null)
+                    Notes.Items = new System.Collections.Generic.List<Note>();
+
                 var tmp = Notes.Items.Find(x => x.Id == item.Id);
                 if (tmp != null)
                 {
@@ -247,7 +278,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                ErrorHappened("An error occurred while updating a note.", ex);
+                ErrorHappened($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
 
@@ -258,10 +289,11 @@ namespace ARStickyNotes.Services
         /// <param name="userMessage">A user-friendly message to display in the toast. If null, falls back to the exception message.</param>
         /// <param name="ex">The original exception. If null, a new generic exception is created.</param>
         /// <exception cref="Exception">Always throws the provided or a new exception.</exception>
-        private void ErrorHappened(string userMessage, Exception ex)
+        private void ErrorHappened(string userMessage, Exception ex = null)
         {
-            var exception = ex ?? new Exception("An unknown error occurred.");
-            var messageToShow = userMessage ?? exception.Message ?? "An unknown error occurred.";
+            var errorMessage = "An unknown error occurred.";
+            var exception = ex ?? new Exception(errorMessage);
+            var messageToShow = userMessage ?? exception.Message ?? errorMessage;
 
             ARStickyNotes.Utilities.ErrorReporter.Report(messageToShow, exception);
             throw exception;
