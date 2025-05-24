@@ -36,7 +36,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while testing note preloading.", ex);
             }
         }
 
@@ -57,7 +57,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while starting NoteManager.", ex);
             }
         }
 
@@ -141,7 +141,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while getting notes.", ex);
             }
         }
 
@@ -167,7 +167,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while getting a note by ID.", ex);
             }
         }
 
@@ -189,7 +189,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while deleting a note.", ex);
             }
         }
         
@@ -207,7 +207,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while deleting all notes.", ex);
             }
         }
 
@@ -224,7 +224,7 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while creating a new note.", ex);
             }
         }
 
@@ -247,19 +247,24 @@ namespace ARStickyNotes.Services
             }
             catch (Exception ex)
             {
-                throw GetExceptionTrace(ex);
+                ErrorHappened("An error occurred while updating a note.", ex);
             }
         }
 
         /// <summary>
-        /// Logs an exception and returns a new simplified exception with just the message.
+        /// Reports an error by logging it (in the editor), showing a toast message to the user,
+        /// and throwing the provided or a new exception.
         /// </summary>
-        /// <param name="ex">The original exception.</param>
-        /// <returns>A new exception with the same message.</returns>
-        private Exception GetExceptionTrace(Exception ex)
+        /// <param name="userMessage">A user-friendly message to display in the toast. If null, falls back to the exception message.</param>
+        /// <param name="ex">The original exception. If null, a new generic exception is created.</param>
+        /// <exception cref="Exception">Always throws the provided or a new exception.</exception>
+        private void ErrorHappened(string userMessage, Exception ex)
         {
-            Debug.LogError(ex.ToString());
-            return new Exception(ex.Message);
+            var exception = ex ?? new Exception("An unknown error occurred.");
+            var messageToShow = userMessage ?? exception.Message ?? "An unknown error occurred.";
+
+            ARStickyNotes.Utilities.ErrorReporter.Report(messageToShow, exception);
+            throw exception;
         }
     }
 }
