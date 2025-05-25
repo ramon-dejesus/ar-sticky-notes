@@ -11,6 +11,10 @@ namespace ARStickyNotes.Utilities
     /// </summary>
     public class UnityEncryption
     {
+        private const string DefaultSalt = "9CE189F6849B4F43AA6007256C4F3CAE";
+        
+        public string DefaultPassword { get; } = "47F8F007168A4DB9834E0746922695A4";
+
         /// <summary>
         /// Encrypts a UTF-8 string using AES and returns a Base64-encoded ciphertext.
         /// </summary>
@@ -97,8 +101,8 @@ namespace ARStickyNotes.Utilities
         private Rfc2898DeriveBytes GetEncryptionKey(string pwd)
         {
             pwd = pwd == "" ? GetUniquePassword() : pwd;
-            var salt1 = System.Text.Encoding.UTF8.GetBytes("9CE189F6849B4F43AA6007256C4F3CAE");
-            return new Rfc2898DeriveBytes(pwd, salt1);
+            var saltBts = System.Text.Encoding.UTF8.GetBytes(DefaultSalt);
+            return new Rfc2898DeriveBytes(pwd, saltBts);
         }
 
         /// <summary>

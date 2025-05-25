@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
@@ -29,10 +28,10 @@ namespace ARStickyNotes.Services
         public void Test()
         {
             try
-            {                
+            {
                 // Show a toast message to indicate the test is running
                 ToastNotifier.Show("Testing NoteManager");
-                
+
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
             }
@@ -67,24 +66,6 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
-        /// Allan to move this to a utility class.
-        /// Generates a random alphanumeric string.
-        /// </summary>
-        /// <param name="length">The desired length of the string.</param>
-        /// <returns>A randomly generated string.</returns>
-        private string GetRandomString(int length)
-        {
-            if (length < 1)
-            {
-                throw new ArgumentException("Length must be greater than 0", nameof(length));
-            }
-
-            var random = new System.Random();
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        /// <summary>
         /// Loads notes from storage and populates with random data if empty.
         /// </summary>
         /// <param name="forcedDelete">If true, deletes all existing notes first.</param>
@@ -106,8 +87,8 @@ namespace ARStickyNotes.Services
                 for (var x = 0; x < 5; x++)
                 {
                     var item = GetNewNote();
-                    item.Title = GetRandomString(10);
-                    item.Description = GetRandomString(100);
+                    item.Title = new TextUtility().GetRandomString(10);
+                    item.Description = new TextUtility().GetRandomString(100);
                     UpdateNote(item);
                 }
             }
@@ -123,7 +104,7 @@ namespace ARStickyNotes.Services
         private string GetNotesFilename()
         {
             var env = new UnityEncryption();
-            return new UnityConverter().ConvertStringToBase64(env.Encrypt(env.GetUniquePassword(), "47F8F007168A4DB9834E0746922695A4"));
+            return new UnityConverter().ConvertStringToBase64(env.Encrypt(env.GetUniquePassword(), env.DefaultPassword));
         }
 
         /// <summary>
@@ -166,7 +147,7 @@ namespace ARStickyNotes.Services
         /// <returns>The matching note, or null if not found.</returns>
         /// <exception cref="Exception">Wraps any storage-related exception.</exception>
         public Note GetNoteById(string id)
-        {            
+        {
             try
             {
                 // Ensure Notes and Notes.Items are initialized
@@ -211,7 +192,7 @@ namespace ARStickyNotes.Services
                 ErrorReporter.Report($"An error occurred while deleting a note with ID: {id}.", ex);
             }
         }
-        
+
         /// <summary>
         /// Clears all notes from the list and resets the state.
         /// </summary>
@@ -283,6 +264,6 @@ namespace ARStickyNotes.Services
             }
         }
 
-        
+
     }
 }
