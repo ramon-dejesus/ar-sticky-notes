@@ -3,6 +3,6 @@
         <ui:TextField name="noteTitleField" label="Note Title" placeholder-text="Enter note title..." />
         <ui:TextField name="noteDescriptionField" label="Note Description" multiline="true" placeholder-text="Enter note description..." />
         <ui:Button name="addNoteButton" text="Add Note" />
-        <ui:ListView name="notesListView" />
+        <ui:ListView name="notesListView" style="flex-grow: 1;" />
     </ui:VisualElement>
 </ui:UXML>

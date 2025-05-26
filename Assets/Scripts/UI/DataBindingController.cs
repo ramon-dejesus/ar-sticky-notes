@@ -48,16 +48,49 @@ public class DataBindingController : MonoBehaviour
 
             LoadNotes();
 
-            // Set up ListView
+            // Set up ListView: Title | Created Date | Delete Button
             notesListView.makeItem = () =>
             {
-                // Create a horizontal row: Title | Description | Delete Button
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
-                var titleLabel = new Label { name = "titleLabel", style = { flexGrow = 1, unityTextAlign = TextAnchor.MiddleLeft } };
-                var descLabel = new Label { name = "descLabel", style = { flexGrow = 2, unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } };
-                var deleteButton = new Button { name = "deleteButton", text = "Delete", style = { marginLeft = 10 } };
+
+                var titleLabel = new Label
+                {
+                    name = "titleLabel",
+                    style =
+                    {
+                        flexGrow = 1,
+                        maxWidth = 180,
+                        unityTextAlign = TextAnchor.MiddleLeft,
+                        whiteSpace = WhiteSpace.NoWrap,
+                        overflow = Overflow.Hidden,
+                        textOverflow = TextOverflow.Ellipsis
+                    }
+                };
+
+                var dateLabel = new Label
+                {
+                    name = "dateLabel",
+                    style =
+                    {
+                        flexGrow = 0,
+                        maxWidth = 120,
+                        unityTextAlign = TextAnchor.MiddleLeft,
+                        marginLeft = 10,
+                        whiteSpace = WhiteSpace.NoWrap,
+                        overflow = Overflow.Hidden,
+                        textOverflow = TextOverflow.Ellipsis
+                    }
+                };
+
+                var deleteButton = new Button
+                {
+                    name = "deleteButton",
+                    text = "Delete",
+                    style = { marginLeft = 10, flexGrow = 0 }
+                };
+
                 row.Add(titleLabel);
-                row.Add(descLabel);
+                row.Add(dateLabel);
                 row.Add(deleteButton);
                 return row;
             };
@@ -65,11 +98,11 @@ public class DataBindingController : MonoBehaviour
             {
                 var note = notes[i];
                 var titleLabel = element.Q<Label>("titleLabel");
-                var descLabel = element.Q<Label>("descLabel");
+                var dateLabel = element.Q<Label>("dateLabel");
                 var deleteButton = element.Q<Button>("deleteButton");
 
                 titleLabel.text = note.Title ?? "(Untitled)";
-                descLabel.text = note.Description ?? note.Id ?? "";
+                dateLabel.text = note.CreatedAt.ToString("yyyy-MM-dd HH:mm");
 
                 // Remove previous click events to avoid stacking
                 if (deleteButton.userData is Action prevAction)
