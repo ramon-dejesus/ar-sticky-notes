@@ -43,13 +43,27 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
-        /// Unity Start method. Initializes local storage and attempts to load notes.
+        /// Unity Awake method. Initializes local storage.
+        /// </summary>
+        void Awake()
+        {
+            try
+            {
+                Storage = new LocalStorage(Application.persistentDataPath, new UnityEncryption().GetUniquePassword());
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("An error occurred while initializing local storage.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Unity Start method. Attempts to load notes.
         /// </summary>
         void Start()
         {
             try
             {
-                Storage = new LocalStorage(Application.persistentDataPath, new UnityEncryption().GetUniquePassword());
                 GetNotes();
             }
             catch (Exception ex)
@@ -134,12 +148,14 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                if (Storage == null)
+                    Storage = new LocalStorage(Application.persistentDataPath, new UnityEncryption().GetUniquePassword());
+
                 if (Notes == null)
                 {
                     Notes = Storage.GetObject<NoteList>(GetNotesFilename());
                     Notes ??= new NoteList();
                 }
-                // Ensure Notes.Items is initialized
                 if (Notes.Items == null)
                     Notes.Items = new System.Collections.Generic.List<Note>();
                 return Notes;

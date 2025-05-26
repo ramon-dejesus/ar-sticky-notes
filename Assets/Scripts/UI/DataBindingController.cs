@@ -8,7 +8,7 @@ using ARStickyNotes.Utilities;
 
 /// <summary>
 /// Controls data binding between the UI Toolkit elements and the NoteManager,
-/// allowing users to view, add, and select notes.
+/// allowing users to view and add notes.
 /// </summary>
 public class DataBindingController : MonoBehaviour
 {
@@ -47,14 +47,12 @@ public class DataBindingController : MonoBehaviour
             LoadNotes();
 
             // Set up ListView
-            myListView.itemsSource = notes;
             myListView.makeItem = () => new Label();
             myListView.bindItem = (element, i) =>
             {
                 ((Label)element).text = notes[i]?.Title ?? "(Untitled)";
             };
-            myListView.selectionType = SelectionType.Single;
-            myListView.onSelectionChange += OnListSelectionChanged;
+            myListView.itemsSource = notes;
 
             myButton.clicked += OnAddNoteClicked;
         }
@@ -106,29 +104,6 @@ public class DataBindingController : MonoBehaviour
         catch (Exception ex)
         {
             ErrorReporter.Report("Failed to add a new note.", ex);
-        }
-    }
-
-    /// <summary>
-    /// Handles selection changes in the ListView, populating the text field with the selected note's title.
-    /// </summary>
-    /// <param name="selectedItems">The selected items in the ListView.</param>
-    private void OnListSelectionChanged(IEnumerable<object> selectedItems)
-    {
-        try
-        {
-            foreach (var item in selectedItems)
-            {
-                if (item is Note note)
-                {
-                    myTextField.value = note.Title;
-                    break;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            ErrorReporter.Report("Failed to update the text field from the selected note.", ex);
         }
     }
 }
