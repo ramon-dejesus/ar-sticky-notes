@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1;">
-        <ui:Button text="Button" />
-        <ui:TextField label="Text Field" placeholder-text="filler text" />
-        <ui:ListView />
+    <ui:VisualElement style="flex-grow: 1; flex-direction: column;">
+        <ui:Button name="myButton" text="Button" />
+        <ui:TextField name="myTextField" label="Text Field" placeholder-text="filler text" />
+        <ui:ListView name="myListView" />
     </ui:VisualElement>
 </ui:UXML>
