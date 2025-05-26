@@ -104,7 +104,7 @@ namespace ARStickyNotes.Services
         private string GetNotesFilename()
         {
             var env = new UnityEncryption();
-            return new UnityConverter().ConvertStringToBase64(env.Encrypt(env.GetUniquePassword(), env.DefaultPassword));
+            return new UnityConverter().ConvertStringToBase64(env.Encrypt(env.GetUniquePassword()));
         }
 
         /// <summary>
