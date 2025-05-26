@@ -8,7 +8,7 @@ using ARStickyNotes.Utilities;
 
 /// <summary>
 /// Controls data binding between the UI Toolkit elements and the NoteManager,
-/// allowing users to view and add notes.
+/// allowing users to view, add, and delete notes.
 /// </summary>
 public class DataBindingController : MonoBehaviour
 {
@@ -22,9 +22,10 @@ public class DataBindingController : MonoBehaviour
     /// </summary>
     [SerializeField] private NoteManager noteManager;
 
-    private Button myButton;
-    private TextField myTextField;
-    private ListView myListView;
+    private Button addNoteButton;
+    private TextField noteTitleField;
+    private TextField noteDescriptionField;
+    private ListView notesListView;
 
     /// <summary>
     /// The current list of notes displayed in the UI.
@@ -40,21 +41,60 @@ public class DataBindingController : MonoBehaviour
         {
             var root = uiDocument.rootVisualElement;
 
-            myButton = root.Q<Button>("myButton");
-            myTextField = root.Q<TextField>("myTextField");
-            myListView = root.Q<ListView>("myListView");
+            addNoteButton = root.Q<Button>("addNoteButton");
+            noteTitleField = root.Q<TextField>("noteTitleField");
+            noteDescriptionField = root.Q<TextField>("noteDescriptionField");
+            notesListView = root.Q<ListView>("notesListView");
 
             LoadNotes();
 
             // Set up ListView
-            myListView.makeItem = () => new Label();
-            myListView.bindItem = (element, i) =>
+            notesListView.makeItem = () =>
             {
-                ((Label)element).text = notes[i]?.Title ?? "(Untitled)";
+                // Create a horizontal row: Title | Description | Delete Button
+                var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
+                var titleLabel = new Label { name = "titleLabel", style = { flexGrow = 1, unityTextAlign = TextAnchor.MiddleLeft } };
+                var descLabel = new Label { name = "descLabel", style = { flexGrow = 2, unityTextAlign = TextAnchor.MiddleLeft, marginLeft = 10 } };
+                var deleteButton = new Button { name = "deleteButton", text = "Delete", style = { marginLeft = 10 } };
+                row.Add(titleLabel);
+                row.Add(descLabel);
+                row.Add(deleteButton);
+                return row;
             };
-            myListView.itemsSource = notes;
+            notesListView.bindItem = (element, i) =>
+            {
+                var note = notes[i];
+                var titleLabel = element.Q<Label>("titleLabel");
+                var descLabel = element.Q<Label>("descLabel");
+                var deleteButton = element.Q<Button>("deleteButton");
 
-            myButton.clicked += OnAddNoteClicked;
+                titleLabel.text = note.Title ?? "(Untitled)";
+                descLabel.text = note.Description ?? note.Id ?? "";
+
+                // Remove previous click events to avoid stacking
+                if (deleteButton.userData is Action prevAction)
+                {
+                    deleteButton.clicked -= prevAction;
+                }
+                // Store the callback so it can be removed next time
+                Action callback = () =>
+                {
+                    try
+                    {
+                        noteManager.DeleteNote(note.Id);
+                        LoadNotes();
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorReporter.Report("Failed to delete note.", ex);
+                    }
+                };
+                deleteButton.userData = callback;
+                deleteButton.clicked += callback;
+            };
+            notesListView.itemsSource = notes;
+
+            addNoteButton.clicked += OnAddNoteClicked;
         }
         catch (Exception ex)
         {
@@ -71,10 +111,10 @@ public class DataBindingController : MonoBehaviour
         {
             var noteList = noteManager.GetNotes();
             notes = noteList?.Items ?? new List<Note>();
-            if (myListView != null)
+            if (notesListView != null)
             {
-                myListView.itemsSource = notes;
-                myListView.RefreshItems();
+                notesListView.itemsSource = notes;
+                notesListView.RefreshItems();
             }
         }
         catch (Exception ex)
@@ -84,21 +124,24 @@ public class DataBindingController : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles the button click event to add a new note with the text field's value as the title.
+    /// Handles the button click event to add a new note with the text fields' values.
     /// </summary>
     private void OnAddNoteClicked()
     {
         try
         {
-            var title = myTextField.value;
+            var title = noteTitleField.value;
+            var description = noteDescriptionField.value;
             if (!string.IsNullOrWhiteSpace(title))
             {
                 var newNote = noteManager.GetNewNote();
                 newNote.Title = title;
+                newNote.Description = description;
                 noteManager.UpdateNote(newNote);
 
                 LoadNotes();
-                myTextField.value = "";
+                noteTitleField.value = "";
+                noteDescriptionField.value = "";
             }
         }
         catch (Exception ex)
