@@ -63,11 +63,6 @@ public class NoteEditorController : MonoBehaviour
         {
             var noteList = noteManager.GetNotes();
             notes = noteList?.Items ?? new List<Note>();
-            if (notesListView != null)
-            {
-                // notesListView.itemsSource = notes;
-                // notesListView.RefreshItems();
-            }
         }
         catch (Exception ex)
         {
