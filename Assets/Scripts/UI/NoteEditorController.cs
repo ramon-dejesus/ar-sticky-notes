@@ -23,6 +23,7 @@ public class NoteEditorController : MonoBehaviour
     [SerializeField] private NoteManager noteManager;
 
     private Button saveNoteButton;
+    private Button deleteNoteButton;
     private TextField noteTitleField;
     private TextField noteDescriptionField;
 
@@ -41,12 +42,14 @@ public class NoteEditorController : MonoBehaviour
             var root = uiDocument.rootVisualElement;
 
             saveNoteButton = root.Q<Button>("saveNoteButton");
+            deleteNoteButton = root.Q<Button>("deleteNoteButton");
             noteTitleField = root.Q<TextField>("noteTitleField");
             noteDescriptionField = root.Q<TextField>("noteDescriptionField");
 
             LoadNotes();
 
             saveNoteButton.clicked += OnSaveNoteClicked;
+            deleteNoteButton.clicked += OnDeleteNoteClicked;
         }
         catch (Exception ex)
         {
@@ -94,6 +97,29 @@ public class NoteEditorController : MonoBehaviour
         catch (Exception ex)
         {
             ErrorReporter.Report("Failed to add a new note.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Handles the button click event to delete a note with the text fields' values.
+    /// </summary>
+    private void OnDeleteNoteClicked()
+    {
+        try
+        {
+            var title = noteTitleField.value;
+            var description = noteDescriptionField.value;
+            /// missing note deletion logic for existing notes
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                LoadNotes();
+            }
+            noteTitleField.value = "";
+            noteDescriptionField.value = "";
+        }
+        catch (Exception ex)
+        {
+            ErrorReporter.Report("Failed to delete note.", ex);
         }
     }
 }

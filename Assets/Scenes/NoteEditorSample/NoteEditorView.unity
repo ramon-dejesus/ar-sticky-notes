@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 725605711}
   - component: {fileID: 725605710}
   m_Layer: 5
-  m_Name: UIDocument
+  m_Name: NoteEditorUIDocument
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
