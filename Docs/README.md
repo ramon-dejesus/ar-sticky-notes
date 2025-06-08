@@ -5,11 +5,10 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ---
 
 ## 🔕️ Project Timeline
-**Total Duration:** 2 Weeks  
+**Total Duration:** 22 Weeks  
 **Team:**
 - 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments, Discord Bot)
-- 👨‍💻 Allan (AR Logic, Anchoring, Persistence)
-- 👨‍💻 Matt (Full Stack Integration, Prefab Logic, UI Implementation)
+- 👨‍💻 Allan D (AR Logic, Anchoring, Persistence)
 - 🎨 Gabe (Wireframes, Visual Design, Branding, UI Implementation)
 
 ---
@@ -18,42 +17,43 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 
 ### ✅ Milestone 1: Core Setup (Day 1–2)
 - Set up GitHub repository, branching strategy, and discord bot *Ramon*
-- Set up valid `.gitignore` Unity git needs *(Matt)*
-- Initialize Unity Project with AR Foundation *(Allan - with Matt assisting on input validation and project scaffolding)*
+- Set up valid `.gitignore` Unity git needs *(Ramon)*
+- Initialize Unity Project with AR Foundation *(Allan - with Ramon assisting on input validation and project scaffolding)*
 - Create mockups, wireframes and color palette  *(Ramon & Gabe)*
 
 ### 🔧 Milestone 2: Anchoring & UI (Day 2–5)
 - Implement wall plane detection + anchor placement *(Allan)*
-- Create sticky note prefab + interaction flow *(Matt)*
+- Create sticky note prefab + interaction flow *(Gabe)*
 - Finalize mockups & branding guidelines *(Gabe)*
 
 ### 📀 Milestone 3: Persistence & Management (Day 5–8)
 - Store and reload notes via local persistence *(Allan)*
-- Build “My Notes” UI list + delete flow *(Matt)*
+- Build “My Notes” UI list + delete flow *(Gabe)*
 - Apply final visual polish to UI + prefab *(Gabe)*
 
 ### 🧪 Milestone 4: QA & Release (Day 9–10)
 - Full QA on Android/iOS *(Ramon)*
-- Bug fixes *(Allan & Matt)*
+- Bug fixes *(Allan, Gabe & Ramon)*
 - Create app icon, finalize UI assets *(Gabe)*
 - Build & publish on TestFlight / Google Internal *(Ramon)*
 
 ---
 
-## 📁 Repository Structure !!ask Allan & Matt>
+## 📁 Repository Structure !!ask Allan & Ramon>
 ```
 📆ARStickyNotes/
-👤 Assets/
-🔜 ARFoundation/       # Core AR Foundation setup
-📈 Prefabs/            # Sticky note prefab
-📃 Scripts/            # C# scripts (AR logic, UI, persistence)
-📋 UI/                 # Buttons, canvases, text inputs
-📄 Docs/                # Wireframes, visual assets
-📄 Builds/              # Android/iOS test builds
+📄 AR-Unity-Setup/       # Unity Root folder
+👤 AR-Unity-Setup/Assets/
+📈 AR-Unity-Setup/Prefabs/            # Sticky note prefab
+📄 AR-Unity-Setup/ProjectSettings/    # Unity project configuration
+📃 AR-Unity-Setup/Scripts/            # C# scripts (AR logic, UI, persistence)
+📋 AR-Unity-Setup/UI/                 # Buttons, canvases, text inputs
+📄 AR-Unity-Setup/Builds/             # Android/iOS test builds
+📄 Docs/               # Wireframes, visual assets
 README.md              # Project overview
 LICENSE.md             # Open-source license (MIT)
 .gitignore             # Unity-specific ignores
-ProjectSettings/       # Unity project configuration
+
 ```
 
 ---
@@ -77,15 +77,15 @@ ProjectSettings/       # Unity project configuration
 ---
 
 ## 🧪 Testing Devices
-- Android: !!ask devs>
-- iOS: !!ask devs>
+- Android: Pixel 9 pro-Android 15, Oneplus-Android 12
+- iOS: iPhone 15
 
 ---
 
-## 📆 Installation (For Developers) !!ask Matt>
+## 📆 Installation (For Developers) 
 ```bash
 # Clone the repo
-$ git clone https://github.com/your-org/ar-sticky-notes.git
+$ git clone https://github.com/ramon-dejesus/ar-sticky-notes.git
 $ cd ar-sticky-notes
 
 # Open the Unity project in Unity Hub (2022.3+ LTS)
