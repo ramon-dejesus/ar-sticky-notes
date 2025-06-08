@@ -29,6 +29,17 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                try
+                {
+                    print(new ARSpawner().SpawnObject());
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    print(ex.ToString());
+                    return;
+                }
+
                 // Show a toast message to indicate the test is running
                 ToastNotifier.Show("Testing NoteManager");
 
