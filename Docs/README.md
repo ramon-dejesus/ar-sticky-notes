@@ -15,23 +15,23 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 
 ## 🚀 Milestones & Workflow
 
-### ✅ Milestone 1: Core Setup (Day 1–2)
+### ✅ Milestone 1: Core Setup
 - Set up GitHub repository, branching strategy, and discord bot *Ramon*
 - Set up valid `.gitignore` Unity git needs *(Ramon)*
 - Initialize Unity Project with AR Foundation *(Allan - with Ramon assisting on input validation and project scaffolding)*
 - Create mockups, wireframes and color palette  *(Ramon & Gabe)*
 
-### 🔧 Milestone 2: Anchoring & UI (Day 2–5)
+### 🔧 Milestone 2: Anchoring & UI
 - Implement wall plane detection + anchor placement *(Allan)*
 - Create sticky note prefab + interaction flow *(Gabe)*
 - Finalize mockups & branding guidelines *(Gabe)*
 
-### 📀 Milestone 3: Persistence & Management (Day 5–8)
+### 📀 Milestone 3: Persistence & Management
 - Store and reload notes via local persistence *(Allan)*
 - Build “My Notes” UI list + delete flow *(Gabe)*
 - Apply final visual polish to UI + prefab *(Gabe)*
 
-### 🧪 Milestone 4: QA & Release (Day 9–10)
+### 🧪 Milestone 4: QA & Release
 - Full QA on Android/iOS *(Ramon)*
 - Bug fixes *(Allan, Gabe & Ramon)*
 - Create app icon, finalize UI assets *(Gabe)*
@@ -39,7 +39,7 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 
 ---
 
-## 📁 Repository Structure !!ask Allan & Ramon>
+## 📁 Repository Structure
 ```
 📆ARStickyNotes/
 📄 AR-Unity-Setup/       # Unity Root folder
