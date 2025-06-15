@@ -5,8 +5,9 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ---
 
 ## 🔕️ Project Timeline
-**Total Duration:** 22 Weeks  
+
 **Team:**
+
 - 👨‍💻 Ramon (Project Management, Architecture, GitHub Setup, Testing, Releases, Deployments, Discord Bot)
 - 👨‍💻 Allan D (AR Logic, Anchoring, Persistence)
 - 🎨 Gabe (Wireframes, Visual Design, Branding, UI Implementation)
@@ -16,30 +17,35 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 ## 🚀 Milestones & Workflow
 
 ### ✅ Milestone 1: Core Setup
-- Set up GitHub repository, branching strategy, and discord bot *Ramon*
-- Set up valid `.gitignore` Unity git needs *(Ramon)*
-- Initialize Unity Project with AR Foundation *(Allan - with Ramon assisting on input validation and project scaffolding)*
-- Create mockups, wireframes and color palette  *(Ramon & Gabe)*
+
+- Set up GitHub repository, branching strategy, and discord bot Ramon
+- Set up valid `.gitignore` Unity git needs _(Ramon)_
+- Initialize Unity Project with AR Foundation _(Allan - with Ramon assisting on input validation and project scaffolding)_
+- Create mockups, wireframes and color palette _(Ramon & Gabe)_
 
 ### 🔧 Milestone 2: Anchoring & UI
-- Implement wall plane detection + anchor placement *(Allan)*
-- Create sticky note prefab + interaction flow *(Gabe)*
-- Finalize mockups & branding guidelines *(Gabe)*
+
+- Implement wall plane detection + anchor placement _(Allan)_
+- Create sticky note prefab + interaction flow _(Gabe)_
+- Finalize mockups & branding guidelines _(Gabe)_
 
 ### 📀 Milestone 3: Persistence & Management
-- Store and reload notes via local persistence *(Allan)*
-- Build “My Notes” UI list + delete flow *(Gabe)*
-- Apply final visual polish to UI + prefab *(Gabe)*
+
+- Store and reload notes via local persistence _(Allan)_
+- Build “My Notes” UI list + delete flow _(Gabe)_
+- Apply final visual polish to UI + prefab _(Gabe)_
 
 ### 🧪 Milestone 4: QA & Release
-- Full QA on Android/iOS *(Ramon)*
-- Bug fixes *(Allan, Gabe & Ramon)*
-- Create app icon, finalize UI assets *(Gabe)*
-- Build & publish on TestFlight / Google Internal *(Ramon)*
+
+- Full QA on Android/iOS _(Ramon)_
+- Bug fixes _(Allan, Gabe & Ramon)_
+- Create app icon, finalize UI assets _(Gabe)_
+- Build & publish on TestFlight / Google Internal _(Ramon)_
 
 ---
 
 ## 📁 Repository Structure
+
 ```
 📆ARStickyNotes/
 📄 AR-Unity-Setup/       # Unity Root folder
@@ -59,6 +65,7 @@ LICENSE.md             # Open-source license (MIT)
 ---
 
 ## 🛠️ Tech Stack
+
 - **Unity** (2022.3+ LTS)
 - **AR Foundation** (ARCore & ARKit backend)
 - **C#** for development
@@ -68,6 +75,7 @@ LICENSE.md             # Open-source license (MIT)
 ---
 
 ## 🎯 MVP Goals
+
 - Place sticky notes via AR on walls ONLY
 - Store note location + text on app exists for future sessions
 - Manage notes on location and on a list (view, delete)
@@ -77,12 +85,14 @@ LICENSE.md             # Open-source license (MIT)
 ---
 
 ## 🧪 Testing Devices
+
 - Android: Pixel 9 pro-Android 15, Oneplus-Android 12
 - iOS: iPhone 15
 
 ---
 
-## 📆 Installation (For Developers) 
+## 📆 Installation (For Developers)
+
 ```bash
 # Clone the repo
 $ git clone https://github.com/ramon-dejesus/ar-sticky-notes.git
@@ -94,6 +104,7 @@ $ cd ar-sticky-notes
 ---
 
 ## 👥 Contribution Guidelines
+
 - Use feature branches (`feature/your-name-description`)
 - Submit Pull Requests to `dev`, never `main`
 - Include test notes, upload screenshots to PR, and demo submitted PR at weekly sessions before PR approval
@@ -101,4 +112,5 @@ $ cd ar-sticky-notes
 ---
 
 ## 📃 License
+
 MIT – See [LICENSE.md](./LICENSE.md)
