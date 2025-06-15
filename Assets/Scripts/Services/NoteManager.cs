@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
+using Unity.XR.CoreUtils;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace ARStickyNotes.Services
 {
@@ -29,11 +31,19 @@ namespace ARStickyNotes.Services
         {
             try
             {
+                try
+                {
+                    print(new ARSpawner().SpawnObject());
+                }
+                catch (Exception ex)
+                {
+                    print(ex.ToString());
+                }
                 // Show a toast message to indicate the test is running
-                ToastNotifier.Show("Testing NoteManager");
+                // ToastNotifier.Show("Testing NoteManager");
 
-                Debug.Log(PreloadNotes());
-                Debug.Log(PreloadNotes(true));
+                // Debug.Log(PreloadNotes());
+                // Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
@@ -76,7 +86,14 @@ namespace ARStickyNotes.Services
         /// </summary>
         void Update()
         {
-
+            try
+            {
+                print(new ARSpawner().SpawnObject());
+            }
+            catch (Exception ex)
+            {
+                // print(ex.ToString());
+            }
         }
 
         /// <summary>

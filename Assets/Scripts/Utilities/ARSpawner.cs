@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
 
@@ -13,62 +16,67 @@ namespace ARStickyNotes.Utilities
     public class ARSpawner
     {
         private const string DefaultPrefab = "Assets/Samples/XR Interaction Toolkit/3.1.1/AR Starter Assets/ARDemoSceneAssets/Prefabs/Cube.prefab";
-
-        public ARSpawner(){}
+        public XRRayInteractor XRRay { get; private set; }
+        public ARSpawner()
+        {
+            LoadXRRayInteractor();
+        }
 
         private Camera GetCamera()
         {
-            var origin = Object.FindAnyObjectByType<XROrigin>();
+            var origin = UnityEngine.Object.FindAnyObjectByType<XROrigin>();
             if (origin == null)
             {
-                ErrorReporter.Report("No XROrigin found in the scene. Please add one to use ARSpawner.");
+                throw new Exception("No XROrigin found in the scene. Please add one to use ARSpawner.");
             }
             else if (origin.Camera == null)
             {
-                ErrorReporter.Report("No camera found in the XROrigin. Please ensure it has a camera component.");
+                throw new Exception("No camera found in the XROrigin. Please ensure it has a camera component.");
             }
             else
             {
                 return origin.Camera;
             }
-            return null;
         }
-        public XRRayInteractor GetXRRayInteractor()
+        private void LoadXRRayInteractor()
         {
-            var tmp = Object.FindAnyObjectByType<XRRayInteractor>();
+            var tmp = UnityEngine.Object.FindAnyObjectByType<XRRayInteractor>();
             if (tmp == null)
             {
                 var camera = GetCamera();
                 if (camera == null)
                 {
-                    ErrorReporter.Report("No camera found in the scene. Please add one to load XRRayInteractor.");
+                    throw new Exception("No camera found in the scene. Please add one to load XRRayInteractor.");
                 }
                 else
                 {
-                    return camera.gameObject.AddComponent<XRRayInteractor>();
+                    tmp = camera.gameObject.AddComponent<XRRayInteractor>();
                 }
             }
-            return tmp;
+            XRRay.hoverEntered.AddListener(new UnityAction<HoverEnterEventArgs>(OnHoverEntered));
+            XRRay = tmp;
+        }
+        public void OnHoverEntered(HoverEnterEventArgs args)
+        {
+            Debug.Log($"{args.interactorObject} hovered over {args.interactableObject}");
         }
         private List<Vector3> GetARVectors()
         {
             var lst = new List<Vector3>();
-            var ray = GetXRRayInteractor();
-            if (ray == null)
+            if (XRRay == null)
             {
-                ErrorReporter.Report("XRRayInteractor is not set. Please ensure it is initialized.");
-                return lst;
+                throw new Exception("XRRayInteractor is not set. Please ensure it is initialized.");
             }
-            if (ray.TryGetCurrentARRaycastHit(out var hit))
+            if (XRRay.TryGetCurrentARRaycastHit(out var hit))
             {
                 return lst;
                 if (!(hit.trackable is ARPlane arPlane))
                 {
-                    ErrorReporter.Report("Hit trackable is not an ARPlane. Cannot spawn object.");
+                    throw new Exception("Hit trackable is not an ARPlane. Cannot spawn object.");
                 }
                 else if (arPlane.alignment != PlaneAlignment.Vertical)
                 {
-                    ErrorReporter.Report("No vertical plane selected. Cannot spawn object.");
+                    throw new Exception("No vertical plane selected. Cannot spawn object.");
                 }
                 else
                 {
@@ -78,9 +86,8 @@ namespace ARStickyNotes.Utilities
             }
             else
             {
-                ErrorReporter.Report("No valid raycast hit found.");
+                throw new Exception("No valid raycast hit found.");
             }
-            return lst;
         }
         private bool IsInView(Vector3 spawnPoint)
         {
@@ -100,18 +107,16 @@ namespace ARStickyNotes.Utilities
             var vectors = GetARVectors();
             if (vectors.Count == 0)
             {
-                ErrorReporter.Report("No valid vectors found for spawning.");
-                return false;
+                throw new Exception("No valid vectors found for spawning.");
             }
             if (onlySpawnInView && !IsInView(vectors[0]))
             {
-                ErrorReporter.Report("Spawn point is not in view of the camera.");
-                return false;
+                throw new Exception("Spawn point is not in view of the camera.");
             }
             var spawnPoint = vectors[0];
             var spawnNormal = vectors[1];
             var cameraToFace = Camera.main;
-            var newObject = Object.Instantiate(Resources.Load(DefaultPrefab) as GameObject);
+            var newObject = UnityEngine.Object.Instantiate(Resources.Load(DefaultPrefab) as GameObject);
             newObject.transform.position = spawnPoint;
             var facePosition = cameraToFace.transform.position;
             var forward = facePosition - spawnPoint;
