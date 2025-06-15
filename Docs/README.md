@@ -18,7 +18,7 @@ Augmented Reality (AR) mobile app that allows users to place and manage virtual 
 
 ### ✅ Milestone 1: Core Setup
 
-- Set up GitHub repository, branching strategy, and discord bot _Ramon_
+- Set up GitHub repository, branching strategy, and discord bot Ramon
 - Set up valid `.gitignore` Unity git needs _(Ramon)_
 - Initialize Unity Project with AR Foundation _(Allan - with Ramon assisting on input validation and project scaffolding)_
 - Create mockups, wireframes and color palette _(Ramon & Gabe)_
