@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEditor.XR.LegacyInputHelpers;
@@ -15,8 +16,10 @@ namespace ARStickyNotes.Utilities
 {
     public class ARSpawner
     {
-        private const string DefaultPrefab = "Assets/Samples/XR Interaction Toolkit/3.1.1/AR Starter Assets/ARDemoSceneAssets/Prefabs/Cube.prefab";
+        private const string DefaultResourceName = "CubeVariant";
+
         public XRRayInteractor XRRay { get; private set; }
+
         public ARSpawner()
         {
             LoadXRRayInteractor();
@@ -40,8 +43,8 @@ namespace ARStickyNotes.Utilities
         }
         private void LoadXRRayInteractor()
         {
-            var tmp = UnityEngine.Object.FindAnyObjectByType<XRRayInteractor>();
-            if (tmp == null)
+            XRRay = UnityEngine.Object.FindAnyObjectByType<XRRayInteractor>();
+            if (XRRay == null)
             {
                 var camera = GetCamera();
                 if (camera == null)
@@ -50,15 +53,33 @@ namespace ARStickyNotes.Utilities
                 }
                 else
                 {
-                    tmp = camera.gameObject.AddComponent<XRRayInteractor>();
+                    XRRay = camera.gameObject.AddComponent<XRRayInteractor>();
                 }
             }
-            XRRay.hoverEntered.AddListener(new UnityAction<HoverEnterEventArgs>(OnHoverEntered));
-            XRRay = tmp;
+            // XRRay.hoverEntered.AddListener(new UnityAction<HoverEnterEventArgs>(OnHoverEntered));
+            // XRRay.hoverExited.AddListener(new UnityAction<HoverExitEventArgs>(OnHoverExited));
+            // XRRay.selectEntered.AddListener(new UnityAction<SelectEnterEventArgs>(OnSelectEntered));
+            // XRRay.selectExited.AddListener(new UnityAction<SelectExitEventArgs>(OnSelectExited));            
         }
         public void OnHoverEntered(HoverEnterEventArgs args)
         {
-            Debug.Log($"{args.interactorObject} hovered over {args.interactableObject}");
+            //Debug.Log($"{args.interactorObject} hovered over {args.interactableObject}");
+            Debug.Log("OnHoverEntered called");
+        }
+        public void OnHoverExited(HoverExitEventArgs args)
+        {
+            //Debug.Log($"{args.interactorObject} exited hover over {args.interactableObject}");
+            Debug.Log("OnHoverExited called");
+        }
+        public void OnSelectEntered(SelectEnterEventArgs args)
+        {
+            //Debug.Log($"{args.interactorObject} selected {args.interactableObject}");
+            Debug.Log("OnSelectEntered called");
+        }
+        public void OnSelectExited(SelectExitEventArgs args)
+        {
+            //Debug.Log($"{args.interactorObject} exited selection of {args.interactableObject}");
+            Debug.Log("OnSelectExited called");
         }
         private List<Vector3> GetARVectors()
         {
@@ -69,7 +90,6 @@ namespace ARStickyNotes.Utilities
             }
             if (XRRay.TryGetCurrentARRaycastHit(out var hit))
             {
-                return lst;
                 if (!(hit.trackable is ARPlane arPlane))
                 {
                     throw new Exception("Hit trackable is not an ARPlane. Cannot spawn object.");
@@ -88,6 +108,7 @@ namespace ARStickyNotes.Utilities
             {
                 throw new Exception("No valid raycast hit found.");
             }
+            return lst;
         }
         private bool IsInView(Vector3 spawnPoint)
         {
@@ -104,21 +125,29 @@ namespace ARStickyNotes.Utilities
         }
         public bool SpawnObject(bool onlySpawnInView = true)
         {
-            var vectors = GetARVectors();
-            if (vectors.Count == 0)
-            {
-                throw new Exception("No valid vectors found for spawning.");
-            }
-            if (onlySpawnInView && !IsInView(vectors[0]))
-            {
-                throw new Exception("Spawn point is not in view of the camera.");
-            }
-            var spawnPoint = vectors[0];
-            var spawnNormal = vectors[1];
+            // var vectors = GetARVectors();
+            // if (vectors.Count == 0)
+            // {
+            //     throw new Exception("No valid vectors found for spawning.");
+            // }
+            // if (onlySpawnInView && !IsInView(vectors[0]))
+            // {
+            //     throw new Exception("Spawn point is not in view of the camera.");
+            // }
+            // var spawnPoint = vectors[0];
+            // var spawnNormal = vectors[1];
             var cameraToFace = Camera.main;
-            var newObject = UnityEngine.Object.Instantiate(Resources.Load(DefaultPrefab) as GameObject);
+            var facePosition = cameraToFace.transform.position; //new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
+            var spawnPoint = new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
+            var spawnNormal = new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
+            var lst = Resources.FindObjectsOfTypeAll<GameObject>().ToList();
+            var newResource = lst.FirstOrDefault(x => x.name == DefaultResourceName);
+            if (newResource == null)
+            {
+                throw new Exception("Resource " + DefaultResourceName + " for spawning was not found.");
+            }
+            var newObject = UnityEngine.Object.Instantiate(newResource);
             newObject.transform.position = spawnPoint;
-            var facePosition = cameraToFace.transform.position;
             var forward = facePosition - spawnPoint;
             BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
             newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);

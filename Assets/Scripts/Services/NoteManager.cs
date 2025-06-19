@@ -86,14 +86,7 @@ namespace ARStickyNotes.Services
         /// </summary>
         void Update()
         {
-            try
-            {
-                print(new ARSpawner().SpawnObject());
-            }
-            catch (Exception ex)
-            {
-                // print(ex.ToString());
-            }
+
         }
 
         /// <summary>
