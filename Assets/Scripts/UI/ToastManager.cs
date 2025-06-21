@@ -1,22 +1,24 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using UnityEngine.Events;
 
 namespace ARStickyNotes.UI
 {
     /// <summary>
-    /// Represents the type of toast message.
+    /// Manages toast notifications in the AR Sticky Notes app.
+    /// Provides a queue-based system for showing info, success, and error messages to the user.
     /// </summary>
     public enum ToastType { Info, Success, Error }
 
-    /// <summary>
-    /// Manages displaying toast messages to the user in a non-blocking UI panel.
-    /// Supports both screen-space and world-space rendering, with fade-in/out animations.
-    /// </summary>
     public class ToastManager : MonoBehaviour
     {
+        /// <summary>
+        /// Singleton instance for global access.
+        /// </summary>
         public static ToastManager Instance { get; private set; }
 
         [Header("UI References")]
@@ -25,13 +27,27 @@ namespace ARStickyNotes.UI
         [SerializeField] private Image panelBackground;
         [SerializeField] private Canvas toastCanvas;
         [SerializeField] private CanvasGroup toastCanvasGroup;
+        [SerializeField] private Button closeButton;
 
         [Header("Settings")]
         [SerializeField] private float displayDuration = 2f;
         [SerializeField] private float fadeDuration = 0.3f;
 
-        private Coroutine currentToast;
+        [Header("Events")]
+        public UnityEvent OnToastDismissed;
 
+        private Coroutine currentToast;
+        private bool dismissedManually = false;
+
+        /// <summary>
+        /// Queue to handle multiple toast messages in sequence.
+        /// </summary>
+        private readonly Queue<ToastData> toastQueue = new();
+
+        /// <summary>
+        /// Initializes the singleton instance and sets up the toast panel.
+        /// Handles XR-specific canvas setup and close button binding.
+        /// </summary>
         private void Awake()
         {
             if (Instance == null)
@@ -42,68 +58,143 @@ namespace ARStickyNotes.UI
                 return;
             }
 
-            // Setup for XR or screen-space use
+            // If running in XR, set the canvas to world space and position in front of the camera
             if (toastCanvas != null && XRSettings.isDeviceActive)
             {
                 toastCanvas.renderMode = RenderMode.WorldSpace;
 
-                // Position the toast in front of the camera
                 Transform cam = Camera.main.transform;
                 toastCanvas.transform.position = cam.position + cam.forward * 1.5f;
                 toastCanvas.transform.rotation = Quaternion.LookRotation(cam.forward);
             }
 
+            if (closeButton != null)
+                closeButton.onClick.AddListener(HandleManualDismiss);
+
             toastPanel.SetActive(false);
         }
 
         /// <summary>
-        /// Shows a toast message with default Info type.
+        /// Shows a toast message with info type.
         /// </summary>
+        /// <param name="message">The message to display in the toast.</param>
         public void ShowToast(string message)
         {
-            ShowToast(message, ToastType.Info);
+            ShowToast(message, ToastType.Info, null);
         }
 
         /// <summary>
-        /// Shows a toast message with a specified type (Info, Success, Error).
+        /// Shows a toast message with a specified type.
         /// </summary>
+        /// <param name="message">The message to display in the toast.</param>
+        /// <param name="type">The type of toast (Info, Success, Error).</param>
         public void ShowToast(string message, ToastType type)
         {
-            if (currentToast != null)
-                StopCoroutine(currentToast);
-
-            currentToast = StartCoroutine(ShowToastCoroutine(message, type));
+            ShowToast(message, type, null);
         }
 
-        private IEnumerator ShowToastCoroutine(string message, ToastType type)
+        /// <summary>
+        /// Shows a toast message with a specified type and optional callback on dismiss.
+        /// </summary>
+        /// <param name="message">The message to display in the toast.</param>
+        /// <param name="type">The type of toast (Info, Success, Error).</param>
+        /// <param name="callback">An optional callback to invoke when the toast is dismissed.</param>
+        public void ShowToast(string message, ToastType type, UnityAction callback)
         {
-            toastText.text = message;
+            toastQueue.Enqueue(new ToastData(message, type, callback));
 
-            // Change background color based on toast type
+            // Start processing the queue if not already running
+            if (currentToast == null)
+                currentToast = StartCoroutine(ToastProcessor());
+        }
+
+        /// <summary>
+        /// Processes the toast queue, showing each toast in order.
+        /// </summary>
+        private IEnumerator ToastProcessor()
+        {
+            while (toastQueue.Count > 0)
+            {
+                var toast = toastQueue.Dequeue();
+                yield return StartCoroutine(ShowToastCoroutine(toast));
+            }
+
+            currentToast = null;
+        }
+
+        /// <summary>
+        /// Handles the display, fade-in, wait, and fade-out of a single toast message.
+        /// </summary>
+        /// <param name="toast">The toast data to display.</param>
+        private IEnumerator ShowToastCoroutine(ToastData toast)
+        {
+            toastText.text = toast.Message;
+            dismissedManually = false;
+
+            // Set background color based on toast type
             if (panelBackground != null)
             {
-                switch (type)
+                switch (toast.Type)
                 {
                     case ToastType.Success:
-                        panelBackground.color = new Color(0.2f, 0.8f, 0.2f, 0.9f); // green
-                        break;
+                        panelBackground.color = new Color(0.2f, 0.8f, 0.2f, 0.9f); break;
                     case ToastType.Error:
-                        panelBackground.color = new Color(0.9f, 0.2f, 0.2f, 0.9f); // red
-                        break;
+                        panelBackground.color = new Color(0.9f, 0.2f, 0.2f, 0.9f); break;
                     case ToastType.Info:
                     default:
-                        panelBackground.color = new Color(0f, 0f, 0f, 0.9f); // black
-                        break;
+                        panelBackground.color = new Color(0f, 0f, 0f, 0.9f); break;
                 }
             }
 
             toastPanel.SetActive(true);
-            yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, 0f, 1f, fadeDuration)); // Fade in
-            yield return new WaitForSeconds(displayDuration);
-            yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, 1f, 0f, fadeDuration)); // Fade out
+            yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, 0f, 1f, fadeDuration));
+
+            float elapsed = 0f;
+            while (elapsed < displayDuration && !dismissedManually)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            yield return StartCoroutine(FadeAndClose());
+
+            // Fire events after toast fully dismissed
+            OnToastDismissed?.Invoke();
+            toast.OnDismiss?.Invoke();
+        }
+
+        /// <summary>
+        /// Handles fade-out and disables the toast panel.
+        /// </summary>
+        private IEnumerator FadeAndClose()
+        {
+            yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, toastCanvasGroup.alpha, 0f, fadeDuration));
             toastPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Handles manual dismissal via the close button.
+        /// </summary>
+        private void HandleManualDismiss()
+        {
+            if (currentToast != null)
+            {
+                Debug.Log("Close button clicked!");
+                dismissedManually = true;
+
+                // Force fade-out and continue queue
+                StopCoroutine(currentToast);
+                currentToast = StartCoroutine(ToastProcessor());
+            }
+        }
+
+        /// <summary>
+        /// Smoothly fades a CanvasGroup's alpha from one value to another.
+        /// </summary>
+        /// <param name="group">The CanvasGroup to fade.</param>
+        /// <param name="from">The starting alpha value.</param>
+        /// <param name="to">The target alpha value.</param>
+        /// <param name="duration">The duration of the fade in seconds.</param>
         private IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
         {
             float elapsed = 0f;
@@ -117,6 +208,38 @@ namespace ARStickyNotes.UI
             }
 
             group.alpha = to;
+        }
+
+        /// <summary>
+        /// Struct to hold toast data for queueing.
+        /// </summary>
+        private struct ToastData
+        {
+            /// <summary>
+            /// The message to display in the toast.
+            /// </summary>
+            public string Message;
+            /// <summary>
+            /// The type of toast (Info, Success, Error).
+            /// </summary>
+            public ToastType Type;
+            /// <summary>
+            /// An optional callback to invoke when the toast is dismissed.
+            /// </summary>
+            public UnityAction OnDismiss;
+
+            /// <summary>
+            /// Creates a new ToastData instance.
+            /// </summary>
+            /// <param name="msg">The message to display.</param>
+            /// <param name="type">The type of toast.</param>
+            /// <param name="onDismiss">Optional callback for when the toast is dismissed.</param>
+            public ToastData(string msg, ToastType type, UnityAction onDismiss = null)
+            {
+                Message = msg;
+                Type = type;
+                OnDismiss = onDismiss;
+            }
         }
     }
 }

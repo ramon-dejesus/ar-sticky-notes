@@ -729,6 +729,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 212114235}
   m_CullTransparentMesh: 1
+--- !u!114 &214436990 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4813620437282297762, guid: 34125963f8d9a47cb9bbd5e9146f8763,
+    type: 3}
+  m_PrefabInstance: {fileID: 2317574912991686329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &232260061
 GameObject:
   m_ObjectHideFlags: 0
@@ -8914,49 +8926,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3068309418165753972, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_text
-      value: this is text
-      objectReference: {fileID: 0}
-    - target: {fileID: 3068309418165753972, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 3068309418165753972, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_fontSizeMax
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 3068309418165753972, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 4096
-      objectReference: {fileID: 0}
-    - target: {fileID: 3068309418165753972, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_HorizontalAlignment
-      value: 32
-      objectReference: {fileID: 0}
     - target: {fileID: 8466298640963725655, guid: 34125963f8d9a47cb9bbd5e9146f8763,
         type: 3}
       propertyPath: m_Name
       value: ToastPanel
       objectReference: {fileID: 0}
-    - target: {fileID: 8466298640963725655, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8466298640963725655, guid: 34125963f8d9a47cb9bbd5e9146f8763,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8763521310756822971}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34125963f8d9a47cb9bbd5e9146f8763, type: 3}
 --- !u!114 &2317574912991686330 stripped
 MonoBehaviour:
@@ -9403,6 +9381,11 @@ PrefabInstance:
       objectReference: {fileID: 8763521310756822969}
     - target: {fileID: 1364335964681382258, guid: bb654c61b46bb46d383a5a0d898ccfd4,
         type: 3}
+      propertyPath: closeButton
+      value: 
+      objectReference: {fileID: 214436990}
+    - target: {fileID: 1364335964681382258, guid: bb654c61b46bb46d383a5a0d898ccfd4,
+        type: 3}
       propertyPath: toastCanvas
       value: 
       objectReference: {fileID: 1362734344}
@@ -9443,18 +9426,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2317574912991686329}
   m_PrefabAsset: {fileID: 0}
---- !u!225 &8763521310756822971
+--- !u!225 &8763521310756822971 stripped
 CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 342475871117758298, guid: 34125963f8d9a47cb9bbd5e9146f8763,
+    type: 3}
+  m_PrefabInstance: {fileID: 2317574912991686329}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8763521310756822969}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
