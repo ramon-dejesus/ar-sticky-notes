@@ -111,17 +111,23 @@ namespace ARStickyNotes.UI
 
         /// <summary>
         /// Processes the toast queue, showing each toast in order.
+        /// The counter always reflects the current batch size.
         /// </summary>
         private IEnumerator ToastProcessor()
         {
-            int totalToasts = toastQueue.Count;
-            int processedCount = 0;
-
             while (toastQueue.Count > 0)
             {
-                processedCount++;
-                var toast = toastQueue.Dequeue();
-                yield return StartCoroutine(ShowToastCoroutine(toast, processedCount, totalToasts));
+                int totalToasts = toastQueue.Count;
+                int processedCount = 0;
+
+                // Process all toasts currently in the queue as a batch
+                while (processedCount < totalToasts)
+                {
+                    processedCount++;
+                    var toast = toastQueue.Dequeue();
+                    yield return StartCoroutine(ShowToastCoroutine(toast, processedCount, totalToasts));
+                }
+                // After this batch, if new toasts were added, loop will run again and show them as a new batch
             }
 
             currentToast = null;
