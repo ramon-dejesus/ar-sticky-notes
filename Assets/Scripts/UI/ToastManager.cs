@@ -28,6 +28,7 @@ namespace ARStickyNotes.UI
         [SerializeField] private Canvas toastCanvas;
         [SerializeField] private CanvasGroup toastCanvasGroup;
         [SerializeField] private Button closeButton;
+        [SerializeField] private TextMeshProUGUI toastCounterText;
 
         [Header("Settings")]
         [SerializeField] private float displayDuration = 2f;
@@ -113,10 +114,14 @@ namespace ARStickyNotes.UI
         /// </summary>
         private IEnumerator ToastProcessor()
         {
+            int totalToasts = toastQueue.Count;
+            int processedCount = 0;
+
             while (toastQueue.Count > 0)
             {
+                processedCount++;
                 var toast = toastQueue.Dequeue();
-                yield return StartCoroutine(ShowToastCoroutine(toast));
+                yield return StartCoroutine(ShowToastCoroutine(toast, processedCount, totalToasts));
             }
 
             currentToast = null;
@@ -124,11 +129,20 @@ namespace ARStickyNotes.UI
 
         /// <summary>
         /// Handles the display, fade-in, wait, and fade-out of a single toast message.
+        /// Updates the toast counter and background color based on toast type.
         /// </summary>
         /// <param name="toast">The toast data to display.</param>
-        private IEnumerator ShowToastCoroutine(ToastData toast)
+        /// <param name="currentIndex">The index of the current toast in the queue (1-based).</param>
+        /// <param name="totalCount">The total number of toasts in the queue.</param>
+        private IEnumerator ShowToastCoroutine(ToastData toast, int currentIndex, int totalCount)
         {
+            // Set the toast message text
             toastText.text = toast.Message;
+
+            // Update the toast counter (e.g., "2/3") if more than one toast is queued
+            if (toastCounterText != null)
+                toastCounterText.text = (totalCount > 1) ? $"{currentIndex}/{totalCount}" : "";
+
             dismissedManually = false;
 
             // Set background color based on toast type
@@ -137,18 +151,23 @@ namespace ARStickyNotes.UI
                 switch (toast.Type)
                 {
                     case ToastType.Success:
-                        panelBackground.color = new Color(0.2f, 0.8f, 0.2f, 0.9f); break;
+                        panelBackground.color = new Color(0.2f, 0.8f, 0.2f, 0.9f); // Green for success
+                        break;
                     case ToastType.Error:
-                        panelBackground.color = new Color(0.9f, 0.2f, 0.2f, 0.9f); break;
+                        panelBackground.color = new Color(0.9f, 0.2f, 0.2f, 0.9f); // Red for error
+                        break;
                     case ToastType.Info:
                     default:
-                        panelBackground.color = new Color(0f, 0f, 0f, 0.9f); break;
+                        panelBackground.color = new Color(0f, 0f, 0f, 0.9f); // Black for info/default
+                        break;
                 }
             }
 
+            // Show the toast panel and fade in
             toastPanel.SetActive(true);
             yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, 0f, 1f, fadeDuration));
 
+            // Wait for display duration or until manually dismissed
             float elapsed = 0f;
             while (elapsed < displayDuration && !dismissedManually)
             {
@@ -156,20 +175,24 @@ namespace ARStickyNotes.UI
                 yield return null;
             }
 
+            // Fade out and close the toast panel
             yield return StartCoroutine(FadeAndClose());
 
-            // Fire events after toast fully dismissed
+            // Fire events after toast is fully dismissed
             OnToastDismissed?.Invoke();
             toast.OnDismiss?.Invoke();
         }
 
         /// <summary>
         /// Handles fade-out and disables the toast panel.
+        /// Also clears the toast counter text.
         /// </summary>
         private IEnumerator FadeAndClose()
         {
             yield return StartCoroutine(FadeCanvasGroup(toastCanvasGroup, toastCanvasGroup.alpha, 0f, fadeDuration));
             toastPanel.SetActive(false);
+            if (toastCounterText != null)
+                toastCounterText.text = "";
         }
 
         /// <summary>

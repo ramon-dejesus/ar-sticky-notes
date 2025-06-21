@@ -6581,6 +6581,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1557067927 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7068411631661568223, guid: 34125963f8d9a47cb9bbd5e9146f8763,
+    type: 3}
+  m_PrefabInstance: {fileID: 2317574912991686329}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1756045394
 GameObject:
   m_ObjectHideFlags: 0
@@ -9296,21 +9308,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1350561688834253557, guid: bb654c61b46bb46d383a5a0d898ccfd4,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 1350561688834253557, guid: bb654c61b46bb46d383a5a0d898ccfd4,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 1350561688834253557, guid: bb654c61b46bb46d383a5a0d898ccfd4,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 1350561688834253557, guid: bb654c61b46bb46d383a5a0d898ccfd4,
-        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -9391,11 +9388,6 @@ PrefabInstance:
       objectReference: {fileID: 1362734344}
     - target: {fileID: 1364335964681382258, guid: bb654c61b46bb46d383a5a0d898ccfd4,
         type: 3}
-      propertyPath: displayDuration
-      value: 5.07
-      objectReference: {fileID: 0}
-    - target: {fileID: 1364335964681382258, guid: bb654c61b46bb46d383a5a0d898ccfd4,
-        type: 3}
       propertyPath: panelBackground
       value: 
       objectReference: {fileID: 2317574912991686330}
@@ -9404,6 +9396,11 @@ PrefabInstance:
       propertyPath: toastCanvasGroup
       value: 
       objectReference: {fileID: 8763521310756822971}
+    - target: {fileID: 1364335964681382258, guid: bb654c61b46bb46d383a5a0d898ccfd4,
+        type: 3}
+      propertyPath: toastCounterText
+      value: 
+      objectReference: {fileID: 1557067927}
     - target: {fileID: 2972014359979776251, guid: bb654c61b46bb46d383a5a0d898ccfd4,
         type: 3}
       propertyPath: m_Name
