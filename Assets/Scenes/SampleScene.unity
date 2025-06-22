@@ -1197,6 +1197,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1553306121604488859, guid: 48cb3fb68c91eb94999fd99957eb0cae,
+        type: 3}
+      propertyPath: m_ScreenTouchCountInput.m_InputActionReference
+      value: 
+      objectReference: {fileID: -7530398834462728267, guid: c348712bda248c246b8c49b3db54643f,
+        type: 3}
     - target: {fileID: 2512387470319625105, guid: 48cb3fb68c91eb94999fd99957eb0cae,
         type: 3}
       propertyPath: m_OccludeARHitsWith2DObjects

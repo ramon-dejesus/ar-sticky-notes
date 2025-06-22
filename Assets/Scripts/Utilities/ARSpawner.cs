@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.XR.CoreUtils;
 using UnityEditor;
-using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.AR.Inputs;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
+using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
 
@@ -16,79 +17,120 @@ namespace ARStickyNotes.Utilities
 {
     public class ARSpawner
     {
-        private const string DefaultResourceName = "CubeVariant";
+        private const string DefaultResourceName = "PyramidVariant";
 
-        public XRRayInteractor XRRay { get; private set; }
+        public XRRayInteractor SpawnerRay { get; private set; } = null;
+
+        public bool GetRayHit { get; set; } = false;
 
         public ARSpawner()
         {
-            LoadXRRayInteractor();
+            LoadRay();
         }
 
-        private Camera GetCamera()
+        private GameObject GetCamera()
         {
             var origin = UnityEngine.Object.FindAnyObjectByType<XROrigin>();
             if (origin == null)
             {
                 throw new Exception("No XROrigin found in the scene. Please add one to use ARSpawner.");
             }
-            else if (origin.Camera == null)
+            else if (origin.CameraFloorOffsetObject == null)
             {
                 throw new Exception("No camera found in the XROrigin. Please ensure it has a camera component.");
             }
             else
             {
-                return origin.Camera;
+                return origin.CameraFloorOffsetObject;
             }
         }
-        private void LoadXRRayInteractor()
+        private void LoadRay()
         {
-            XRRay = UnityEngine.Object.FindAnyObjectByType<XRRayInteractor>();
-            if (XRRay == null)
+            foreach (var item in UnityEngine.Object.FindObjectsByType<XRRayInteractor>(FindObjectsSortMode.None).ToList())
             {
-                var camera = GetCamera();
-                if (camera == null)
-                {
-                    throw new Exception("No camera found in the scene. Please add one to load XRRayInteractor.");
-                }
-                else
-                {
-                    XRRay = camera.gameObject.AddComponent<XRRayInteractor>();
-                }
+                //item.gameObject.SetActive(false);
+                //UnityEngine.Object.Destroy(interactor);
             }
-            // XRRay.hoverEntered.AddListener(new UnityAction<HoverEnterEventArgs>(OnHoverEntered));
-            // XRRay.hoverExited.AddListener(new UnityAction<HoverExitEventArgs>(OnHoverExited));
-            // XRRay.selectEntered.AddListener(new UnityAction<SelectEnterEventArgs>(OnSelectEntered));
-            // XRRay.selectExited.AddListener(new UnityAction<SelectExitEventArgs>(OnSelectExited));            
-        }
-        public void OnHoverEntered(HoverEnterEventArgs args)
-        {
-            //Debug.Log($"{args.interactorObject} hovered over {args.interactableObject}");
-            Debug.Log("OnHoverEntered called");
-        }
-        public void OnHoverExited(HoverExitEventArgs args)
-        {
-            //Debug.Log($"{args.interactorObject} exited hover over {args.interactableObject}");
-            Debug.Log("OnHoverExited called");
-        }
-        public void OnSelectEntered(SelectEnterEventArgs args)
-        {
-            //Debug.Log($"{args.interactorObject} selected {args.interactableObject}");
-            Debug.Log("OnSelectEntered called");
-        }
-        public void OnSelectExited(SelectExitEventArgs args)
-        {
-            //Debug.Log($"{args.interactorObject} exited selection of {args.interactableObject}");
-            Debug.Log("OnSelectExited called");
+            var touchActions = new XRIDefaultInputActions().asset.FindActionMap("Touchscreen Gestures");
+            var obj = new GameObject("ARSpawnerRay", typeof(TouchscreenGestureInputLoader), typeof(XRRayInteractor), typeof(XRInteractionGroup), typeof(TouchscreenHoverFilter), typeof(ScreenSpaceRayPoseDriver));
+            obj.transform.SetParent(GetCamera().transform, false);
+            var select = new GameObject("ARSelectInput", typeof(ScreenSpaceSelectInput));
+            select.transform.SetParent(obj.transform, false);
+            var selectInput = select.GetComponent<ScreenSpaceSelectInput>();
+            var rotate = new GameObject("ARRotateInput", typeof(ScreenSpaceRotateInput));
+            rotate.transform.SetParent(obj.transform, false);
+            var scale = new GameObject("ARScaleInput", typeof(ScreenSpacePinchScaleInput));
+            scale.transform.SetParent(obj.transform, false);
+            //var select = obj.GetComponent<ScreenSpaceSelectInput>();
+            //select.tapStartPositionInput = new XRInputValueReader<Vector2>("XRI Default Input Actions/Touchscreen Gestures/Tap Start Position", XRInputValueReader.InputSourceMode.InputActionReference);
+            //Assets/Samples/XR Interaction Toolkit/3.1.1/Starter Assets/XRI Default Input Actions.inputactions
+            // var rotate = obj.GetComponent<ScreenSpaceRotateInput>();
+            // var scale = obj.GetComponent<ScreenSpacePinchScaleInput>();
+            SpawnerRay = obj.GetComponent<XRRayInteractor>();
+            SpawnerRay.transform.SetParent(GetCamera().transform, false);
+            SpawnerRay.enableUIInteraction = true;
+            SpawnerRay.blockInteractionsWithScreenSpaceUI = true;
+            SpawnerRay.blockUIOnInteractableSelection = true;
+            SpawnerRay.useForceGrab = false;
+            SpawnerRay.manipulateAttachTransform = true;
+            SpawnerRay.translateSpeed = 0;
+            SpawnerRay.rotateMode = XRRayInteractor.RotateMode.RotateOverTime;
+            SpawnerRay.rotateSpeed = 180f;
+            SpawnerRay.scaleMode = UnityEngine.XR.Interaction.Toolkit.Interactors.ScaleMode.ScaleOverTime;
+
+
+            //SpawnerRay.rotateManipulationInput = ScreenSpaceRotateInput;
+
+            SpawnerRay.disableVisualsWhenBlockedInGroup = true;
+            SpawnerRay.lineType = XRRayInteractor.LineType.StraightLine;
+            SpawnerRay.maxRaycastDistance = 30f;
+            SpawnerRay.raycastTriggerInteraction = QueryTriggerInteraction.Ignore;
+            SpawnerRay.raycastSnapVolumeInteraction = XRRayInteractor.QuerySnapVolumeInteraction.Collide;
+            SpawnerRay.hitDetectionType = XRRayInteractor.HitDetectionType.Raycast;
+            SpawnerRay.hitClosestOnly = false;
+            SpawnerRay.blendVisualLinePoints = true;
+            SpawnerRay.selectActionTrigger = XRBaseInputInteractor.InputTriggerType.StateChange;
+            SpawnerRay.keepSelectedTargetValid = true;
+            SpawnerRay.allowHoveredActivate = false;
+            SpawnerRay.hoverToSelect = false;
+            SpawnerRay.targetPriorityMode = TargetPriorityMode.None;
+            SpawnerRay.enableARRaycasting = true;
+            SpawnerRay.occludeARHitsWith3DObjects = true;
+            SpawnerRay.occludeARHitsWith2DObjects = false;//c348712bda248c246b8c49b3db54643f
+            var group = obj.GetComponent<XRInteractionGroup>();
+            group.startingGroupMembers = new List<UnityEngine.Object> { SpawnerRay };
+            var hover = obj.GetComponent<TouchscreenHoverFilter>();
+            hover.screenTouchCountInput = new XRInputValueReader<int>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Screen Touch Count")
+            };
+            var driver = obj.GetComponent<ScreenSpaceRayPoseDriver>();
+            driver.tapStartPositionInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Tap Start Position")
+            };
+            driver.dragStartPositionInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Drag Start Position")
+            };
+            driver.dragCurrentPositionInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Drag Current Position")
+            };
+            driver.screenTouchCountInput = new XRInputValueReader<int>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Screen Touch Count")
+            };
+            SpawnerRay.gameObject.SetActive(true);
         }
         private List<Vector3> GetARVectors()
         {
             var lst = new List<Vector3>();
-            if (XRRay == null)
+            if (SpawnerRay == null)
             {
                 throw new Exception("XRRayInteractor is not set. Please ensure it is initialized.");
             }
-            if (XRRay.TryGetCurrentARRaycastHit(out var hit))
+            if (SpawnerRay.TryGetCurrentARRaycastHit(out var hit))
             {
                 if (!(hit.trackable is ARPlane arPlane))
                 {
@@ -104,42 +146,33 @@ namespace ARStickyNotes.Utilities
                     lst.Add(arPlane.normal);
                 }
             }
-            else
-            {
-                throw new Exception("No valid raycast hit found.");
-            }
+            // else
+            // {
+            //     throw new Exception("No valid raycast hit found.");
+            // }
             return lst;
         }
-        private bool IsInView(Vector3 spawnPoint)
+        public List<Vector3> SpawnHit()
         {
-            var cameraToFace = Camera.main;
-            var inViewMin = 0.15f;
-            var inViewMax = 1f - inViewMin;
-            var pointInViewportSpace = cameraToFace.WorldToViewportPoint(spawnPoint);
-            if (pointInViewportSpace.z < 0f || pointInViewportSpace.x > inViewMax || pointInViewportSpace.x < inViewMin ||
-                pointInViewportSpace.y > inViewMax || pointInViewportSpace.y < inViewMin)
+            var vectors = GetARVectors();
+            if (vectors.Count > 0)
             {
-                return false;
+                var spawnPoint = vectors[0];//new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
+                var spawnNormal = vectors[1];//new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
+                SpawnObject(spawnPoint, spawnNormal);
+                GetRayHit = false; // Reset the flag after spawning
             }
-            return true;
+            else
+            {
+                var spawnPoint = new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
+                var spawnNormal = new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
+                SpawnObject(spawnPoint, spawnNormal);
+                GetRayHit = false; // Reset the flag after spawning
+            }
+            return vectors;
         }
-        public bool SpawnObject(bool onlySpawnInView = true)
+        public void SpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
         {
-            // var vectors = GetARVectors();
-            // if (vectors.Count == 0)
-            // {
-            //     throw new Exception("No valid vectors found for spawning.");
-            // }
-            // if (onlySpawnInView && !IsInView(vectors[0]))
-            // {
-            //     throw new Exception("Spawn point is not in view of the camera.");
-            // }
-            // var spawnPoint = vectors[0];
-            // var spawnNormal = vectors[1];
-            var cameraToFace = Camera.main;
-            var facePosition = cameraToFace.transform.position; //new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
-            var spawnPoint = new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
-            var spawnNormal = new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
             var lst = Resources.FindObjectsOfTypeAll<GameObject>().ToList();
             var newResource = lst.FirstOrDefault(x => x.name == DefaultResourceName);
             if (newResource == null)
@@ -148,10 +181,11 @@ namespace ARStickyNotes.Utilities
             }
             var newObject = UnityEngine.Object.Instantiate(newResource);
             newObject.transform.position = spawnPoint;
+            var cameraToFace = Camera.main;
+            var facePosition = cameraToFace.transform.position; //new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
             var forward = facePosition - spawnPoint;
             BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
             newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
-            return true;
         }
     }
 }

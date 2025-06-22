@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
-using Unity.XR.CoreUtils;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace ARStickyNotes.Services
 {
@@ -31,19 +29,11 @@ namespace ARStickyNotes.Services
         {
             try
             {
-                try
-                {
-                    print(new ARSpawner().SpawnObject());
-                }
-                catch (Exception ex)
-                {
-                    print(ex.ToString());
-                }
                 // Show a toast message to indicate the test is running
-                // ToastNotifier.Show("Testing NoteManager");
+                ToastNotifier.Show("Testing NoteManager");
 
-                // Debug.Log(PreloadNotes());
-                // Debug.Log(PreloadNotes(true));
+                Debug.Log(PreloadNotes());
+                Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
@@ -262,6 +252,23 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
+        /// Add a new note to the list, then saves.
+        /// </summary>
+        /// <param name="item">The note to update or add.</param>
+        /// <exception cref="Exception">Wraps any storage-related exception.</exception>
+        public void CreateNote(Note item)
+        {
+            try
+            {
+                UpdateNote(item);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report($"An error occurred while new a note with ID: {item?.Id}.", ex);
+            }
+        }
+
+        /// <summary>
         /// Updates an existing note in the list or adds it if it doesn't exist, then saves.
         /// </summary>
         /// <param name="item">The note to update or add.</param>
@@ -289,7 +296,5 @@ namespace ARStickyNotes.Services
                 ErrorReporter.Report($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
-
-
     }
 }
