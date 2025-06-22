@@ -252,9 +252,9 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
-        /// Add a new note to the list, then saves.
+        /// Adds a new note to the list, then saves.
         /// </summary>
-        /// <param name="item">The note to update or add.</param>
+        /// <param name="item">The note to add.</param>
         /// <exception cref="Exception">Wraps any storage-related exception.</exception>
         public void CreateNote(Note item)
         {
