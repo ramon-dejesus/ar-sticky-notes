@@ -45,6 +45,10 @@ namespace ARStickyNotes.UI
         /// </summary>
         private readonly Queue<ToastData> toastQueue = new();
 
+        // Track batch state for correct counter display, even after manual dismiss
+        private int currentBatchTotal = 0;
+        private int currentBatchProcessed = 0;
+
         /// <summary>
         /// Initializes the singleton instance and sets up the toast panel.
         /// Handles XR-specific canvas setup and close button binding.
@@ -111,26 +115,38 @@ namespace ARStickyNotes.UI
 
         /// <summary>
         /// Processes the toast queue, showing each toast in order.
-        /// The counter always reflects the current batch size.
+        /// The counter always reflects the current batch size, even after manual dismiss.
         /// </summary>
         private IEnumerator ToastProcessor()
         {
+            // If resuming after manual dismiss, continue the current batch
+            if (currentBatchTotal > 0 && currentBatchProcessed < currentBatchTotal)
+            {
+                while (toastQueue.Count > 0 && currentBatchProcessed < currentBatchTotal)
+                {
+                    currentBatchProcessed++;
+                    var toast = toastQueue.Dequeue();
+                    yield return StartCoroutine(ShowToastCoroutine(toast, currentBatchProcessed, currentBatchTotal));
+                }
+            }
+
+            // Start a new batch if there are still toasts left
             while (toastQueue.Count > 0)
             {
-                int totalToasts = toastQueue.Count;
-                int processedCount = 0;
+                currentBatchTotal = toastQueue.Count;
+                currentBatchProcessed = 0;
 
-                // Process all toasts currently in the queue as a batch
-                while (processedCount < totalToasts)
+                while (toastQueue.Count > 0 && currentBatchProcessed < currentBatchTotal)
                 {
-                    processedCount++;
+                    currentBatchProcessed++;
                     var toast = toastQueue.Dequeue();
-                    yield return StartCoroutine(ShowToastCoroutine(toast, processedCount, totalToasts));
+                    yield return StartCoroutine(ShowToastCoroutine(toast, currentBatchProcessed, currentBatchTotal));
                 }
-                // After this batch, if new toasts were added, loop will run again and show them as a new batch
             }
 
             currentToast = null;
+            currentBatchTotal = 0;
+            currentBatchProcessed = 0;
         }
 
         /// <summary>
@@ -208,7 +224,6 @@ namespace ARStickyNotes.UI
         {
             if (currentToast != null)
             {
-                Debug.Log("Close button clicked!");
                 dismissedManually = true;
 
                 // Force fade-out and continue queue
