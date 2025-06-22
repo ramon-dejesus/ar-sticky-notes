@@ -26,7 +26,7 @@ RectTransform:
   m_GameObject: {fileID: 2972014359979776251}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.35, y: 1.35, z: 1.35}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -50,4 +50,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toastPanel: {fileID: 0}
   toastText: {fileID: 0}
-  displayDuration: 2
+  panelBackground: {fileID: 0}
+  toastCanvas: {fileID: 0}
+  toastCanvasGroup: {fileID: 0}
+  closeButton: {fileID: 0}
+  toastCounterText: {fileID: 0}
+  displayDuration: 5.07
+  fadeDuration: 0.3
+  OnToastDismissed:
+    m_PersistentCalls:
+      m_Calls: []
