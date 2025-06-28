@@ -30,7 +30,7 @@ namespace ARStickyNotes.Services
             try
             {
                 // Show a toast message to indicate the test is running
-                ToastNotifier.Show("Testing NoteManager");
+                UGUI_ToastNotifier.Show("Testing NoteManager");
 
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));

@@ -232,7 +232,6 @@ public class MainSceneController : MonoBehaviour
             LoadNotes();
             SubscribeToEvents();
             
-            ToastNotifier.ShowInfoMessage("Welcome to AR Sticky Notes! Click 'Create Note' to get started.");
         }
         catch (Exception ex)
         {

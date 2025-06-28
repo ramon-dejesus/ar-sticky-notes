@@ -14,12 +14,12 @@ namespace ARStickyNotes.UI
     /// </summary>
     public enum ToastType { Info, Success, Error }
 
-    public class ToastManager : MonoBehaviour
+    public class UGUI_ToastManager : MonoBehaviour
     {
         /// <summary>
         /// Singleton instance for global access.
         /// </summary>
-        public static ToastManager Instance { get; private set; }
+        public static UGUI_ToastManager Instance { get; private set; }
 
         [Header("UI References")]
         [SerializeField] private GameObject toastPanel;

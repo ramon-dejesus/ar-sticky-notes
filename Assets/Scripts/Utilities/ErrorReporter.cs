@@ -27,7 +27,7 @@ namespace ARStickyNotes.Utilities
                 Debug.LogError(ex);
 #endif
             if (showToast)
-                ToastNotifier.ShowErrorMessage(messageToShow);
+                UGUI_ToastNotifier.ShowErrorMessage(messageToShow);
 
             if (throwException)
                 throw exception;
