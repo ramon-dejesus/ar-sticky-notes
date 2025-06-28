@@ -13,6 +13,15 @@ namespace ARStickyNotes.Utilities
         /// <param name="message">The default message to display in the toast.</param>
         public static void Show(string message)
         {
+            ShowInfoMessage(message);
+        }
+
+        /// <summary>
+        /// Shows a default toast message to the user.
+        /// </summary>
+        /// <param name="message">The default message to display in the toast.</param>
+        public static void ShowInfoMessage(string message)
+        {
             ToastManager.Instance?.ShowToast(message, ToastType.Info);
         }
 

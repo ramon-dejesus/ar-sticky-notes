@@ -127,7 +127,7 @@ public class MainSceneController : MonoBehaviour
                         ErrorReporter.Report("Failed to delete note.", ex);
                     }
                 };
-                
+
                 deleteButton.userData = callback;
                 deleteButton.clicked += callback;
             };
@@ -182,6 +182,8 @@ public class MainSceneController : MonoBehaviour
     {
         try
         {
+            ToastNotifier.ShowInfoMessage("Welcome to AR Sticky Notes! Click 'Create Note' to get started.");
+            
             InitiateUIElements();
             LoadNotes();
             SubscribeToEvents();
