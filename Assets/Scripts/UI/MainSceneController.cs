@@ -222,15 +222,17 @@ public class MainSceneController : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// Unity OnEnable method. Binds UI elements and loads notes.
+    /// Unity Start method. Binds UI elements and loads notes.
     /// </summary>
-    private void OnEnable()
+    private void Start()
     {
         try
         {
             InitiateUIElements();
             LoadNotes();
             SubscribeToEvents();
+            
+            ToastNotifier.ShowInfoMessage("Welcome to AR Sticky Notes! Click 'Create Note' to get started.");
         }
         catch (Exception ex)
         {

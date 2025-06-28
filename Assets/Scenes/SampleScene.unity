@@ -8951,7 +8951,7 @@ PrefabInstance:
     - target: {fileID: 8466298640963725655, guid: 34125963f8d9a47cb9bbd5e9146f8763,
         type: 3}
       propertyPath: m_Name
-      value: ToastPanel
+      value: UGUI-ToastPanel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9414,7 +9414,7 @@ PrefabInstance:
     - target: {fileID: 2972014359979776251, guid: bb654c61b46bb46d383a5a0d898ccfd4,
         type: 3}
       propertyPath: m_Name
-      value: ToastManager
+      value: UGUI-ToastManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
