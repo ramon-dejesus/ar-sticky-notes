@@ -12,44 +12,48 @@ using ARStickyNotes.Utilities;
 /// </summary>
 public class MainSceneController : MonoBehaviour
 {
+    #region References
+    [Header("UI References")]
     /// <summary>
     /// Reference to the UIDocument containing the UI Toolkit layout.
     /// </summary>
     [SerializeField] private UIDocument uiDocument;
 
+    [Header("Script References")]
     /// <summary>
     /// Reference to the NoteManager responsible for note operations.
     /// </summary>
     [SerializeField] private NoteManager noteManager;
+    #endregion
 
-    private Button addNoteButton;
-    private TextField noteTitleField;
-    private TextField noteDescriptionField;
-    private ListView notesListView;
+    #region UI Elements
+    private Button OpenAllNotesButton;
+    private VisualElement AllNotesVisualElement;
+    private Button CreateNoteButton;
+    private ListView NotesListView;
 
-    /// <summary>
-    /// The current list of notes displayed in the UI.
-    /// </summary>
+    #endregion
+
+    #region Fields and Data Objects
+
     private List<Note> notes = new List<Note>();
 
-    /// <summary>
-    /// Unity OnEnable method. Binds UI elements and loads notes.
-    /// </summary>
-    private void OnEnable()
+    #endregion
+
+    #region Supporting Functions
+    private void InitiateUIElements()
     {
         try
         {
             var root = uiDocument.rootVisualElement;
 
-            addNoteButton = root.Q<Button>("addNoteButton");
-            noteTitleField = root.Q<TextField>("noteTitleField");
-            noteDescriptionField = root.Q<TextField>("noteDescriptionField");
-            notesListView = root.Q<ListView>("notesListView");
-
-            LoadNotes();
+            OpenAllNotesButton = root.Q<Button>("openAllNotesButton");
+            AllNotesVisualElement = root.Q<VisualElement>("allNotesVisualElement");
+            CreateNoteButton = root.Q<Button>("createNoteButton");
+            NotesListView = root.Q<ListView>("NotesListView");
 
             // Set up ListView: Title | Created Date | Delete Button
-            notesListView.makeItem = () =>
+            NotesListView.makeItem = () =>
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
 
@@ -94,7 +98,8 @@ public class MainSceneController : MonoBehaviour
                 row.Add(deleteButton);
                 return row;
             };
-            notesListView.bindItem = (element, i) =>
+
+            NotesListView.bindItem = (element, i) =>
             {
                 var note = notes[i];
                 var titleLabel = element.Q<Label>("titleLabel");
@@ -122,16 +127,29 @@ public class MainSceneController : MonoBehaviour
                         ErrorReporter.Report("Failed to delete note.", ex);
                     }
                 };
+                
                 deleteButton.userData = callback;
                 deleteButton.clicked += callback;
             };
-            notesListView.itemsSource = notes;
 
-            addNoteButton.clicked += OnAddNoteClicked;
+            NotesListView.itemsSource = notes;
         }
         catch (Exception ex)
         {
-            ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
+            ErrorReporter.Report("Failed to initialize UI elements.", ex);
+        }
+    }
+
+    private void SubscribeToEvents()
+    {
+        try
+        {
+            OpenAllNotesButton.clicked += () => AllNotesVisualElement.style.display = DisplayStyle.Flex;
+            CreateNoteButton.clicked += () => AllNotesVisualElement.style.display = DisplayStyle.None;
+        }
+        catch (Exception ex)
+        {
+            ErrorReporter.Report("Failed to subscribe to NoteManager events.", ex);
         }
     }
 
@@ -144,10 +162,10 @@ public class MainSceneController : MonoBehaviour
         {
             var noteList = noteManager.GetNotes();
             notes = noteList?.Items ?? new List<Note>();
-            if (notesListView != null)
+            if (NotesListView != null)
             {
-                notesListView.itemsSource = notes;
-                notesListView.RefreshItems();
+                NotesListView.itemsSource = notes;
+                NotesListView.RefreshItems();
             }
         }
         catch (Exception ex)
@@ -155,31 +173,22 @@ public class MainSceneController : MonoBehaviour
             ErrorReporter.Report("Failed to load notes from storage.", ex);
         }
     }
-
+    #endregion
+    
     /// <summary>
-    /// Handles the button click event to add a new note with the text fields' values.
+    /// Unity OnEnable method. Binds UI elements and loads notes.
     /// </summary>
-    private void OnAddNoteClicked()
+    private void OnEnable()
     {
         try
         {
-            var title = noteTitleField.value;
-            var description = noteDescriptionField.value;
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                var newNote = noteManager.GetNewNote();
-                newNote.Title = title;
-                newNote.Description = description;
-                noteManager.UpdateNote(newNote);
-
-                LoadNotes();
-                noteTitleField.value = "";
-                noteDescriptionField.value = "";
-            }
+            InitiateUIElements();
+            LoadNotes();
+            SubscribeToEvents();
         }
         catch (Exception ex)
         {
-            ErrorReporter.Report("Failed to add a new note.", ex);
+            ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
         }
-    }
+    }  
 }
