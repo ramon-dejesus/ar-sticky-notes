@@ -27,33 +27,45 @@ public class MainSceneController : MonoBehaviour
     #endregion
 
     #region UI Elements
-    private Button OpenAllNotesButton;
-    private VisualElement AllNotesVisualElement;
-    private Button CreateNoteButton;
-    private ListView NotesListView;
-
+    private Button openAllNotesButton;
+    private VisualElement allNotesVisualElement;
+    private Button createNoteButton;
+    private ListView notesListView;
     #endregion
 
     #region Fields and Data Objects
-
     private List<Note> notes = new List<Note>();
-
     #endregion
 
     #region Supporting Functions
+
+    /// <summary>
+    /// Initializes and binds UI Toolkit elements from the UIDocument.
+    /// </summary>
     private void InitiateUIElements()
     {
         try
         {
             var root = uiDocument.rootVisualElement;
 
-            OpenAllNotesButton = root.Q<Button>("openAllNotesButton");
-            AllNotesVisualElement = root.Q<VisualElement>("allNotesVisualElement");
-            CreateNoteButton = root.Q<Button>("createNoteButton");
-            NotesListView = root.Q<ListView>("NotesListView");
+            // Ensure names match UXML exactly (case-sensitive)
+            openAllNotesButton = root.Q<Button>("OpenAllNotesButton");
+            allNotesVisualElement = root.Q<VisualElement>("AllNotesVisualElement");
+            createNoteButton = root.Q<Button>("CreateNoteButton");
+            notesListView = root.Q<ListView>("NotesListView");
+
+            // Null checks for all UI elements
+            if (openAllNotesButton == null)
+                throw new Exception("OpenAllNotesButton not found in UXML.");
+            if (allNotesVisualElement == null)
+                throw new Exception("AllNotesVisualElement not found in UXML.");
+            if (createNoteButton == null)
+                throw new Exception("CreateNoteButton not found in UXML.");
+            if (notesListView == null)
+                throw new Exception("NotesListView not found in UXML.");
 
             // Set up ListView: Title | Created Date | Delete Button
-            NotesListView.makeItem = () =>
+            notesListView.makeItem = () =>
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
 
@@ -99,7 +111,7 @@ public class MainSceneController : MonoBehaviour
                 return row;
             };
 
-            NotesListView.bindItem = (element, i) =>
+            notesListView.bindItem = (element, i) =>
             {
                 var note = notes[i];
                 var titleLabel = element.Q<Label>("titleLabel");
@@ -109,11 +121,18 @@ public class MainSceneController : MonoBehaviour
                 titleLabel.text = note.Title ?? "(Untitled)";
                 dateLabel.text = note.CreatedAt.ToString("yyyy-MM-dd HH:mm");
 
-                // Remove previous click events to avoid stacking
+                // Delete Button Event Unsubscription ---
+                // Remove all previous listeners before adding a new one
+#if UNITY_2022_2_OR_NEWER
+                deleteButton.clicked -= (Action)deleteButton.userData;
+                deleteButton.userData = null;
+#endif
+                // For older Unity versions, use userData pattern
                 if (deleteButton.userData is Action prevAction)
                 {
                     deleteButton.clicked -= prevAction;
                 }
+
                 // Store the callback so it can be removed next time
                 Action callback = () =>
                 {
@@ -132,7 +151,7 @@ public class MainSceneController : MonoBehaviour
                 deleteButton.clicked += callback;
             };
 
-            NotesListView.itemsSource = notes;
+            notesListView.itemsSource = notes;
         }
         catch (Exception ex)
         {
@@ -140,17 +159,40 @@ public class MainSceneController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Subscribes to UI events for showing/hiding the notes panel.
+    /// </summary>
     private void SubscribeToEvents()
     {
         try
         {
-            OpenAllNotesButton.clicked += () => AllNotesVisualElement.style.display = DisplayStyle.Flex;
-            CreateNoteButton.clicked += () => AllNotesVisualElement.style.display = DisplayStyle.None;
+            // Remove previous listeners to avoid stacking ---
+            openAllNotesButton.clicked -= ShowAllNotes;
+            createNoteButton.clicked -= HideAllNotes;
+
+            openAllNotesButton.clicked += ShowAllNotes;
+            createNoteButton.clicked += HideAllNotes;
         }
         catch (Exception ex)
         {
             ErrorReporter.Report("Failed to subscribe to NoteManager events.", ex);
         }
+    }
+
+    /// <summary>
+    /// Shows the all notes panel.
+    /// </summary>
+    private void ShowAllNotes()
+    {
+        allNotesVisualElement.style.display = DisplayStyle.Flex;
+    }
+
+    /// <summary>
+    /// Hides the all notes panel.
+    /// </summary>
+    private void HideAllNotes()
+    {
+        allNotesVisualElement.style.display = DisplayStyle.None;
     }
 
     /// <summary>
@@ -162,10 +204,11 @@ public class MainSceneController : MonoBehaviour
         {
             var noteList = noteManager.GetNotes();
             notes = noteList?.Items ?? new List<Note>();
-            if (NotesListView != null)
+            if (notesListView != null)
             {
-                NotesListView.itemsSource = notes;
-                NotesListView.RefreshItems();
+                // Always re-assign itemsSource after changing notes reference ---
+                notesListView.itemsSource = notes;
+                notesListView.RefreshItems();
             }
         }
         catch (Exception ex)
@@ -174,7 +217,7 @@ public class MainSceneController : MonoBehaviour
         }
     }
     #endregion
-    
+
     /// <summary>
     /// Unity OnEnable method. Binds UI elements and loads notes.
     /// </summary>
@@ -190,5 +233,5 @@ public class MainSceneController : MonoBehaviour
         {
             ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
         }
-    }  
+    }
 }
