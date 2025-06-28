@@ -25,7 +25,6 @@ namespace ARStickyNotes.UI
         [SerializeField] private GameObject toastPanel;
         [SerializeField] private TextMeshProUGUI toastText;
         [SerializeField] private Image panelBackground;
-        [SerializeField] private Canvas toastCanvas;
         [SerializeField] private CanvasGroup toastCanvasGroup;
         [SerializeField] private Button closeButton;
         [SerializeField] private TextMeshProUGUI toastCounterText;
@@ -61,17 +60,7 @@ namespace ARStickyNotes.UI
             {
                 Destroy(gameObject);
                 return;
-            }
-
-            // If running in XR, set the canvas to world space and position in front of the camera
-            if (toastCanvas != null && XRSettings.isDeviceActive)
-            {
-                toastCanvas.renderMode = RenderMode.WorldSpace;
-
-                Transform cam = Camera.main.transform;
-                toastCanvas.transform.position = cam.position + cam.forward * 1.5f;
-                toastCanvas.transform.rotation = Quaternion.LookRotation(cam.forward);
-            }
+            }            
 
             if (closeButton != null)
                 closeButton.onClick.AddListener(HandleManualDismiss);
