@@ -121,19 +121,15 @@ public class MainSceneController : MonoBehaviour
                 titleLabel.text = note.Title ?? "(Untitled)";
                 dateLabel.text = note.CreatedAt.ToString("yyyy-MM-dd HH:mm");
 
-                // Delete Button Event Unsubscription ---
-                // Remove all previous listeners before adding a new one
 #if UNITY_2022_2_OR_NEWER
                 deleteButton.clicked -= (Action)deleteButton.userData;
                 deleteButton.userData = null;
 #endif
-                // For older Unity versions, use userData pattern
                 if (deleteButton.userData is Action prevAction)
                 {
                     deleteButton.clicked -= prevAction;
                 }
 
-                // Store the callback so it can be removed next time
                 Action callback = () =>
                 {
                     try
@@ -160,18 +156,18 @@ public class MainSceneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Subscribes to UI events for showing/hiding the notes panel.
+    /// Subscribes to UI events for toggling the notes panel and creating notes.
     /// </summary>
     private void SubscribeToEvents()
     {
         try
         {
-            // Remove previous listeners to avoid stacking ---
-            openAllNotesButton.clicked -= ShowAllNotes;
-            createNoteButton.clicked -= HideAllNotes;
+            // Remove previous listeners to avoid stacking
+            openAllNotesButton.clicked -= OpenOrHideNotes;
+            createNoteButton.clicked -= OpenCreateNotePanel;
 
-            openAllNotesButton.clicked += ShowAllNotes;
-            createNoteButton.clicked += HideAllNotes;
+            openAllNotesButton.clicked += OpenOrHideNotes;
+            createNoteButton.clicked += OpenCreateNotePanel;
         }
         catch (Exception ex)
         {
@@ -180,19 +176,27 @@ public class MainSceneController : MonoBehaviour
     }
 
     /// <summary>
-    /// Shows the all notes panel.
+    /// Toggles the visibility of the all notes panel.
     /// </summary>
-    private void ShowAllNotes()
+    private void OpenOrHideNotes()
     {
-        allNotesVisualElement.style.display = DisplayStyle.Flex;
+        if (allNotesVisualElement.style.display == DisplayStyle.Flex)
+            allNotesVisualElement.style.display = DisplayStyle.None;
+        else
+            allNotesVisualElement.style.display = DisplayStyle.Flex;
     }
 
     /// <summary>
-    /// Hides the all notes panel.
+    /// Open Create Note panel and hide all notes.
     /// </summary>
-    private void HideAllNotes()
+    private void OpenCreateNotePanel()
     {
+        // Hide all notes panel
         allNotesVisualElement.style.display = DisplayStyle.None;
+
+        // Show create note panel
+        Debug.Log("Opening Create Note Panel");
+        //createNotePanel.style.display = DisplayStyle.Flex;
     }
 
     /// <summary>
@@ -206,7 +210,6 @@ public class MainSceneController : MonoBehaviour
             notes = noteList?.Items ?? new List<Note>();
             if (notesListView != null)
             {
-                // Always re-assign itemsSource after changing notes reference ---
                 notesListView.itemsSource = notes;
                 notesListView.RefreshItems();
             }
