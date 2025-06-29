@@ -5,21 +5,16 @@
     xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
 >
+    <ui:Style src="ToastUSS.uss"/>
     <!-- Toast Root: background color will be set dynamically in C# based on toast type -->
-    <ui:VisualElement name="toast-root"
-        style="position: absolute; left: 0; right: 0; bottom: 0; height: 180px; flex-direction: column; justify-content: flex-start; align-items: stretch; padding-left: 24px; padding-right: 24px; padding-top: 16px; padding-bottom: 16px;">
-        
+    <ui:VisualElement name="toast-root" class="toast-root">
         <!-- Top row: Close button -->
-        <ui:VisualElement style="flex-direction: row; justify-content: flex-end;">
-            <ui:Button name="toast-close" style="color: white; background-color: #0000; font-size: 32px; width: 40px; height: 40px; margin-bottom: 8px; margin-right: 0px; align-self: flex-end;">&#10005;</ui:Button>
+        <ui:VisualElement class="toast-top-row">
+            <ui:Button name="toast-close" class="toast-close">&#10005;</ui:Button>
         </ui:VisualElement>
-
         <!-- Message -->
-        <ui:Label name="toast-message"
-            style="color: white; font-size: 28px; unity-font-style: bold; margin-bottom: 24px; margin-top: 0px; flex-grow: 1;"/>
-
+        <ui:Label name="toast-message" class="toast-message"/>
         <!-- Counter -->
-        <ui:Label name="toast-counter"
-            style="color: white; font-size: 20px; align-self: flex-end; margin-bottom: 0px;"/>
+        <ui:Label name="toast-counter" class="toast-counter"/>
     </ui:VisualElement>
 </ui:UXML>
