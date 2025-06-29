@@ -12,8 +12,6 @@ namespace ARStickyNotes.UI
     /// Manages toast notifications in the AR Sticky Notes app.
     /// Provides a queue-based system for showing info, success, and error messages to the user.
     /// </summary>
-    public enum ToastType { Info, Success, Error }
-
     public class UGUI_ToastManager : MonoBehaviour
     {
         /// <summary>

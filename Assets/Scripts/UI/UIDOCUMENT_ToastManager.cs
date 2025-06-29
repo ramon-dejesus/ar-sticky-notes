@@ -81,7 +81,6 @@ public class UIDOCUMENT_ToastManager : MonoBehaviour
 
     private IEnumerator ShowToastCoroutine(ToastData toast, int currentIndex, int totalCount)
     {
-        Exception caughtException = null;
         try
         {
             EnsureToastUI();
