@@ -231,7 +231,15 @@ public class MainSceneController : MonoBehaviour
             InitiateUIElements();
             LoadNotes();
             SubscribeToEvents();
-            
+
+            // Show an info toast
+            UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info toast1!");
+
+            // Show an info toast
+            UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info toast2!");
+
+            // Show an info toast
+            UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info toast3!");
         }
         catch (Exception ex)
         {
