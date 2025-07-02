@@ -17,7 +17,7 @@ namespace ARStickyNotes.Utilities
 {
     public class ARSpawner
     {
-        private const string DefaultResourceName = "PyramidVariant";
+        private const string DefaultResourceName = "WorldSpaceUI";
 
         public XRRayInteractor SpawnerRay { get; private set; } = null;
 
@@ -25,7 +25,7 @@ namespace ARStickyNotes.Utilities
 
         public ARSpawner()
         {
-            LoadRay();
+
         }
 
         private GameObject GetCamera()
@@ -57,7 +57,7 @@ namespace ARStickyNotes.Utilities
                 UnityEngine.Object.Destroy(item);
             }
         }
-        private void LoadRay()
+        public void LoadRay()
         {
             DestroyRay();
             var touchActions = new XRIDefaultInputActions().asset.FindActionMap("Touchscreen Gestures");
@@ -226,6 +226,25 @@ namespace ARStickyNotes.Utilities
             var forward = facePosition - spawnPoint;
             BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
             newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
+        }
+        public void Spawn()
+        {
+            var spawnPoint = new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
+            var spawnNormal = new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
+            var lst = Resources.FindObjectsOfTypeAll<GameObject>().ToList();
+            var newResource = lst.FirstOrDefault(x => x.name == DefaultResourceName);
+            if (newResource == null)
+            {
+                throw new Exception("Resource " + DefaultResourceName + " for spawning was not found.");
+            }
+            var newObject = UnityEngine.Object.Instantiate(newResource);
+            newObject.transform.position = spawnPoint;
+            var facePosition = Camera.main.transform.position; //new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
+            var forward = facePosition - spawnPoint;
+            BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
+            newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
+            //var doc = newObject.get;
+            //doc.SetLabelText("DamageLabel", "Hello World!");
         }
     }
 }

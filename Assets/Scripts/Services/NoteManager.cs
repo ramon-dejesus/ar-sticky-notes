@@ -30,10 +30,12 @@ namespace ARStickyNotes.Services
             try
             {
                 // Show a toast message to indicate the test is running
-                ToastNotifier.Show("Testing NoteManager");
+                //ToastNotifier.Show("Testing NoteManager");
 
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
+
+                new ARSpawner().Spawn();
             }
             catch (Exception ex)
             {
