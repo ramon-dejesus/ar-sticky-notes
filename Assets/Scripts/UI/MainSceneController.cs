@@ -67,8 +67,19 @@ public class MainSceneController : MonoBehaviour
             // Set up ListView: Title | Created Date | Delete Button
             notesListView.makeItem = () =>
             {
+                
+                var row = new VisualElement{ name = "RowElement" };
+                row.AddToClassList("row");
+                var contentElement = new VisualElement{ name = "ContentElement" };
+                contentElement.AddToClassList("content");
+                var titleLabel = new Label { name = "titleLabel" };
+                titleLabel.AddToClassList("title-label");
+                var dateLabel = new Label { name = "dateLabel" };
+                dateLabel.AddToClassList("date-label");
+                var deleteButton = new Button { name = "deleteButton" };
+                deleteButton.AddToClassList("delete-list-item-btn");
+                /* 
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
-
                 var titleLabel = new Label
                 {
                     name = "titleLabel",
@@ -81,9 +92,9 @@ public class MainSceneController : MonoBehaviour
                         overflow = Overflow.Hidden,
                         textOverflow = TextOverflow.Ellipsis
                     }
-                };
+                }; */
 
-                var dateLabel = new Label
+                /* var dateLabel = new Label
                 {
                     name = "dateLabel",
                     style =
@@ -104,10 +115,12 @@ public class MainSceneController : MonoBehaviour
                     text = "Delete",
                     style = { marginLeft = 10, flexGrow = 0 }
                 };
-
-                row.Add(titleLabel);
-                row.Add(dateLabel);
-                row.Add(deleteButton);
+                */
+                contentElement.Add(titleLabel);
+                contentElement.Add(dateLabel);
+                contentElement.Add(deleteButton);
+                row.Add(contentElement);
+                
                 return row;
             };
 
