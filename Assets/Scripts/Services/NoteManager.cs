@@ -29,13 +29,18 @@ namespace ARStickyNotes.Services
         {
             try
             {
-                // Show a toast message to indicate the test is running
-                //ToastNotifier.Show("Testing NoteManager");
-
-                Debug.Log(PreloadNotes());
-                Debug.Log(PreloadNotes(true));
-
-                new ARSpawner().Spawn();
+                PreloadNotes();
+                try
+                {
+                    //var item = new ARSpawner().SpawnGameObject("whiteboard");
+                    var item = new ARSpawner().SpawnGameObject("WordSpaceNoteboardUI");
+                    item.GetComponent<NoteboardUIDocument>().LoadNotes(Notes);
+                }
+                catch (Exception ex)
+                {
+                    Debug.ClearDeveloperConsole();
+                    Debug.Log(ex.Message);
+                }
             }
             catch (Exception ex)
             {

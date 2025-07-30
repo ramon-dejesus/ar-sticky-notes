@@ -1,11 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ARStickyNotes.Models;
+using ARStickyNotes.Utilities;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityUtils;
 
-// https://discussions.unity.com/t/uitoolkit-world-space-support-status/887441/22
-// https://gist.githubusercontent.com/katas94/7b220a591215efc36110860a0b1125eb
-public class WorldSpaceUIDocument : MonoBehaviour
+public class NoteboardUIDocument : MonoBehaviour
 {
     #region Fields
 
@@ -43,33 +48,30 @@ public class WorldSpaceUIDocument : MonoBehaviour
     RenderTexture renderTexture;
     Material material;
 
+    private ListView notesListView;
+
     #endregion
 
     void Awake()
     {
         InitializeComponents();
         BuildPanel();
+        SetListView();
     }
 
-    public void SetLabelText(string label, string text)
+    public void LoadNotes(NoteList notes)
     {
         if (uiDocument.rootVisualElement == null)
         {
             uiDocument.visualTreeAsset = visualTreeAsset;
         }
-
-        // Consider caching the label element for better performance
-        uiDocument.rootVisualElement.Q<Label>(label).text = text;
+        notesListView.itemsSource = notes.Items;
+        notesListView.RefreshItems();
     }
 
     void InitializeComponents()
     {
         InitializeMeshRenderer();
-
-        // Optionally add a box collider to the object
-        // BoxCollider boxCollider = gameObject.GetOrAdd<BoxCollider>();
-        // boxCollider.size = new Vector3(1, 1, 0);
-
         MeshFilter meshFilter = gameObject.GetOrAdd<MeshFilter>();
         meshFilter.sharedMesh = GetQuadMesh();
     }
@@ -98,12 +100,12 @@ public class WorldSpaceUIDocument : MonoBehaviour
 
     void CreateRenderTexture()
     {
-        RenderTextureDescriptor descriptor = renderTextureAsset.descriptor;
+        var descriptor = renderTextureAsset.descriptor;
         descriptor.width = panelWidth;
         descriptor.height = panelHeight;
         renderTexture = new RenderTexture(descriptor)
         {
-            name = $"{name} - RenderTexture"
+            name = name + "RenderTexture"
         };
     }
 
@@ -114,7 +116,7 @@ public class WorldSpaceUIDocument : MonoBehaviour
         panelSettings.clearColor = true;
         panelSettings.scaleMode = PanelScaleMode.ConstantPixelSize;
         panelSettings.scale = panelScale;
-        panelSettings.name = $"{name} - PanelSettings";
+        panelSettings.name = name + "PanelSettings";
     }
 
     void CreateUIDocument()
@@ -152,6 +154,77 @@ public class WorldSpaceUIDocument : MonoBehaviour
         }
 
         transform.localScale = new Vector3(panelWidth / pixelsPerUnit, panelHeight / pixelsPerUnit, 1.0f);
+    }
+
+    void SetListView()
+    {
+        notesListView = uiDocument.rootVisualElement.Q<ListView>("notesListView");
+
+        if (notesListView == null)
+        {
+            throw new Exception("Notes ListView was not found.");
+        }
+        notesListView.makeItem = () =>
+        {
+            var row = new VisualElement
+            {
+                style = { flexDirection = FlexDirection.Row,
+                    alignItems = Align.Center
+                }
+            };
+            var title = new Label
+            {
+                name = "lblTitle",
+                style =
+                {
+                    flexGrow = 1,
+                    maxWidth = 180,
+                    unityTextAlign = TextAnchor.MiddleLeft,
+                    whiteSpace = WhiteSpace.NoWrap,
+                    overflow = Overflow.Hidden,
+                    textOverflow = TextOverflow.Ellipsis
+                }
+            };
+            var createdAt = new Label
+            {
+                name = "lblCreatedAt",
+                style =
+                {
+                    flexGrow = 0,
+                    maxWidth = 180,
+                    unityTextAlign = TextAnchor.MiddleLeft,
+                    marginLeft = 10,
+                    whiteSpace = WhiteSpace.NoWrap,
+                    overflow = Overflow.Hidden,
+                    textOverflow = TextOverflow.Ellipsis
+                }
+            };
+            row.Add(title);
+            row.Add(createdAt);
+            return row;
+        };
+        notesListView.bindItem = (element, i) =>
+        {
+            var note = notesListView.itemsSource[i] as Note;
+            var createdAt = element.Q<Label>("lblCreatedAt");
+            var title = element.Q<Label>("lblTitle");
+            title.text = note.Title ?? "(Untitled)";
+            createdAt.text = note.CreatedAt.ToString("MM/dd/yyyy hh:mm:ss tt");
+        };
+        notesListView.selectionChanged += OnSelectionChange;
+    }
+
+    private void OnSelectionChange(IEnumerable<object> item)
+    {
+        try
+        {
+            var note = item.FirstOrDefault() as Note;
+            ToastNotifier.ShowSuccessMessage($"Selected note: {note?.Title ?? "None"}");
+        }
+        catch (Exception e)
+        {
+            ErrorReporter.Report("An error occurred while selecting a note.", e, false);
+        }
     }
 
     static Mesh GetQuadMesh()
