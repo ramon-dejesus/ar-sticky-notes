@@ -33,8 +33,9 @@ namespace ARStickyNotes.Services
                 try
                 {
                     //var item = new ARSpawner().SpawnGameObject("whiteboard");
-                    var item = new ARSpawner().SpawnGameObject("WordSpaceNoteboardUI");
-                    item.GetComponent<NoteboardUIDocument>().LoadNotes(Notes);
+                    var item = new ARSpawner().SpawnGameObject("Noteboard");
+                    //var item = new ARSpawner().SpawnGameObject("WordSpaceNoteboardUI");
+                    //item.GetComponent<NoteboardUIDocument>().LoadNotes(Notes);
                 }
                 catch (Exception ex)
                 {

@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement style="flex-grow: 1; flex-direction: column;height: 300px;">
-        <ui:ListView name="notesListView" style="flex-grow: 1; overflow: hidden; background-color: white;"></ui:ListView>
+    <ui:VisualElement style="flex-grow: 1; flex-direction: column; font-size: 20px;">
+        <ui:ListView name="notesListView" style="flex-grow: 1; overflow: hidden; background-color: white;" />
     </ui:VisualElement>
 </ui:UXML>

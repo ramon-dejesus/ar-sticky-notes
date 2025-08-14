@@ -178,7 +178,6 @@ public class NoteboardUIDocument : MonoBehaviour
                 style =
                 {
                     flexGrow = 1,
-                    maxWidth = 180,
                     unityTextAlign = TextAnchor.MiddleLeft,
                     whiteSpace = WhiteSpace.NoWrap,
                     overflow = Overflow.Hidden,
@@ -191,7 +190,6 @@ public class NoteboardUIDocument : MonoBehaviour
                 style =
                 {
                     flexGrow = 0,
-                    maxWidth = 180,
                     unityTextAlign = TextAnchor.MiddleLeft,
                     marginLeft = 10,
                     whiteSpace = WhiteSpace.NoWrap,
@@ -211,7 +209,7 @@ public class NoteboardUIDocument : MonoBehaviour
             title.text = note.Title ?? "(Untitled)";
             createdAt.text = note.CreatedAt.ToString("MM/dd/yyyy hh:mm:ss tt");
         };
-        notesListView.selectionChanged += OnSelectionChange;
+        //notesListView.selectionChanged += OnSelectionChange;
     }
 
     private void OnSelectionChange(IEnumerable<object> item)

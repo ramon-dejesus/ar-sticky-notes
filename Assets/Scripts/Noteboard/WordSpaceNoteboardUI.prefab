@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 192651088775836876}
   - component: {fileID: 7773964047883577391}
+  - component: {fileID: -1641117438507662599}
   m_Layer: 0
   m_Name: WordSpaceNoteboardUI
   m_TagString: Untagged
@@ -52,3 +53,30 @@ MonoBehaviour:
     type: 3}
   panelSettingsAsset: {fileID: 11400000, guid: 6540f603a38604448be1d11be6f56876, type: 2}
   renderTextureAsset: {fileID: 8400000, guid: b2e26e455c6da974598f518ee478bb4d, type: 2}
+--- !u!54 &-1641117438507662599
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5090762021068731611}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
