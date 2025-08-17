@@ -32,14 +32,16 @@ namespace ARStickyNotes.Services
                 PreloadNotes();
                 try
                 {
+                    Debug.ClearDeveloperConsole();
+                    var gameObjectName = "Noteboard";
+                    Debug.Log(gameObjectName);
                     //var item = new ARSpawner().SpawnGameObject("whiteboard");
-                    var item = new ARSpawner().SpawnGameObject("Noteboard");
+                    var item = new ARSpawner().SpawnGameObject(gameObjectName);
                     //var item = new ARSpawner().SpawnGameObject("WordSpaceNoteboardUI");
                     //item.GetComponent<NoteboardUIDocument>().LoadNotes(Notes);
                 }
                 catch (Exception ex)
                 {
-                    Debug.ClearDeveloperConsole();
                     Debug.Log(ex.Message);
                 }
             }

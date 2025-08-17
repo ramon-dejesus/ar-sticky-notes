@@ -284,14 +284,13 @@ namespace ARStickyNotes.Utilities
                 throw new Exception(name + " was not found.");
             }
             var cameraToFace = Camera.main;
-            var distanceInFront = 5f;
-            var spawnPoint = cameraToFace.transform.position + cameraToFace.transform.forward * distanceInFront;
-            newObject.transform.position = spawnPoint;
-            //newObject.transform.LookAt(cameraToFace.transform);
-            newObject.transform.rotation = Quaternion.LookRotation(cameraToFace.transform.forward, Camera.main.transform.up);
-            //newObject.transform.localScale = new Vector3(1, 1, 1);
-            //newObject.transform.rotation = cameraToFace.transform.rotation;
-            //newObject.transform.rotation = Quaternion.LookRotation(cameraToFace.transform.forward, Vector3.up);
+            var distanceInFront = 3f;
+            var cameraPosition = cameraToFace.transform.position;
+            var cameraForward = cameraToFace.transform.forward;
+            newObject.transform.position = cameraPosition + cameraForward * distanceInFront;
+            newObject.transform.LookAt(cameraPosition);
+            newObject.transform.Rotate(-1, 195, 0);
+            // newObject.transform.localScale = new Vector3(1, 1, 1);
             return newObject;
         }
     }
