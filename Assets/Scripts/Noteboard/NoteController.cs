@@ -170,7 +170,7 @@ public class NoteController : MonoBehaviour
             uiDocument?.rootVisualElement?.MarkDirtyRepaint();
         }
 
-        transform.localScale = new Vector3(panelWidth / pixelsPerUnit, panelHeight / pixelsPerUnit, 1.0f);
+        //transform.localScale = new Vector3(panelWidth / pixelsPerUnit, panelHeight / pixelsPerUnit, 1.0f);
     }
 
     void SetControls()

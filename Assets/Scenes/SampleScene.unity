@@ -2579,22 +2579,37 @@ PrefabInstance:
     - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 5
+      value: 5.56
       objectReference: {fileID: 0}
     - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 5
+      value: 3.1275
       objectReference: {fileID: 0}
     - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 5
+      value: 2.171875
+      objectReference: {fileID: 0}
+    - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2297422976545145936, guid: be3d97997af0a5b4a851322b917de875,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_Name
-      value: StickyNote
+      value: prefabStickyNoteUIDocument
       objectReference: {fileID: 0}
     - target: {fileID: 8778880294989601782, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
@@ -2604,12 +2619,12 @@ PrefabInstance:
     - target: {fileID: 8778880294989601782, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 8778880294989601782, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.006
       objectReference: {fileID: 0}
     - target: {fileID: 8778880294989601782, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
@@ -7138,12 +7153,12 @@ PrefabInstance:
     - target: {fileID: -6873166153500580589, guid: 34392f9525672744f92b29323ad7b422,
         type: 3}
       propertyPath: m_Name
-      value: Paperclip_on_sticky_notes
+      value: prefabStickyNoteOriginal
       objectReference: {fileID: 0}
     - target: {fileID: -6873166153500580589, guid: 34392f9525672744f92b29323ad7b422,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2259651201424232592, guid: 34392f9525672744f92b29323ad7b422,
         type: 3}
