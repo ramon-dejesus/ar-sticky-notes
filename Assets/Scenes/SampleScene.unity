@@ -236,6 +236,12 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &59242360 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8627109515054552313, guid: a73778a7697f9ea4dbfa4b4864543116,
+    type: 3}
+  m_PrefabInstance: {fileID: 1600625635}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &72989974
 GameObject:
   m_ObjectHideFlags: 0
@@ -1223,7 +1229,7 @@ PrefabInstance:
     - target: {fileID: 2512387470319625119, guid: 48cb3fb68c91eb94999fd99957eb0cae,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2512387470528047719, guid: 48cb3fb68c91eb94999fd99957eb0cae,
         type: 3}
@@ -6726,6 +6732,36 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_ThrowOnDetach
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_AttachTransform
+      value: 
+      objectReference: {fileID: 59242360}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_UseDynamicAttach
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_MatchAttachRotation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_SnapToColliderVolume
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_ReinitializeDynamicAttachEverySingleGrab
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8627109515054552313, guid: a73778a7697f9ea4dbfa4b4864543116,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -6791,7 +6827,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8784764804299197478, guid: a73778a7697f9ea4dbfa4b4864543116, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5711938039977634303, guid: a73778a7697f9ea4dbfa4b4864543116,
