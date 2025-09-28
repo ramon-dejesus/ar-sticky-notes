@@ -2617,6 +2617,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: prefabStickyNoteUIDocument
       objectReference: {fileID: 0}
+    - target: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8778880294989601782, guid: be3d97997af0a5b4a851322b917de875,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6722,6 +6727,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1702844816784506524, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: m_Name
+      value: WhiteboardRoot
+      objectReference: {fileID: 0}
     - target: {fileID: 3999999076721656815, guid: a73778a7697f9ea4dbfa4b4864543116,
         type: 3}
       propertyPath: m_Name
@@ -6732,6 +6742,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7899109459583493349, guid: a73778a7697f9ea4dbfa4b4864543116,
+        type: 3}
+      propertyPath: NotePrefab
+      value: 
+      objectReference: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
+        type: 3}
     - target: {fileID: 8081932894698117063, guid: a73778a7697f9ea4dbfa4b4864543116,
         type: 3}
       propertyPath: m_ThrowOnDetach

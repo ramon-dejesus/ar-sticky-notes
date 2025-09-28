@@ -33,10 +33,9 @@ namespace ARStickyNotes.Services
                 try
                 {
                     Debug.ClearDeveloperConsole();
-                    var gameObjectName = "Noteboard";
-                    Debug.Log(gameObjectName);
                     //var item = new ARSpawner().SpawnGameObject("whiteboard");
-                    var item = new ARSpawner().SpawnGameObject(gameObjectName);
+                    var item = new ARSpawner().SpawnGameObject("Noteboard");
+                    item.GetComponent<NoteboardController>().LoadNotes(Notes);
                     //var item = new ARSpawner().SpawnGameObject("WordSpaceNoteboardUI");
                     //item.GetComponent<NoteboardUIDocument>().LoadNotes(Notes);
                 }

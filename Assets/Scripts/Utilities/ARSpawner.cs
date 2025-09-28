@@ -260,11 +260,14 @@ namespace ARStickyNotes.Utilities
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private GameObject GetGameObject(string name)
+        public GameObject GetGameObject(string name, bool activeGameObject = true)
         {
             foreach (var item in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList())
             {
-                item.SetActive(true);
+                if (activeGameObject)
+                {
+                    item.SetActive(true);
+                }
                 return item;
             }
             return null;

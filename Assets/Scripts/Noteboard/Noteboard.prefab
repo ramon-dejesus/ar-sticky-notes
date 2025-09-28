@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8627109515054552313}
+  - component: {fileID: 7899109459583493349}
   - component: {fileID: 2970064793642195173}
   - component: {fileID: 8081932894698117063}
   m_Layer: 0
@@ -34,6 +35,24 @@ Transform:
   - {fileID: 9011655315425667782}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7899109459583493349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3999999076721656815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f4bfab5197c80b48b83a18e5608c5d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotePrefab: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
+    type: 3}
+  NoteContainer: {fileID: 0}
+  NoteInitialPosition: {x: 0.012, y: 0.01, z: -0.006}
+  NoteRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  NoteScale: {x: 0.001, y: 0.001, z: 0.001}
 --- !u!54 &2970064793642195173
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -195,6 +214,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Whiteboard
+      objectReference: {fileID: 0}
+    - target: {fileID: -723522225951079222, guid: b8a88ae0ce792fa46b209010108bf4d5,
+        type: 3}
+      propertyPath: m_Name
+      value: WhiteboardRoot
       objectReference: {fileID: 0}
     - target: {fileID: 2259651201424232592, guid: b8a88ae0ce792fa46b209010108bf4d5,
         type: 3}
