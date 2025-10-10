@@ -286,6 +286,21 @@ namespace ARStickyNotes.Utilities
             {
                 throw new Exception(name + " was not found.");
             }
+            return SpawnGameObject(newObject);
+        }
+
+        /// <summary>
+        /// Spawns a GameObject in front of the main camera.
+        /// </summary>
+        /// <param name="newObject"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public GameObject SpawnGameObject(GameObject newObject)
+        {
+            if (newObject == null)
+            {
+                throw new Exception("GameObject was not found.");
+            }
             var cameraToFace = Camera.main;
             var distanceInFront = 3f;
             var cameraPosition = cameraToFace.transform.position;
