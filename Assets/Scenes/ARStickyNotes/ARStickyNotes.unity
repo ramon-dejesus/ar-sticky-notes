@@ -1216,7 +1216,7 @@ MonoBehaviour:
   MenuButton: {fileID: 1217354770}
   MenuOptionsPanel: {fileID: 1916406315}
   WhiteboardButton: {fileID: 289263781}
-  Whiteboard: {fileID: 3999999076721656815, guid: a73778a7697f9ea4dbfa4b4864543116,
+  Whiteboard: {fileID: 2033142433167768597, guid: 3960330a295978d4f85f3d698aeb5ce3,
     type: 3}
   NoteMan: {fileID: 657232050}
 --- !u!114 &657232050

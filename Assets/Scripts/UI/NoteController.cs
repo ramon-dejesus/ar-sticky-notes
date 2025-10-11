@@ -28,8 +28,8 @@ public class NoteController : MonoBehaviour
     [Tooltip("Scale of the panel (like zoom in a browser).")]
     [SerializeField] float panelScale = 1.0f;
 
-    [Tooltip("Pixels per world unit. Determines the real-world size of the panel.")]
-    [SerializeField] float pixelsPerUnit = 500.0f;
+    //[Tooltip("Pixels per world unit. Determines the real-world size of the panel.")]
+    //[SerializeField] float pixelsPerUnit = 500.0f;
 
     [Header("Dependencies")]
     [Tooltip("Visual tree asset for this panel.")]
