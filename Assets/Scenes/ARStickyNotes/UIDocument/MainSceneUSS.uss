@@ -1,0 +1,116 @@
+.row {
+    flex-grow: 0;
+    background-color: rgb(255, 212, 42);
+    margin-top: 1%;
+    margin-right: 5%;
+    margin-bottom: 1%;
+    margin-left: 5%;
+    min-height: 40%;
+    max-height: 4000px;
+    width: auto;
+    align-items: stretch;
+    align-self: center;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-direction: row;
+    min-width: 90%;
+    padding-left: 0;
+    display: flex;
+}
+
+.content {
+    flex-grow: 1;
+    width: auto;
+    flex-direction: column;
+    white-space: normal;
+    align-items: stretch;
+    justify-content: flex-start;
+    align-self: center;
+}
+
+.title-label {
+    flex-direction: row;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    margin-top: auto;
+    margin-left: 4%;
+    margin-bottom: auto;
+    margin-right: 4%;
+    max-width: none;
+    overflow: hidden;
+    padding-bottom: 0;
+    text-overflow: ellipsis;
+    -unity-font-style: normal;
+    flex-grow: 0;
+    min-width: auto;
+    width: 65%;
+    font-size: 10px;
+}
+
+.date-label {
+    flex-direction: row;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    align-content: flex-start;
+    margin-top: auto;
+    margin-left: 4%;
+    margin-bottom: auto;
+    margin-right: 4%;
+    max-width: none;
+    overflow: hidden;
+    font-size: 10px;
+    padding-top: 0;
+}
+
+.delete-list-item-btn {
+    width: 10px;
+    height: auto;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0%;
+    padding-bottom: 2%;
+    background-color: rgba(188, 188, 188, 0);
+    border-left-color: rgba(55, 55, 55, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-top-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(55, 55, 55, 0);
+    transition-property: all;
+    transition-duration: 0s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    display: flex;
+    margin-top: 0%;
+    margin-right: 4%;
+    margin-bottom: 0%;
+    margin-left: 0%;
+    background-size: 100% 100%;
+    scale: 2 2;
+    align-self: center;
+    justify-content: center;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    position: absolute;
+    left: auto;
+    right: 1px;
+    background-position-x: right 0;
+    -unity-slice-type: sliced;
+    -unity-text-align: middle-center;
+    background-image: url("project://database/Assets/Scenes/MainScene/Icons/delete.svg?fileID=7388822144124034973&guid=35f57cd302740f7499a9ca8f7c5d6a70&type=3#delete");
+    background-position-y: center 0;
+    -unity-background-scale-mode: scale-to-fit;
+    align-items: center;
+    align-content: flex-start;
+    top: auto;
+    bottom: 40%;
+    flex-grow: 0;
+    white-space: nowrap;
+    max-width: none;
+    min-width: auto;
+    min-height: auto;
+    max-height: 40px;
+}

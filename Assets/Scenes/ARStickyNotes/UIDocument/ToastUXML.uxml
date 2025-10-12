@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scenes/ARStickyNotes/UIDocument/ToastUSS.uss?fileID=7433441132597879392&amp;guid=e9ca0724eb63d456f9e20dd93ecb022c&amp;type=3#ToastUSS" />
+    <ui:VisualElement name="toast-root" class="toast-root">
+        <ui:VisualElement class="toast-top-row">
+            <ui:Button name="toast-close" text="X" class="toast-close" style="position: absolute; overflow: visible;" />
+        </ui:VisualElement>
+        <ui:Label name="toast-message" class="toast-message" />
+        <ui:Label name="toast-counter" class="toast-counter" />
+    </ui:VisualElement>
+</ui:UXML>
