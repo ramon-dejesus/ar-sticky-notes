@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.XR.CoreUtils;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Interaction.Toolkit.AR.Inputs;
@@ -12,23 +10,31 @@ using UnityEngine.XR.Interaction.Toolkit.Filtering;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Interaction.Toolkit.Utilities;
+using UnityUtils;
 
 namespace ARStickyNotes.Utilities
 {
     public class ARSpawner
     {
-        private const string DefaultResourceName = "PyramidVariant";
+        private const string DefaultResourceName = "CubeVariant";
 
         public XRRayInteractor SpawnerRay { get; private set; } = null;
 
+        /// <summary>
+        /// Indicates whether the AR ray interactor has hit a valid surface.
+        /// </summary>
         public bool GetRayHit { get; set; } = false;
 
         public ARSpawner()
         {
-            LoadRay();
+
         }
 
-        private GameObject GetCamera()
+        /// <summary>
+        /// Gets the XROrigin's CameraFloorOffsetObject, which is the camera offset
+        /// </summary>
+        /// <returns></returns>
+        private GameObject GetCameraOffset()
         {
             var origin = UnityEngine.Object.FindAnyObjectByType<XROrigin>();
             if (origin == null)
@@ -44,30 +50,88 @@ namespace ARStickyNotes.Utilities
                 return origin.CameraFloorOffsetObject;
             }
         }
-        private void LoadRay()
+
+        /// <summary>
+        /// Destroys the AR ray interactor and all XRRayInteractors in the scene
+        /// to clean up resources.
+        /// </summary>
+        private void DestroyRay()
         {
+            if (SpawnerRay != null)
+            {
+                UnityEngine.Object.Destroy(SpawnerRay.gameObject);
+                SpawnerRay = null;
+            }
             foreach (var item in UnityEngine.Object.FindObjectsByType<XRRayInteractor>(FindObjectsSortMode.None).ToList())
             {
                 //item.gameObject.SetActive(false);
-                //UnityEngine.Object.Destroy(interactor);
+                UnityEngine.Object.Destroy(item);
             }
+        }
+
+        /// <summary>
+        /// Loads the AR ray interactor and its associated inputs.
+        /// </summary>
+        public void LoadRay()
+        {
+            DestroyRay();
             var touchActions = new XRIDefaultInputActions().asset.FindActionMap("Touchscreen Gestures");
             var obj = new GameObject("ARSpawnerRay", typeof(TouchscreenGestureInputLoader), typeof(XRRayInteractor), typeof(XRInteractionGroup), typeof(TouchscreenHoverFilter), typeof(ScreenSpaceRayPoseDriver));
-            obj.transform.SetParent(GetCamera().transform, false);
+            obj.transform.SetParent(GetCameraOffset().transform, false);
             var select = new GameObject("ARSelectInput", typeof(ScreenSpaceSelectInput));
             select.transform.SetParent(obj.transform, false);
-            var selectInput = select.GetComponent<ScreenSpaceSelectInput>();
             var rotate = new GameObject("ARRotateInput", typeof(ScreenSpaceRotateInput));
             rotate.transform.SetParent(obj.transform, false);
             var scale = new GameObject("ARScaleInput", typeof(ScreenSpacePinchScaleInput));
             scale.transform.SetParent(obj.transform, false);
-            //var select = obj.GetComponent<ScreenSpaceSelectInput>();
-            //select.tapStartPositionInput = new XRInputValueReader<Vector2>("XRI Default Input Actions/Touchscreen Gestures/Tap Start Position", XRInputValueReader.InputSourceMode.InputActionReference);
-            //Assets/Samples/XR Interaction Toolkit/3.1.1/Starter Assets/XRI Default Input Actions.inputactions
-            // var rotate = obj.GetComponent<ScreenSpaceRotateInput>();
-            // var scale = obj.GetComponent<ScreenSpacePinchScaleInput>();
+            var selectInput = select.GetComponent<ScreenSpaceSelectInput>();
+            selectInput.tapStartPositionInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Tap Start Position")
+            };
+            selectInput.dragCurrentPositionInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Drag Current Position")
+            };
+            selectInput.pinchGapDeltaInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Pinch Gap Delta")
+            };
+            selectInput.twistDeltaRotationInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Twist Delta Rotation")
+            };
+            var rotateInput = rotate.GetComponent<ScreenSpaceRotateInput>();
+            rotateInput.twistDeltaRotationInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Twist Delta Rotation")
+            };
+            rotateInput.dragDeltaInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Drag Delta")
+            };
+            rotateInput.screenTouchCountInput = new XRInputValueReader<int>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Screen Touch Count")
+            };
+            var scaleInput = scale.GetComponent<ScreenSpacePinchScaleInput>();
+            scaleInput.useRotationThreshold = true;
+            scaleInput.rotationThreshold = 0.02f;
+            scaleInput.pinchGapDeltaInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Pinch Gap Delta")
+            };
+            scaleInput.twistDeltaRotationInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.InputAction)
+            {
+                inputAction = touchActions.FindAction("Twist Delta Rotation")
+            };
             SpawnerRay = obj.GetComponent<XRRayInteractor>();
-            SpawnerRay.transform.SetParent(GetCamera().transform, false);
+            SpawnerRay.rotateManipulationInput = new XRInputValueReader<Vector2>(null, XRInputValueReader.InputSourceMode.ObjectReference);
+            SpawnerRay.rotateManipulationInput.SetObjectReference(rotateInput);
+            SpawnerRay.scaleDistanceDeltaInput = new XRInputValueReader<float>(null, XRInputValueReader.InputSourceMode.ObjectReference);
+            SpawnerRay.scaleDistanceDeltaInput.SetObjectReference(scaleInput);
+            SpawnerRay.selectInput = new XRInputButtonReader(null, null, false, XRInputButtonReader.InputSourceMode.ObjectReference);
+            SpawnerRay.selectInput.SetObjectReference(selectInput);
             SpawnerRay.enableUIInteraction = true;
             SpawnerRay.blockInteractionsWithScreenSpaceUI = true;
             SpawnerRay.blockUIOnInteractableSelection = true;
@@ -77,10 +141,6 @@ namespace ARStickyNotes.Utilities
             SpawnerRay.rotateMode = XRRayInteractor.RotateMode.RotateOverTime;
             SpawnerRay.rotateSpeed = 180f;
             SpawnerRay.scaleMode = UnityEngine.XR.Interaction.Toolkit.Interactors.ScaleMode.ScaleOverTime;
-
-
-            //SpawnerRay.rotateManipulationInput = ScreenSpaceRotateInput;
-
             SpawnerRay.disableVisualsWhenBlockedInGroup = true;
             SpawnerRay.lineType = XRRayInteractor.LineType.StraightLine;
             SpawnerRay.maxRaycastDistance = 30f;
@@ -96,7 +156,7 @@ namespace ARStickyNotes.Utilities
             SpawnerRay.targetPriorityMode = TargetPriorityMode.None;
             SpawnerRay.enableARRaycasting = true;
             SpawnerRay.occludeARHitsWith3DObjects = true;
-            SpawnerRay.occludeARHitsWith2DObjects = false;//c348712bda248c246b8c49b3db54643f
+            SpawnerRay.occludeARHitsWith2DObjects = false;
             var group = obj.GetComponent<XRInteractionGroup>();
             group.startingGroupMembers = new List<UnityEngine.Object> { SpawnerRay };
             var hover = obj.GetComponent<TouchscreenHoverFilter>();
@@ -123,6 +183,11 @@ namespace ARStickyNotes.Utilities
             };
             SpawnerRay.gameObject.SetActive(true);
         }
+
+        /// <summary>
+        /// Gets the AR raycast hit point and normal vector from the SpawnerRay.
+        /// </summary>
+        /// <returns></returns>
         private List<Vector3> GetARVectors()
         {
             var lst = new List<Vector3>();
@@ -134,11 +199,11 @@ namespace ARStickyNotes.Utilities
             {
                 if (!(hit.trackable is ARPlane arPlane))
                 {
-                    throw new Exception("Hit trackable is not an ARPlane. Cannot spawn object.");
+                    //ToastNotifier.Show("Please select a valid surface to spawn the object.");
                 }
                 else if (arPlane.alignment != PlaneAlignment.Vertical)
                 {
-                    throw new Exception("No vertical plane selected. Cannot spawn object.");
+                    //ToastNotifier.Show("Please select a vertical plane/wall to spawn the object.");
                 }
                 else
                 {
@@ -146,32 +211,32 @@ namespace ARStickyNotes.Utilities
                     lst.Add(arPlane.normal);
                 }
             }
-            // else
-            // {
-            //     throw new Exception("No valid raycast hit found.");
-            // }
             return lst;
         }
+
+        /// <summary>
+        /// Spawns an object at the hit point of the AR raycast if GetRayHit is true.
+        /// </summary>
+        /// <returns></returns>
         public List<Vector3> SpawnHit()
         {
-            var vectors = GetARVectors();
-            if (vectors.Count > 0)
+            if (GetRayHit)
             {
-                var spawnPoint = vectors[0];//new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
-                var spawnNormal = vectors[1];//new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
-                SpawnObject(spawnPoint, spawnNormal);
-                GetRayHit = false; // Reset the flag after spawning
+                var vectors = GetARVectors();
+                if (vectors.Count > 0)
+                {
+                    var spawnPoint = vectors[0];//new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
+                    var spawnNormal = vectors[1];//new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
+                    SpawnObject(spawnPoint, spawnNormal);
+                    GetRayHit = false; // Reset the flag after spawning
+                    Debug.Log("Spawning hit...");
+                    new XRIDefaultInputActions().asset.FindActionMap("Touchscreen Gestures").Dispose();
+                }
+                return vectors;
             }
-            else
-            {
-                var spawnPoint = new Vector3(-1.2440004348754883f, 0.6156576871871948f, -0.5772958397865295f);
-                var spawnNormal = new Vector3(1.0000001192092896f, -1.1920928955078126e-7f, 0.0f);
-                SpawnObject(spawnPoint, spawnNormal);
-                GetRayHit = false; // Reset the flag after spawning
-            }
-            return vectors;
+            return new List<Vector3>();
         }
-        public void SpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
+        public GameObject SpawnObject(Vector3 spawnPoint, Vector3 spawnNormal)
         {
             var lst = Resources.FindObjectsOfTypeAll<GameObject>().ToList();
             var newResource = lst.FirstOrDefault(x => x.name == DefaultResourceName);
@@ -183,9 +248,68 @@ namespace ARStickyNotes.Utilities
             newObject.transform.position = spawnPoint;
             var cameraToFace = Camera.main;
             var facePosition = cameraToFace.transform.position; //new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
+            facePosition = new Vector3(0.2199999988079071f, 0.9345943927764893f, -0.20999999344348908f);
             var forward = facePosition - spawnPoint;
             BurstMathUtility.ProjectOnPlane(forward, spawnNormal, out var projectedForward);
             newObject.transform.rotation = Quaternion.LookRotation(projectedForward, spawnNormal);
+            return newObject;
+        }
+
+        /// <summary>
+        /// Finds a GameObject by name in the scene and activates it.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public GameObject GetGameObject(string name, bool activeGameObject = true)
+        {
+            foreach (var item in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList())
+            {
+                if (activeGameObject)
+                {
+                    item.SetActive(true);
+                }
+                return item;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Spawns a GameObject with the specified name at a position in front of the main camera.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public GameObject SpawnGameObject(string name)
+        {
+            var newObject = GetGameObject(name);
+            if (newObject == null)
+            {
+                throw new Exception(name + " was not found.");
+            }
+            return SpawnGameObject(newObject);
+        }
+
+        /// <summary>
+        /// Spawns a GameObject in front of the main camera.
+        /// </summary>
+        /// <param name="newObject"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public GameObject SpawnGameObject(GameObject newObject)
+        {
+            if (newObject == null)
+            {
+                throw new Exception("GameObject was not found.");
+            }
+            var cameraToFace = Camera.main;
+            var distanceInFront = 3f;
+            var cameraPosition = cameraToFace.transform.position;
+            var cameraForward = cameraToFace.transform.forward;
+            newObject.transform.position = cameraPosition + cameraForward * distanceInFront;
+            newObject.transform.LookAt(cameraPosition);
+            newObject.transform.Rotate(-1, 195, 0);
+            // newObject.transform.localScale = new Vector3(1, 1, 1);
+            return newObject;
         }
     }
 }
