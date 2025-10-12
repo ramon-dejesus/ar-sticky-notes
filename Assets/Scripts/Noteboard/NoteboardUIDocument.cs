@@ -9,6 +9,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityUtils;
+using ARStickyNotes.UI;
 
 public class NoteboardUIDocument : MonoBehaviour
 {
@@ -217,7 +218,7 @@ public class NoteboardUIDocument : MonoBehaviour
         try
         {
             var note = item.FirstOrDefault() as Note;
-            ToastNotifier.ShowSuccessMessage($"Selected note: {note?.Title ?? "None"}");
+            UGUI_ToastNotifier.ShowSuccessMessage($"Selected note: {note?.Title ?? "None"}");
         }
         catch (Exception e)
         {

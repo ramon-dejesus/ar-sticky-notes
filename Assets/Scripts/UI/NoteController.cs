@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using UnityUtils;
+using ARStickyNotes.UI;
 
 
 public class NoteController : MonoBehaviour
@@ -78,12 +79,12 @@ public class NoteController : MonoBehaviour
 
     private void SaveNote(Note item)
     {
-        ToastNotifier.ShowSuccessMessage($"Save note: {item?.Title ?? "None"}");
+        UGUI_ToastNotifier.ShowSuccessMessage($"Save note: {item?.Title ?? "None"}");
     }
 
     private void DeleteNote(Note item)
     {
-        ToastNotifier.ShowSuccessMessage($"Delete note: {item?.Title ?? "None"}");
+        UGUI_ToastNotifier.ShowSuccessMessage($"Delete note: {item?.Title ?? "None"}");
     }
 
     void InitializeComponents()
