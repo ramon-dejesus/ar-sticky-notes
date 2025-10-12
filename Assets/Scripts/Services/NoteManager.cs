@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
+using ARStickyNotes.UI;
 
 namespace ARStickyNotes.Services
 {
@@ -30,7 +31,7 @@ namespace ARStickyNotes.Services
             try
             {
                 // Show a toast message to indicate the test is running
-                ToastNotifier.Show("Testing NoteManager");
+                UGUI_ToastNotifier.Show("Testing NoteManager");
 
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
@@ -252,6 +253,23 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
+        /// Adds a new note to the list, then saves.
+        /// </summary>
+        /// <param name="item">The note to add.</param>
+        /// <exception cref="Exception">Wraps any storage-related exception.</exception>
+        public void CreateNote(Note item)
+        {
+            try
+            {
+                UpdateNote(item);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report($"An error occurred while new a note with ID: {item?.Id}.", ex);
+            }
+        }
+
+        /// <summary>
         /// Updates an existing note in the list or adds it if it doesn't exist, then saves.
         /// </summary>
         /// <param name="item">The note to update or add.</param>
@@ -279,7 +297,5 @@ namespace ARStickyNotes.Services
                 ErrorReporter.Report($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
-
-
     }
 }
