@@ -72,6 +72,7 @@ namespace ARStickyNotes.UI
         {
             try
             {
+
                 var root = uiDocument.rootVisualElement;
 
                 // Ensure names match UXML exactly (case-sensitive)
@@ -214,7 +215,7 @@ namespace ARStickyNotes.UI
             }
         }
 
-        
+
 
         /// <summary>
         /// Shows Notes Menu.
@@ -333,7 +334,7 @@ namespace ARStickyNotes.UI
             HideCreateNoteButton();
 
             // Spawn white board if not already present
-            ShowWhiteboard();            
+            ShowWhiteboard();
         }
 
         /// <summary>
@@ -376,6 +377,6 @@ namespace ARStickyNotes.UI
             {
                 ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
             }
-        }        
+        }
     }
 }
