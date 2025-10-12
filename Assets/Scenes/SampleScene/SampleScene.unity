@@ -8957,11 +8957,14 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UGUI-ToastPanel
+<<<<<<< HEAD:Assets/Scenes/SampleScene/SampleScene.unity
       objectReference: {fileID: 0}
     - target: {fileID: 8466298640963725655, guid: 34125963f8d9a47cb9bbd5e9146f8763,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+=======
+>>>>>>> origin/test:Assets/Scenes/SampleScene.unity
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
