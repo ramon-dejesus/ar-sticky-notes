@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
+using ARStickyNotes.UI;
 
 namespace ARStickyNotes.Services
 {
@@ -29,7 +30,11 @@ namespace ARStickyNotes.Services
         {
             try
             {
-                PreloadNotes();
+                // Show a toast message to indicate the test is running
+                UGUI_ToastNotifier.Show("Testing NoteManager");
+
+                Debug.Log(PreloadNotes());
+                Debug.Log(PreloadNotes(true));
             }
             catch (Exception ex)
             {
