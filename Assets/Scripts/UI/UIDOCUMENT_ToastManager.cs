@@ -170,14 +170,17 @@ namespace ARStickyNotes.UI
             switch (type)
             {
                 case ToastType.Success:
-                    color = new Color(0.2f, 0.8f, 0.2f, 0.95f); // Green
+                    //hex #34c759 // Green
+                    color = new Color(0.2039f, 0.7843f, 0.349f, 0.95f); // Green
                     break;
                 case ToastType.Error:
-                    color = new Color(0.9f, 0.2f, 0.2f, 0.95f); // Red
+                    //hex #ff5e51 // Orange-Red
+                    color = new Color(1f, 0.3686f, 0.3176f, 0.95f); // Orange-Red
                     break;
                 case ToastType.Info:
                 default:
-                    color = new Color(0f, 0.2f, 0.5f, 0.95f); // Blue
+                    //hex #0ab5ff // Blue
+                    color = new Color(0f, 0.7098f, 1f, 0.95f); // Blue
                     break;
             }
             toastRoot.style.backgroundColor = new StyleColor(color);
