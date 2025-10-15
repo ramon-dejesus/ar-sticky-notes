@@ -29,22 +29,37 @@ namespace ARStickyNotes.UI
 
         #region UI Elements
         [Header("UI Elements")]
+
         /// <summary>
-        /// UI Toolkit elements bound from the UIDocument.
+        /// Button to open all notes.
         /// </summary>  
         private UnityEngine.UIElements.Button openAllNotesButton;
+        
+        /// <summary>
+        /// Button to close all notes.
+        /// </summary>
+        private UnityEngine.UIElements.Button closeAllNotesButton;
+
         /// <summary>
         /// VisualElement that contains all notes and can be toggled.
         /// </summary>
         private VisualElement allNotesVisualElement;
+        
         /// <summary>
         /// Button to create a new note.
         /// </summary>
         private UnityEngine.UIElements.Button createNoteButton;
+
         /// <summary>
         /// ListView to display existing notes.
         /// </summary>
         private ListView notesListView;
+
+        /// <summary>
+        /// Button to launch whiteboard view of notes.
+        /// </summary>
+        private UnityEngine.UIElements.Button openWhiteboardButton;
+
         #endregion
 
         #region Prefab References
@@ -61,6 +76,11 @@ namespace ARStickyNotes.UI
         /// List of notes loaded from the NoteManager.
         /// </summary>
         private List<Note> notes = new List<Note>();
+
+        /// <summary>
+        /// Reference to the currently spawned whiteboard instance.
+        /// </summary>
+        private GameObject spawnedWhiteboard;
         #endregion
 
         #region Supporting Functions
@@ -76,19 +96,25 @@ namespace ARStickyNotes.UI
 
                 // Ensure names match UXML exactly (case-sensitive)
                 openAllNotesButton = root.Q<UnityEngine.UIElements.Button>("OpenAllNotesButton");
+                closeAllNotesButton = root.Q<UnityEngine.UIElements.Button>("CloseAllNotesButton");
                 allNotesVisualElement = root.Q<VisualElement>("AllNotesVisualElement");
                 createNoteButton = root.Q<UnityEngine.UIElements.Button>("CreateNoteButton");
                 notesListView = root.Q<ListView>("NotesListView");
+                openWhiteboardButton = root.Q<UnityEngine.UIElements.Button>("OpenWhiteboardButton");
 
                 // Null checks for all UI elements
                 if (openAllNotesButton == null)
                     throw new Exception("OpenAllNotesButton not found in UXML.");
+                if (closeAllNotesButton == null)
+                    throw new Exception("CloseAllNotesButton not found in UXML.");
                 if (allNotesVisualElement == null)
                     throw new Exception("AllNotesVisualElement not found in UXML.");
                 if (createNoteButton == null)
                     throw new Exception("CreateNoteButton not found in UXML.");
                 if (notesListView == null)
                     throw new Exception("NotesListView not found in UXML.");
+                if (openWhiteboardButton == null)
+                    throw new Exception("OpenWhiteboardButton not found in UXML.");
 
                 // Set up ListView: Title | Created Date | Delete Button
                 notesListView.makeItem = () =>
@@ -104,44 +130,6 @@ namespace ARStickyNotes.UI
                     dateLabel.AddToClassList("date-label");
                     var deleteButton = new UnityEngine.UIElements.Button { name = "deleteButton" };
                     deleteButton.AddToClassList("delete-list-item-btn");
-                    /* 
-                    var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
-                    var titleLabel = new Label
-                    {
-                        name = "titleLabel",
-                        style =
-                        {
-                            flexGrow = 1,
-                            maxWidth = 180,
-                            unityTextAlign = TextAnchor.MiddleLeft,
-                            whiteSpace = WhiteSpace.NoWrap,
-                            overflow = Overflow.Hidden,
-                            textOverflow = TextOverflow.Ellipsis
-                        }
-                    }; */
-
-                    /* var dateLabel = new Label
-                    {
-                        name = "dateLabel",
-                        style =
-                        {
-                            flexGrow = 0,
-                            maxWidth = 120,
-                            unityTextAlign = TextAnchor.MiddleLeft,
-                            marginLeft = 10,
-                            whiteSpace = WhiteSpace.NoWrap,
-                            overflow = Overflow.Hidden,
-                            textOverflow = TextOverflow.Ellipsis
-                        }
-                    };
-
-                    var deleteButton = new Button
-                    {
-                        name = "deleteButton",
-                        text = "Delete",
-                        style = { marginLeft = 10, flexGrow = 0 }
-                    };
-                    */
                     contentElement.Add(titleLabel);
                     contentElement.Add(dateLabel);
                     contentElement.Add(deleteButton);
@@ -202,11 +190,15 @@ namespace ARStickyNotes.UI
             try
             {
                 // Remove previous listeners to avoid stacking
-                openAllNotesButton.clicked -= OpenOrHideNotes;
-                createNoteButton.clicked -= SpawnWhiteboard;
+                openAllNotesButton.clicked -= OpenOrHideNotesMenu;
+                closeAllNotesButton.clicked -= OpenOrHideNotesMenu;
+                createNoteButton.clicked -= OpenCreateNotePanel;
+                openWhiteboardButton.clicked -= OpenOrHideWhiteboard;
 
-                openAllNotesButton.clicked += OpenOrHideNotes;
-                createNoteButton.clicked += SpawnWhiteboard;
+                openAllNotesButton.clicked += OpenOrHideNotesMenu;
+                closeAllNotesButton.clicked += OpenOrHideNotesMenu;
+                createNoteButton.clicked += OpenCreateNotePanel;
+                openWhiteboardButton.clicked += OpenOrHideWhiteboard;
             }
             catch (Exception ex)
             {
@@ -214,7 +206,52 @@ namespace ARStickyNotes.UI
             }
         }
 
+        /// <summary>
+        /// Show Open All Notes button.
+        /// </summary>
+        private void ShowOpenAllNotesButton()
+        {
+            if (openAllNotesButton == null)
+                return;
+            openAllNotesButton.style.display = DisplayStyle.Flex;
+            openAllNotesButton.SetEnabled(true);
+        } 
         
+        /// <summary>
+        /// Hide Open All Notes button.
+        /// </summary>
+        private void HideOpenAllNotesButton()
+        {
+            if (openAllNotesButton == null)
+                return;
+
+            openAllNotesButton.style.display = DisplayStyle.None;
+            openAllNotesButton.SetEnabled(false);
+        }
+
+        /// <summary>
+        /// Show Close All Notes button.
+        /// </summary>
+        private void ShowCloseAllNotesButton()
+        {
+            if (closeAllNotesButton == null)
+                return;
+
+            closeAllNotesButton.style.display = DisplayStyle.Flex;
+            closeAllNotesButton.SetEnabled(true);
+        }
+
+        /// <summary>
+        /// Hides Close All Notes button.
+        /// </summary>
+        private void HideCloseAllNotesButton()
+        {
+            if (closeAllNotesButton == null)
+                return;
+
+            closeAllNotesButton.style.display = DisplayStyle.None;
+            closeAllNotesButton.SetEnabled(false);
+        }
 
         /// <summary>
         /// Shows Notes Menu.
@@ -228,6 +265,8 @@ namespace ARStickyNotes.UI
                 return;
 
             allNotesVisualElement.style.display = DisplayStyle.Flex;
+
+            // Hide create note button when notes panel is open
             HideCreateNoteButton();
         }
 
@@ -246,17 +285,36 @@ namespace ARStickyNotes.UI
         }
 
         /// <summary>
-        /// Toggles the visibility of the all notes panel.
+        /// Toggles the notes menu: shows if hidden, hides if visible.
         /// </summary>
-        private void OpenOrHideNotes()
+        public void OpenOrHideNotesMenu()
         {
+            if (allNotesVisualElement == null)
+                return;
+            // Toggle visibility
             if (allNotesVisualElement.style.display == DisplayStyle.Flex)
             {
+                // Currently visible, so hide it
                 HideNotesMenu();
+                ShowCreateNoteButton();
+
+                // Update button states
+                // Disable close button, enable open button
+                ShowOpenAllNotesButton();
+                HideCloseAllNotesButton();
             }
             else
             {
+                // If whiteboard is open, hide/destroy it
+                HideOrDestroyWhiteboard(false);
+
+                // Currently hidden, so show it
                 ShowNotesMenu();
+
+                // Update button states
+                // Disable open button, enable close button
+                HideOpenAllNotesButton();
+                ShowCloseAllNotesButton();
             }
         }
 
@@ -269,6 +327,7 @@ namespace ARStickyNotes.UI
                 return;
 
             createNoteButton.style.display = DisplayStyle.Flex;
+            createNoteButton.SetEnabled(true);
         }
 
         /// <summary>
@@ -280,60 +339,116 @@ namespace ARStickyNotes.UI
                 return;
 
             createNoteButton.style.display = DisplayStyle.None;
+            createNoteButton.SetEnabled(false);
         }
 
         /// <summary>
-        /// Show or Hide the create note button based on display flex.
+        /// Opens the create/edit note panel.
         /// </summary>
-        private void ToggleCreateNoteButton()
+        private void OpenCreateNotePanel()
         {
-            if (createNoteButton == null)
-                return;
-
-            if (createNoteButton.style.display == DisplayStyle.Flex)
-            {
-                HideCreateNoteButton();
-            }
-            else
-            {
-                ShowCreateNoteButton();
-            }
+            // Implementation for opening the create note panel can be added here.
+            UIDOCUMENT_ToastNotifier.ShowInfoMessage("Create Note panel to be opened.");
         }
 
         /// <summary>
-        /// Displays the whiteboard and loads notes onto it.
+        /// Hides the create/edit note panel.
         /// </summary>
-        void ShowWhiteboard()
+        private void HideCreateNotePanel()
         {
-            try
-            {
-                if (Whiteboard == null)
-                {
-                    throw new System.Exception("Whiteboard reference is missing.");
-                }
-                var item = Instantiate(Whiteboard, transform);
-                item = new ARSpawner().SpawnGameObject(item);
-
-                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
-
-            }
-            catch (System.Exception ex)
-            {
-                ErrorReporter.Report("An error occurred while spawning the whiteboard.", ex);
-            }
+            // Implementation for hiding the create/edit note panel can be added here.
+            UIDOCUMENT_ToastNotifier.ShowInfoMessage("Create Note panel to be hidden.");
         }
 
+
         /// <summary>
-        /// Spawn the whiteboard and prepare for note creation.
+        /// Shows the whiteboard: spawns if needed, or just makes visible if hidden.
         /// </summary>
-        private void SpawnWhiteboard()
+        public void ShowOrSpawnWhiteboard()
         {
             // Hide all notes panel visibility
             HideNotesMenu();
-            HideCreateNoteButton();
 
-            // Spawn white board if not already present
-            ShowWhiteboard();            
+            // Update button states
+            // Hide create note button, hide close all notes button, and show open all notes button
+            HideCreateNoteButton();
+            HideCloseAllNotesButton();
+            ShowOpenAllNotesButton();
+
+            if (spawnedWhiteboard == null)
+            {
+                try
+                {
+                    if (Whiteboard == null)
+                        throw new System.Exception("Whiteboard reference is missing.");
+
+                    var item = Instantiate(Whiteboard, transform);
+                    item = new ARSpawner().SpawnGameObject(item);
+                    spawnedWhiteboard = item;
+
+                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
+                }
+                catch (System.Exception ex)
+                {
+                    ErrorReporter.Report("An error occurred while spawning the whiteboard.", ex);
+                }
+            }
+            else if (!spawnedWhiteboard.activeSelf)
+            {
+                spawnedWhiteboard.SetActive(true);
+                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard shown.");
+            }
+            else
+            {
+                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard is already visible.");
+            }
+        }
+
+        /// <summary>
+        /// Hides or destroys the spawned whiteboard, if present.
+        /// </summary>
+        /// <param name="destroy">If true, destroys the whiteboard. Otherwise, just hides it.</param>
+        public void HideOrDestroyWhiteboard(bool destroy = false)
+        {
+            if (spawnedWhiteboard != null)
+            {
+                if (destroy)
+                {
+                    Destroy(spawnedWhiteboard);
+                    spawnedWhiteboard = null;
+                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard destroyed.");
+                }
+                else if (spawnedWhiteboard.activeSelf)
+                {
+                    spawnedWhiteboard.SetActive(false);
+                }
+                else
+                {
+                    // Whiteboard is already hidden
+                }
+            }
+            else
+            {
+                // UIDOCUMENT_ToastNotifier.ShowInfoMessage("No whiteboard to hide or destroy.");
+            }
+
+            // Show create note button again
+            ShowCreateNoteButton();
+        }
+
+        /// <summary>
+        /// Toggles the whiteboard: shows/spawns if hidden, hides if visible.
+        /// </summary>
+        public void OpenOrHideWhiteboard()
+        {
+            if (spawnedWhiteboard == null || !spawnedWhiteboard.activeSelf)
+            {
+                ShowOrSpawnWhiteboard();
+            }
+            else
+            {
+                HideOrDestroyWhiteboard(false); // Only hide, do not destroy
+            }
         }
 
         /// <summary>
