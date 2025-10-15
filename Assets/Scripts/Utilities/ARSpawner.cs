@@ -55,6 +55,22 @@ namespace ARStickyNotes.Utilities
         /// Destroys the AR ray interactor and all XRRayInteractors in the scene
         /// to clean up resources.
         /// </summary>
+        private void DestroyGameObject(GameObject obj)
+        {
+            if (obj != null)
+            {
+                var lst = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (var item in lst.Where(x => x.name.Trim().ToLower().Contains(obj.name.Trim().ToLower())).ToList())
+                {
+                    UnityEngine.Object.Destroy(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Destroys the AR ray interactor and all XRRayInteractors in the scene
+        /// to clean up resources.
+        /// </summary>
         private void DestroyRay()
         {
             if (SpawnerRay != null)
@@ -295,12 +311,17 @@ namespace ARStickyNotes.Utilities
         /// <param name="newObject"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public GameObject SpawnGameObject(GameObject newObject)
+        public GameObject SpawnGameObject(GameObject newObject, bool preventDuplicate = true)
         {
             if (newObject == null)
             {
                 throw new Exception("GameObject was not found.");
             }
+            if (preventDuplicate)
+            {
+                DestroyGameObject(newObject);
+            }
+            newObject = UnityEngine.Object.Instantiate(newObject);
             var cameraToFace = Camera.main;
             var distanceInFront = 3f;
             var cameraPosition = cameraToFace.transform.position;
