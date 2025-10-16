@@ -5,8 +5,8 @@
     margin-right: 5%;
     margin-bottom: 1%;
     margin-left: 5%;
-    min-height: 40%;
-    max-height: 4000px;
+    min-height: auto;
+    max-height: none;
     width: auto;
     align-items: stretch;
     align-self: center;
@@ -16,6 +16,7 @@
     min-width: 90%;
     padding-left: 0;
     display: flex;
+    padding-bottom: 0;
 }
 
 .content {
@@ -26,6 +27,9 @@
     align-items: stretch;
     justify-content: flex-start;
     align-self: center;
+    min-height: auto;
+    max-height: none;
+    height: auto;
 }
 
 .title-label {
