@@ -381,13 +381,12 @@ namespace ARStickyNotes.UI
                 try
                 {
                     if (Whiteboard == null)
+                    {
                         throw new System.Exception("Whiteboard reference is missing.");
-
-                    var item = Instantiate(Whiteboard, transform);
-                    item = new ARSpawner().SpawnGameObject(item);
-                    spawnedWhiteboard = item;
-
-                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
+                    }
+                    spawnedWhiteboard = new ARSpawner().SpawnGameObject(Whiteboard);
+                    spawnedWhiteboard.GetComponent<WhiteboardController>().LoadNotes(noteManager.GetNotes());
+                    //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
                 }
                 catch (System.Exception ex)
                 {
