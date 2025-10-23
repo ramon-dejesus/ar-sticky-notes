@@ -127,7 +127,7 @@ namespace ARStickyNotes.UI
         {
             if (toastRoot == null)
             {
-                try // Best Practice: Error handling
+                try
                 {
                     var root = uiDocument.rootVisualElement;
                     toastRoot = toastUXML.CloneTree().Q<VisualElement>("toast-root");
@@ -147,6 +147,19 @@ namespace ARStickyNotes.UI
                     // Add to rootVisualElement if not already present
                     if (!root.Contains(toastRoot))
                         root.Add(toastRoot);
+                    else
+                    {
+                        // Remove and re-add to bring to front
+                        root.Remove(toastRoot);
+                        root.Add(toastRoot);
+                    }
+
+                    // Force overlay positioning in C# (in case USS is overridden)
+                    toastRoot.style.position = Position.Absolute;
+                    toastRoot.style.top = 16f;
+                    toastRoot.style.left = 0f;
+                    toastRoot.style.right = 0f;
+                    //toastRoot.style.height = 180f;
 
                     toastRoot.style.display = DisplayStyle.None;
                 }
