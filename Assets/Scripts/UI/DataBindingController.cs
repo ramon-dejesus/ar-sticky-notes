@@ -52,7 +52,7 @@ public class DataBindingController : MonoBehaviour
             notesListView.makeItem = () =>
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
-
+                
                 var titleLabel = new Label
                 {
                     name = "titleLabel",

@@ -3,7 +3,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 180px;
+    top: 10px;
+    /* height: 180px; */
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
@@ -33,7 +34,7 @@
 .toast-message {
     color: white;
     font-size: 28px;
-    unity-font-style: bold;
+    -unity-font-style: bold;
     margin-bottom: 24px;
     margin-top: 0px;
     flex-grow: 1;

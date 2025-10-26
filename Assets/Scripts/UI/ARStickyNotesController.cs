@@ -120,6 +120,14 @@ namespace ARStickyNotes.UI
                 // Set up ListView: Title | Created Date | Delete Button
                 notesListView.makeItem = () =>
                 {
+                    var container = new VisualElement { name = "RowContainerElement" };
+                    // Adding styling to container as needed because unity sucks and doesn't seem to apply the uss from our style sheet
+                    container.style.paddingBottom = new StyleLength(new Length(1, LengthUnit.Pixel));
+                    container.style.paddingTop = new StyleLength(new Length(1, LengthUnit.Pixel));
+                    container.style.marginBottom = new StyleLength(new Length(5, LengthUnit.Percent));
+                    container.style.marginTop = new StyleLength(new Length(5, LengthUnit.Percent));
+                    container.style.marginLeft = new StyleLength(new Length(5, LengthUnit.Percent));
+                    container.style.marginRight = new StyleLength(new Length(5, LengthUnit.Percent));
 
                     var row = new VisualElement { name = "RowElement" };
                     row.AddToClassList("row");
@@ -135,8 +143,10 @@ namespace ARStickyNotes.UI
                     contentElement.Add(dateLabel);
                     contentElement.Add(deleteButton);
                     row.Add(contentElement);
+                    container.Add(row);
 
-                    return row;
+                    //return row;
+                    return container; 
                 };
 
                 notesListView.bindItem = (element, i) =>
