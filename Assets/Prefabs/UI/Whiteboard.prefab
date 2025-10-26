@@ -200,8 +200,9 @@ MonoBehaviour:
     type: 3}
   NoteContainerName: Root
   NoteInitialPosition: {x: 0.012, y: 0.01, z: -0.006}
-  NoteRotation: {x: 0, y: 90, z: 0, w: 1}
   NoteScale: {x: 0.001, y: 0.001, z: 0.001}
+  MaxRowCount: 3
+  MaxColumnCount: 5
 --- !u!1001 &5685032892049414870
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -384,8 +384,8 @@ namespace ARStickyNotes.UI
                     {
                         throw new System.Exception("Whiteboard reference is missing.");
                     }
+                    WhiteboardController.EnableEvent += OnWhiteboardActivated;
                     spawnedWhiteboard = new ARSpawner().SpawnGameObject(Whiteboard);
-                    spawnedWhiteboard.GetComponent<WhiteboardController>().LoadNotes(noteManager.GetNotes());
                     //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
                 }
                 catch (System.Exception ex)
@@ -396,14 +396,27 @@ namespace ARStickyNotes.UI
             else if (!spawnedWhiteboard.activeSelf)
             {
                 spawnedWhiteboard.SetActive(true);
-                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard shown.");
+                //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard shown.");
             }
             else
             {
                 UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard is already visible.");
             }
         }
-
+        public void OnWhiteboardActivated()
+        {
+            try
+            {
+                if (spawnedWhiteboard != null)
+                {
+                    spawnedWhiteboard.GetComponent<WhiteboardController>().LoadNotes(noteManager.GetNotes());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to load notes onto whiteboard upon activation.", ex);
+            }
+        }
         /// <summary>
         /// Hides or destroys the spawned whiteboard, if present.
         /// </summary>
@@ -485,9 +498,9 @@ namespace ARStickyNotes.UI
                 SubscribeToEvents();
 
                 // Show an info toast
-                UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Welcome to the AR Sticky Notes!");
-                UIDOCUMENT_ToastNotifier.ShowErrorMessage("This is an error message example.");
-                UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info message example.");
+                // UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Welcome to the AR Sticky Notes!");
+                // UIDOCUMENT_ToastNotifier.ShowErrorMessage("This is an error message example.");
+                // UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info message example.");
             }
             catch (Exception ex)
             {

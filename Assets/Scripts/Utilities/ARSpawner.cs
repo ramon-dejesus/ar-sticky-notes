@@ -276,9 +276,19 @@ namespace ARStickyNotes.Utilities
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public GameObject GetGameObject(string name, bool activeGameObject = true)
+        public GameObject GetGameObject(string name, bool activeGameObject = true, bool findExact = false)
         {
-            foreach (var item in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList())
+            var objects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            List<GameObject> lst; ;
+            if (findExact)
+            {
+                lst = objects.Where(x => x.name.Trim().ToLower() == name.ToLower()).ToList();
+            }
+            else
+            {
+                lst = objects.Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList();
+            }
+            foreach (var item in lst)
             {
                 if (activeGameObject)
                 {
