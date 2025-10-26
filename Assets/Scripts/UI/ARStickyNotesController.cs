@@ -121,7 +121,7 @@ namespace ARStickyNotes.UI
                 notesListView.makeItem = () =>
                 {
                     var container = new VisualElement { name = "RowContainerElement" };
-                    // Adding styling to container as needed because unity sucks and doesn't seem to apply the uss from our style sheet
+                    // Adding styling to container as needed to apply the uss from our style sheet.
                     container.style.paddingBottom = new StyleLength(new Length(1, LengthUnit.Pixel));
                     container.style.paddingTop = new StyleLength(new Length(1, LengthUnit.Pixel));
                     container.style.marginBottom = new StyleLength(new Length(5, LengthUnit.Percent));
@@ -146,7 +146,7 @@ namespace ARStickyNotes.UI
                     container.Add(row);
 
                     //return row;
-                    return container; 
+                    return container;
                 };
 
                 notesListView.bindItem = (element, i) =>
