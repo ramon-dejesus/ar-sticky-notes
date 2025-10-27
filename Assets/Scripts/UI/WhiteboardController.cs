@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
+using TMPro;
 using UnityEngine;
 
 namespace ARStickyNotes.UI
@@ -91,9 +92,6 @@ namespace ARStickyNotes.UI
             }
             var row = index / MaxColumnCount;
             var column = index % MaxColumnCount;
-            Debug.Log("INDEX: " + index.ToString());
-            Debug.Log("MaxColumnCount: " + MaxColumnCount.ToString());
-            Debug.Log("ROW,COLUMN: " + row.ToString() + "," + column.ToString());
             var position = NoteInitialPosition;
             position.x -= column * NoteSize.Value.x;
             position.z -= row * NoteSize.Value.z;
@@ -111,20 +109,32 @@ namespace ARStickyNotes.UI
                 {
                     throw new System.Exception("Could not find container for notes");
                 }
-                var go = Instantiate(NotePrefab, transform);
-                if (go == null)
+                var noteObject = Instantiate(NotePrefab, transform);
+                if (noteObject == null)
                 {
                     throw new System.Exception("Could not instantiate note prefab");
                 }
-                go.name = "Note" + note.Id;
-                go.transform.SetParent(container.transform, false);
-                go.transform.localPosition = CalculateNotePosition(go, CurrentNoteIndex);
-                go.transform.localScale = NoteScale;
-                // var t = go.AddComponent<TextMesh>();
-                // t.text = note.Title;
-                // t.fontSize = 30;
-                // t.transform.localEulerAngles += new Vector3(90, 0, 0);
-                // t.transform.localPosition += new Vector3(56f, 3f, 40f);
+                noteObject.name = "Note" + note.Id;
+                noteObject.transform.SetParent(container.transform, false);
+                noteObject.transform.localPosition = CalculateNotePosition(noteObject, CurrentNoteIndex);
+                noteObject.transform.localScale = NoteScale;
+                SetNoteTitle(noteObject, note.Title);
+            }
+        }
+        private void SetNoteTitle(GameObject noteObject, string title)
+        {
+            var txt = noteObject.GetComponentInChildren<TextMeshPro>();
+            if (txt != null)
+            {
+                txt.text = title;
+            }
+            else
+            {
+                var txt2 = noteObject.GetComponentInChildren<TextMeshProUGUI>();
+                if (txt2 != null)
+                {
+                    txt2.text = title;
+                }
             }
         }
         public void LoadNotes(NoteList notes)
