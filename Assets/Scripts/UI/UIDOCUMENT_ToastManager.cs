@@ -142,7 +142,8 @@ namespace ARStickyNotes.UI
                     if (toastClose == null)
                         throw new Exception("toast-close Button not found in ToastUXML.");
 
-                    // Change button text to simple "X" for better Android compatibility
+                    // Explicitly set button text to "X" here because on some Android devices,
+                    // the UXML-defined button text does not always render correctly.
                     toastClose.text = "X";
 
                     toastClose.clicked += HandleManualDismiss;
