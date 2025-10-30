@@ -627,6 +627,7 @@ namespace ARStickyNotes.UI
             var contentField = noteEditorRoot.Q<TextField>("noteDescriptionField");
             var saveButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("saveNoteButton");
             var deleteButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("deleteNoteButton");
+            var cancelButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("cancelNoteButton");
 
             // Populate fields if editing
             if (action == NoteActionType.Edit && note != null)
@@ -665,7 +666,7 @@ namespace ARStickyNotes.UI
                 }
             };
 
-            // Delete / Cancel logic
+            // Delete logic
             deleteButton.clicked += () =>
             {
                 if (action == NoteActionType.Edit && note != null)
@@ -673,12 +674,15 @@ namespace ARStickyNotes.UI
                     noteManager.DeleteNote(note.Id);
                     CloseNoteEditor();
                     onComplete?.Invoke(NoteEditorResult.Deleted, note);
-                }
-                else if (action == NoteActionType.Insert)
-                {
-                    CloseNoteEditor();
-                    onComplete?.Invoke(NoteEditorResult.Cancelled, null);
-                }
+                }                
+            };
+
+            // Cancel logic
+            cancelButton.clicked += () =>
+            {   
+                // Simply close the editor without saving            
+                CloseNoteEditor();
+                onComplete?.Invoke(NoteEditorResult.Cancelled, null);
             };
         }
 
