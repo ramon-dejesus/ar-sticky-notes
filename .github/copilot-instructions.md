@@ -61,7 +61,7 @@ private void OnDestroy() // Cleanup, unsubscribe global events
 
 **The Reality of USS in Unity UI Toolkit:**
 - USS styles are NOT reliably applied when cloning VisualTreeAssets
-- Inline C# styles ALWAYS override USS (higher specificity)
+- Inline C(sharp) styles ALWAYS override USS (higher specificity)
 - For production code, use inline styles for layout-critical properties
 
 ```csharp
@@ -118,7 +118,7 @@ toastRoot.style.height = new StyleLength(140);
 // ✓ ALWAYS use simple ASCII for button text
 button.text = "X";  // Works everywhere
 
-// ✓ Set button text in C# after cloning, not just in UXML
+// ✓ Set button text in C(sharp) after cloning, not just in UXML
 toastClose.text = "X"; // Override UXML default
 
 // ✓ Use large, bold fonts with high contrast
@@ -450,7 +450,7 @@ When reviewing code, verify:
 // In C(sharp): (nothing)
 // Result: Element may not appear or be positioned incorrectly
 
-// ✓ GOOD: Set all critical layout in C#
+// ✓ GOOD: Set all critical layout in C(sharp)
 toastRoot.style.position = Position.Absolute;
 toastRoot.style.top = new StyleLength(80);
 toastRoot.style.left = new StyleLength(new Length(5, LengthUnit.Percent));
@@ -471,14 +471,14 @@ button.text = "CLOSE";
 button.text = "OK";
 ```
 
-### ❌ Don't Forget to Override UXML Defaults in C#
+### ❌ Don't Forget to Override UXML Defaults in C(sharp)
 
 ```csharp
 // ✗ BAD: Assuming UXML text will render correctly
 // In UXML: <ui:Button text="✖" />
 // On Android: Might not display
 
-// ✓ GOOD: Override in C# after cloning
+// ✓ GOOD: Override in C(sharp) after cloning
 toastClose = toastRoot.Q<Button>("toast-close");
 toastClose.text = "X"; // Always override for Android compatibility
 ```
