@@ -2,14 +2,15 @@
 
 /* Top action bar */
 .top-actions-element {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 48px;
+    position: relative;
+    margin: 0 auto;
+    height: 15%;
+    min-height: 250px;
     width: 100%;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 5%;
+    padding-top: 2%;
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
@@ -24,10 +25,11 @@
 .create-note-from-list-btn,
 .delete-note-btn,
 .save-note-btn {
-    width: 48px;
-    height: 48px;
-    margin-left: 8px;
-    margin-right: 8px;
+    width: 15%;
+    height: 100%;
+    min-height: 52px;
+    margin-left: 2%;
+    margin-right: 0px;
     background-color: transparent;
     border-width: 0;
     background-size: contain;
@@ -62,13 +64,14 @@
 .notes-list-container {
     width: 100%;
     height: auto;
-    margin-top: 56px;            /* must be >= .top-actions-element height */
-    padding-bottom: 20px;        /* space for bottom bar */
+    padding-bottom: 20%;        /* space for bottom bar */
     flex-direction: column;
     align-items: stretch;
     background-color: transparent;
     overflow: hidden;
     display: none; /* default hidden, shown via code */
+    padding-left: 5%;
+    padding-right: 5%;
 }
 
 .notes-list-view {
@@ -78,7 +81,8 @@
 }
 
 /* Remove default extra spacing from ListView items */
-.unity-list-view__item {
+.unity-list-view__item.
+.unity-collection-view__item {
     margin: 0;
     padding: 0;
 }
@@ -89,12 +93,15 @@
     flex-direction: row;
     align-items: center;
     background-color: rgb(255, 212, 42);
-    height: 64px;                /* keep in sync with fixedItemHeight */
-    min-height: 64px;
+    height: 100%;                /* keep in sync with fixedItemHeight */
+    min-height: 72px;
     width: 100%;
-    padding-left: 12px;
-    padding-right: 12px;
-    border-bottom-color: #e0c200;
+    padding-left: 5%;
+    padding-bottom: 3%;
+    padding-right: 3%;
+    padding-top: 3%;
+    border-bottom-color: #000000;
+    border-bottom-width: 3;
 }
 
 /* Left text stack */
@@ -108,7 +115,7 @@
 }
 
 .title-label {
-    font-size: 16px;
+    font-size: 52px;
     color: #222222;
     width: 100%;
     white-space: nowrap;
@@ -119,7 +126,7 @@
 }
 
 .date-label {
-    font-size: 12px;
+    font-size: 42px;
     color: #444444;
     width: 100%;
     white-space: nowrap;
@@ -139,8 +146,8 @@
 
 /* Delete button */
 .delete-list-item-btn {
-    width: 28px;
-    height: 28px;
+    width: 10%;
+    height: 50%;
     background-color: transparent;
     border-width: 0;
     background-size: contain;
@@ -154,7 +161,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 60px;
+    height: 10%;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -163,8 +170,8 @@
 }
 
 .create-note-btn {
-    width: 48px;
-    height: 48px;
+    width: 15%;
+    height: 100%;
     background-color: transparent;
     border-width: 0;
     background-size: contain;
