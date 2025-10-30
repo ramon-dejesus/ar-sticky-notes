@@ -92,6 +92,11 @@ namespace ARStickyNotes.UI
         /// </summary>  
         private VisualElement noteEditorRoot;
 
+        /// <summary>
+        /// Action to invoke when the note editor is closed.
+        /// </summary>
+        private Action onNoteEditorClosed;
+
         #endregion
 
         #region Supporting Functions
@@ -170,10 +175,10 @@ namespace ARStickyNotes.UI
                     titleLabel.text = note.Title ?? "(Untitled)";
                     dateLabel.text = note.CreatedAt.ToString("yyyy-MM-dd HH:mm");
 
-#if UNITY_2022_2_OR_NEWER
+                    #if UNITY_2022_2_OR_NEWER
                     deleteButton.clicked -= (Action)deleteButton.userData;
                     deleteButton.userData = null;
-#endif
+                    #endif
                     if (deleteButton.userData is Action prevAction)
                     {
                         deleteButton.clicked -= prevAction;
@@ -206,7 +211,39 @@ namespace ARStickyNotes.UI
                         var note = obj as Note;
                         if (note != null)
                         {
-                            ShowNoteEditor(note, NoteActionType.Edit);
+                            // Hide notes menu when editing a note
+                            HideNotesMenu();
+
+                            // Hide create note button when editing a note
+                            HideCreateNoteButton();
+
+                            // Hide open all notes button when editing a note
+                            HideOpenAllNotesButton();
+
+                            // Hide Show Whiteboard button when editing a note
+                            HideShowWhiteboardButton();
+
+                            // Hide close all notes button when editing a note
+                            HideCloseAllNotesButton();
+
+                            // Open note editor for the selected note
+                            ShowNoteEditor(note, NoteActionType.Edit, (result, affectedNote) =>
+                            {
+                                // Show appropriate toast notification
+                                ShowNoteEditorNotification(result, affectedNote);
+
+                                // Show create note button after editing
+                                ShowCreateNoteButton();
+
+                                // Show Open All Notes button after editing
+                                ShowOpenAllNotesButton();
+
+                                // Show Show Whiteboard button after editing
+                                DisplayShowWhiteboardButton();                                
+                                
+                                //  Refresh notes list
+                                LoadNotes(); 
+                            });
                             break;
                         }
                     }
@@ -265,6 +302,30 @@ namespace ARStickyNotes.UI
 
             openAllNotesButton.style.display = DisplayStyle.None;
             openAllNotesButton.SetEnabled(false);
+        }
+
+        /// <summary>
+        /// Displays Show Whiteboard button.
+        /// </summary>
+        private void DisplayShowWhiteboardButton()
+        {
+            if (openWhiteboardButton == null)
+                return;
+
+            openWhiteboardButton.style.display = DisplayStyle.Flex;
+            openWhiteboardButton.SetEnabled(true);
+        }
+
+        /// <summary>
+        /// Hide Show Whiteboard button.
+        /// </summary>
+        private void HideShowWhiteboardButton()
+        {
+            if (openWhiteboardButton == null)
+                return;
+
+            openWhiteboardButton.style.display = DisplayStyle.None;
+            openWhiteboardButton.SetEnabled(false);
         }
 
         /// <summary>
@@ -385,17 +446,34 @@ namespace ARStickyNotes.UI
         /// </summary>
         private void OpenCreateNotePanel()
         {
-            // Implementation for opening the create note panel can be added here.
-            ShowNoteEditor(null, NoteActionType.Insert);
-        }
+            // Hide Open All Notes button
+            HideOpenAllNotesButton();
 
-        /// <summary>
-        /// Hides the create/edit note panel.
-        /// </summary>
-        private void HideCreateNotePanel()
-        {
-            // Implementation for hiding the create/edit note panel can be added here.
-            UIDOCUMENT_ToastNotifier.ShowInfoMessage("Create Note panel to be hidden.");
+            // Hide ShowWhiteboard button
+            HideShowWhiteboardButton();
+
+            // Hide Create Note button
+            HideCreateNoteButton();
+
+            // Implementation for opening the create note panel can be added here.
+            ShowNoteEditor(null, NoteActionType.Insert, (result, affectedNote) =>
+            {
+
+                // Show appropriate toast notification
+                ShowNoteEditorNotification(result, affectedNote);
+
+                // Show ShowWhiteboard button again
+                DisplayShowWhiteboardButton();
+
+                // Show Create Note button again
+                ShowCreateNoteButton();
+
+                // Show Open All Notes button again
+                ShowOpenAllNotesButton();
+
+                // Reload notes list
+                LoadNotes(); // Refresh after save or cancel
+            });
         }
 
 
@@ -522,13 +600,20 @@ namespace ARStickyNotes.UI
             }
         }
 
-        private void ShowNoteEditor(Note note = null, NoteActionType action = NoteActionType.Insert)
+        /// <summary>
+        /// Shows the note editor panel for creating or editing a note.
+        /// </summary>
+        /// <param name="note"></param>
+        /// <param name="action"></param>
+        private void ShowNoteEditor(
+    Note note = null,
+    NoteActionType action = NoteActionType.Insert,
+    Action<NoteEditorResult, Note> onComplete = null)
         {
             var root = mainSceneUIDocument.rootVisualElement;
             if (noteEditorRoot != null)
             {
-                root.Remove(noteEditorRoot);
-                noteEditorRoot = null;
+                CloseNoteEditor();
             }
             noteEditorRoot = noteEditorUXML.CloneTree();
             noteEditorRoot.style.position = Position.Absolute;
@@ -538,29 +623,27 @@ namespace ARStickyNotes.UI
             noteEditorRoot.style.bottom = 0;
             root.Add(noteEditorRoot);
 
-            var titleField = noteEditorRoot.Q<TextField>("NoteTitleField");
-            var contentField = noteEditorRoot.Q<TextField>("NoteContentField");
-            var saveButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("SaveNoteButton");
-            var deleteButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("DeleteNoteButton");
-            var cancelButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("CancelNoteButton");
+            var titleField = noteEditorRoot.Q<TextField>("noteTitleField");
+            var contentField = noteEditorRoot.Q<TextField>("noteDescriptionField");
+            var saveButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("saveNoteButton");
+            var deleteButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("deleteNoteButton");
 
             // Populate fields if editing
             if (action == NoteActionType.Edit && note != null)
             {
                 titleField.value = note.Title;
                 contentField.value = note.Description;
-                deleteButton.style.display = DisplayStyle.Flex;
             }
             else
             {
                 titleField.value = "";
                 contentField.value = "";
-                deleteButton.style.display = DisplayStyle.None;
             }
 
             // Save logic
             saveButton.clicked += () =>
             {
+                Note affectedNote = note;
                 if (action == NoteActionType.Insert)
                 {
                     var newNote = noteManager.GetNewNote();
@@ -568,36 +651,72 @@ namespace ARStickyNotes.UI
                     newNote.Description = contentField.value;
                     newNote.CreatedAt = DateTime.Now;
                     noteManager.CreateNote(newNote);
+                    affectedNote = newNote;
+                    CloseNoteEditor();
+                    onComplete?.Invoke(NoteEditorResult.Created, affectedNote);
                 }
                 else if (action == NoteActionType.Edit && note != null)
                 {
                     note.Title = titleField.value;
                     note.Description = contentField.value;
                     noteManager.UpdateNote(note);
+                    CloseNoteEditor();
+                    onComplete?.Invoke(NoteEditorResult.Updated, note);
                 }
-                root.Remove(noteEditorRoot);
-                noteEditorRoot = null;
-                LoadNotes();
             };
 
-            // Delete logic (only for edit)
+            // Delete / Cancel logic
             deleteButton.clicked += () =>
             {
                 if (action == NoteActionType.Edit && note != null)
                 {
                     noteManager.DeleteNote(note.Id);
-                    root.Remove(noteEditorRoot);
-                    noteEditorRoot = null;
-                    LoadNotes();
+                    CloseNoteEditor();
+                    onComplete?.Invoke(NoteEditorResult.Deleted, note);
+                }
+                else if (action == NoteActionType.Insert)
+                {
+                    CloseNoteEditor();
+                    onComplete?.Invoke(NoteEditorResult.Cancelled, null);
                 }
             };
+        }
 
-            // Cancel logic
-            cancelButton.clicked += () =>
+        /// <summary>
+        /// Closes the note editor panel if open.
+        /// </summary>
+        private void CloseNoteEditor()
+        {
+            var root = mainSceneUIDocument.rootVisualElement;
+            if (noteEditorRoot != null)
             {
                 root.Remove(noteEditorRoot);
                 noteEditorRoot = null;
-            };
+
+                // Invoke any registered callbacks
+                onNoteEditorClosed?.Invoke();
+                onNoteEditorClosed = null;
+            }
+        }
+        
+        private void ShowNoteEditorNotification(NoteEditorResult result, Note affectedNote)
+        {
+            switch (result)
+            {
+                case NoteEditorResult.Created:
+                    UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Note created!");
+                    break;
+                case NoteEditorResult.Updated:
+                    UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Note updated!");
+                    break;
+                case NoteEditorResult.Deleted:
+                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Note deleted.");
+                    break;
+                case NoteEditorResult.Cancelled:
+                default:
+                    // No notification for cancel
+                    break;
+            }
         }
         #endregion
 
