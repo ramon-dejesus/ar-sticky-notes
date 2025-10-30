@@ -637,7 +637,7 @@ MonoBehaviour:
   uiDocument: {fileID: 75969488}
   toastUXML: {fileID: 9197481963319205126, guid: c2d84497869ee40bd80aeaa7504b5a46,
     type: 3}
-  displayDuration: 2
+  displayDuration: 20
   fadeDuration: 0.3
 --- !u!1 &657232047
 GameObject:

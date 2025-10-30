@@ -250,6 +250,13 @@ namespace ARStickyNotes.UI
                 };
 
                 notesListView.itemsSource = notes;
+
+                var scrollView = notesListView.Q<ScrollView>();
+                if (scrollView != null)
+                {
+                    scrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+                    scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+                }
             }
             catch (Exception ex)
             {
