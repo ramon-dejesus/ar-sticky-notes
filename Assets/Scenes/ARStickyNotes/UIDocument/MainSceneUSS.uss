@@ -63,7 +63,7 @@
     width: 100%;
     height: auto;
     margin-top: 56px;            /* must be >= .top-actions-element height */
-    padding-bottom: 60px;        /* space for bottom bar */
+    padding-bottom: 20px;        /* space for bottom bar */
     flex-direction: column;
     align-items: stretch;
     background-color: transparent;
@@ -94,9 +94,6 @@
     width: 100%;
     padding-left: 12px;
     padding-right: 12px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    border-bottom-width: 1px;
     border-bottom-color: #e0c200;
 }
 
@@ -122,7 +119,7 @@
 }
 
 .date-label {
-    font-size: 10px;
+    font-size: 12px;
     color: #444444;
     width: 100%;
     white-space: nowrap;
