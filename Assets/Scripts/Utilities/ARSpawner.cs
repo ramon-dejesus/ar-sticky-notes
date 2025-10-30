@@ -55,6 +55,22 @@ namespace ARStickyNotes.Utilities
         /// Destroys the AR ray interactor and all XRRayInteractors in the scene
         /// to clean up resources.
         /// </summary>
+        private void DestroyGameObject(GameObject obj)
+        {
+            if (obj != null)
+            {
+                var lst = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (var item in lst.Where(x => x.name.Trim().ToLower().Contains(obj.name.Trim().ToLower())).ToList())
+                {
+                    UnityEngine.Object.Destroy(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Destroys the AR ray interactor and all XRRayInteractors in the scene
+        /// to clean up resources.
+        /// </summary>
         private void DestroyRay()
         {
             if (SpawnerRay != null)
@@ -260,9 +276,19 @@ namespace ARStickyNotes.Utilities
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public GameObject GetGameObject(string name, bool activeGameObject = true)
+        public GameObject GetGameObject(string name, bool activeGameObject = true, bool findExact = false)
         {
-            foreach (var item in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList())
+            var objects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            List<GameObject> lst; ;
+            if (findExact)
+            {
+                lst = objects.Where(x => x.name.Trim().ToLower() == name.ToLower()).ToList();
+            }
+            else
+            {
+                lst = objects.Where(x => x.name.Trim().ToLower().Contains(name.ToLower())).ToList();
+            }
+            foreach (var item in lst)
             {
                 if (activeGameObject)
                 {
@@ -295,12 +321,17 @@ namespace ARStickyNotes.Utilities
         /// <param name="newObject"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public GameObject SpawnGameObject(GameObject newObject)
+        public GameObject SpawnGameObject(GameObject newObject, bool preventDuplicate = true)
         {
             if (newObject == null)
             {
                 throw new Exception("GameObject was not found.");
             }
+            if (preventDuplicate)
+            {
+                DestroyGameObject(newObject);
+            }
+            newObject = UnityEngine.Object.Instantiate(newObject);
             var cameraToFace = Camera.main;
             var distanceInFront = 3f;
             var cameraPosition = cameraToFace.transform.position;
