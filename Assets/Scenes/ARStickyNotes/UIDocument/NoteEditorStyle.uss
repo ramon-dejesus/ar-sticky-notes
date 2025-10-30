@@ -1,12 +1,107 @@
-.unity-text-field__label {
-    display: none;
-    visibility: visible;
+/* Root container fills the panel */
+.note-editor-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.unity-text-field__input {
+/* Top action bar: percentage height, px min for very small screens */
+.note-editor-actions {
     display: flex;
-    margin-left: 4%;
-    margin-right: 4%;
-    margin-top: 4%;
-    margin-bottom: 4%;
+    flex-direction: row-reverse;
+    align-items: center;
+    height: 10%;
+    min-height: 250px;
+    margin-top: 5%;
+    margin-left: 8%;
+    margin-right: 8%;
+}
+
+/* Icons scale with bar (percent). Min size keeps them usable on tiny devices. */
+.cancel-btn,
+.delete-btn,
+.save-btn {
+    height: 100%;          /* of the action bar height */
+    min-height: 28px;
+    width: 15%;            /* of the action bar width */
+    min-width: 28px;
+    margin-left: 2%;
+    margin-right: 0px;
+    padding: 0px;
+    margin-bottom: 0px;
+    background-color: transparent;
+    border-width: 0px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Specific button images */
+.cancel-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/hamburger-notes-close.svg?fileID=7388822144124034973&guid=2fa5c78b8849443fab0721d63379796f&type=3#hamburger-notes-close");
+}
+.delete-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/delete.svg?fileID=7388822144124034973&guid=f7e49557c7643421e85a5325baeef3e7&type=3#delete");
+}
+.save-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/save.svg?fileID=7388822144124034973&guid=f308d299435ec46d6970218868c15a82&type=3#save");
+}
+
+/* Content area uses responsive margins and padding */
+.note-content {
+    flex-grow: 1;
+    margin-left: 8%;
+    margin-right: 8%;
+    margin-bottom: 10%;
+    background-color: rgb(255, 219, 74);
+    display: flex;
+    flex-direction: column;
+    padding: 3%;
+}
+
+/* Hide built-in labels only for editor fields */
+.note-field .unity-text-field__label {
+    display: none;
+}
+
+/* Consolidate input styling; keep your sizes */
+.note-field .unity-text-field__input {
+    margin: 2%;
+    font-size: 60px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/* Ensure fields take full width and allow ellipsis to compute */
+.note-field {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Title: single line with ellipsis (works only with nowrap + hidden + min-width:0) */
+.note-title .unity-text-field__input,
+.note-title .unity-text-field__placeholder {
+    flex-grow: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Description: multiline wrap + scroll (no multi-line ellipsis in UI Toolkit) */
+.note-description {
+    flex-grow: 1;
+    min-height: 60%;
+}
+.note-description .unity-text-field__input,
+.note-description .unity-text-field__placeholder {
+    white-space: normal;
+    overflow: scroll;
+    flex-grow: 1;
+    min-height: 0;
 }

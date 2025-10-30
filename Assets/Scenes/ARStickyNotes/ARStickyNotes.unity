@@ -129,6 +129,8 @@ GameObject:
   m_Component:
   - component: {fileID: 75969487}
   - component: {fileID: 75969488}
+  - component: {fileID: 75969490}
+  - component: {fileID: 75969489}
   m_Layer: 0
   m_Name: MainSceneUIDocument
   m_TagString: Untagged
@@ -163,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PanelSettings: {fileID: 11400000, guid: 6540f603a38604448be1d11be6f56876, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: 16f6b254532da44c590c957d7115d913, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 8398afa79a4244ff390ae1ce5af8f726,
     type: 3}
@@ -171,6 +173,34 @@ MonoBehaviour:
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+--- !u!114 &75969489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75969486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a1e7a9675744b3b9e5085c0936a121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiDocument: {fileID: 75969488}
+  panelSettings: {fileID: 11400000, guid: 16f6b254532da44c590c957d7115d913, type: 2}
+  referenceResolution: {x: 1080, y: 1920}
+  match: 0.5
+--- !u!114 &75969490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75969486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ddc17bb452d3475fb811ed01feb3854, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &92828817
 GameObject:
   m_ObjectHideFlags: 0

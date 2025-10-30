@@ -138,12 +138,6 @@ namespace ARStickyNotes.UI
                 {
                     var container = new VisualElement { name = "RowContainerElement" };
                     // Adding styling to container as needed to apply the uss from our style sheet.
-                    container.style.paddingBottom = new StyleLength(new Length(1, LengthUnit.Pixel));
-                    container.style.paddingTop = new StyleLength(new Length(1, LengthUnit.Pixel));
-                    container.style.marginBottom = new StyleLength(new Length(5, LengthUnit.Percent));
-                    container.style.marginTop = new StyleLength(new Length(5, LengthUnit.Percent));
-                    container.style.marginLeft = new StyleLength(new Length(5, LengthUnit.Percent));
-                    container.style.marginRight = new StyleLength(new Length(5, LengthUnit.Percent));
 
                     var row = new VisualElement { name = "RowElement" };
                     row.AddToClassList("row");
@@ -157,8 +151,8 @@ namespace ARStickyNotes.UI
                     deleteButton.AddToClassList("delete-list-item-btn");
                     contentElement.Add(titleLabel);
                     contentElement.Add(dateLabel);
-                    contentElement.Add(deleteButton);
                     row.Add(contentElement);
+                    row.Add(deleteButton);
                     container.Add(row);
 
                     //return row;
@@ -250,6 +244,22 @@ namespace ARStickyNotes.UI
                 };
 
                 notesListView.itemsSource = notes;
+
+                var scrollView = notesListView.Q<ScrollView>();
+                if (scrollView != null)
+                {
+                    scrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+                    scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+                }
+
+                // Initially display Open All Notes button
+                ShowOpenAllNotesButton();
+
+                // Initially display Show Whiteboard button
+                DisplayShowWhiteboardButton();
+
+                // Initially Show Create Note button
+                ShowCreateNoteButton();
             }
             catch (Exception ex)
             {
@@ -364,6 +374,7 @@ namespace ARStickyNotes.UI
                 return;
 
             allNotesVisualElement.style.display = DisplayStyle.Flex;
+            allNotesVisualElement.SetEnabled(true);
 
             // Hide create note button when notes panel is open
             HideCreateNoteButton();
@@ -381,6 +392,7 @@ namespace ARStickyNotes.UI
                 return;
 
             allNotesVisualElement.style.display = DisplayStyle.None;
+            allNotesVisualElement.SetEnabled(false);
         }
 
         /// <summary>
