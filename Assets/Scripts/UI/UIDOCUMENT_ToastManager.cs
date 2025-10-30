@@ -226,11 +226,6 @@ namespace ARStickyNotes.UI
                     toastCounter.style.fontSize = 40;
                     toastCounter.style.color = new Color(1, 1, 1, 0.9f);
                     toastCounter.style.unityTextAlign = TextAnchor.MiddleRight;
-                    
-                    // Debug: Verify button text and safe area
-                    Debug.Log($"Toast close button text: '{toastClose.text}'");
-                    Debug.Log($"Safe area: {safeArea}, Top offset: {topSafeAreaOffset}");
-                    Debug.Log($"Toast root classes: {string.Join(", ", toastRoot.GetClasses())}");
                 }
                 catch (Exception ex)
                 {
