@@ -447,7 +447,7 @@ When reviewing code, verify:
 ```csharp
 // ✗ BAD: Relying on USS to position elements
 // In USS: .toast-root { top: 80px; }
-// In C#: (nothing)
+// In C(sharp): (nothing)
 // Result: Element may not appear or be positioned incorrectly
 
 // ✓ GOOD: Set all critical layout in C#
