@@ -12,8 +12,9 @@ public class ApplySafeArea : MonoBehaviour
         doc = GetComponent<UIDocument>();
         root = doc.rootVisualElement;
 
-        topBar = root.Q(className: "top-actions-element");
-        bottomBar = root.Q(className: "bottom-bar");
+        // Dynamically detect top and bottom bars based on active UXML
+        topBar = root.Q(className: "top-actions-element") ?? root.Q(className: "note-editor-actions");
+        bottomBar = root.Q(className: "bottom-bar") ?? root.Q(className: "note-content");
 
         root.RegisterCallback<GeometryChangedEvent>(_ => Apply());
         Apply();
