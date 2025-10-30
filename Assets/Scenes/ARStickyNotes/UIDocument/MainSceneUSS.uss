@@ -7,6 +7,7 @@
     left: 0;
     right: 0;
     height: 48px;
+    width: 100%;
     padding-left: 8px;
     padding-right: 8px;
     display: flex;
@@ -23,8 +24,8 @@
 .create-note-from-list-btn,
 .delete-note-btn,
 .save-note-btn {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     margin-left: 8px;
     margin-right: 8px;
     background-color: transparent;
@@ -110,17 +111,18 @@
 }
 
 .title-label {
-    font-size: 14px;
+    font-size: 16px;
     color: #222222;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 2px;
+    -unity-font-style: bold;
 }
 
 .date-label {
-    font-size: 12px;
+    font-size: 10px;
     color: #444444;
     width: 100%;
     white-space: nowrap;
