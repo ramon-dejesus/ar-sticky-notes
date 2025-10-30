@@ -5,7 +5,9 @@ using UnityEngine.UIElements;
 public class ApplySafeArea : MonoBehaviour
 {
     UIDocument doc;
-    VisualElement root, topBar, bottomBar;
+    VisualElement root;
+    VisualElement topBar;
+    VisualElement bottomBar;
 
     void OnEnable()
     {
