@@ -67,64 +67,69 @@
     background-color: transparent;
 }
 
+/* List rows */
 .row {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     background-color: rgb(255, 212, 42);
-    margin: 1px 0;
-    height: 48px;
+    height: 64px;
+    min-height: 64px;
     width: 100%;
+    padding: 8px 12px;
+    margin: 2px 0;
     border-bottom-width: 1px;
     border-bottom-color: #e0c200;
-    border-bottom-style: solid;
 }
 
+/* Text container inside a row */
 .content {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 8px;
     min-width: 0;
-    width: 90%;
+    display: flex;
+    flex-direction: column;        /* Title first, Date second */
+    justify-content: center;
 }
 
 .title-label {
     font-size: 14px;
-    color: #222;
-    margin-bottom: 4px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #222222;
     white-space: nowrap;
+    overflow: hidden;
     width: 100%;
+    margin-bottom: 2px;       /* replaces gap */
 }
 
 .date-label {
     font-size: 12px;
-    color: #444;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #444444;
     white-space: nowrap;
+    overflow: hidden;
     width: 100%;
 }
 
+/* Delete button at the far right, perfectly centered vertically */
 .delete-list-item-btn {
-    width: 32px;
-    height: 32px;
-    margin: 0;
+    margin-left: auto;             /* push to the far right */
+    width: 28px;
+    height: 28px;
     background-color: transparent;
     border-width: 0;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    align-self: center;
-    flex-shrink: 0;
+    align-self: center;            /* vertical centering in the row */
+}
+
+/* Optional: tighten default ListView item container spacing */
+.unity-list-view__item {
+    padding: 0;
+    margin: 0;
 }
 
 .bottom-bar {
-    position: fixed;
+    position: absolute;       /* fixed not supported */
     left: 0;
     right: 0;
     bottom: 0;
@@ -146,4 +151,4 @@
     background-repeat: no-repeat;
     background-position: center;
     -unity-background-scale-mode: scale-to-fit;
-}
+} 
