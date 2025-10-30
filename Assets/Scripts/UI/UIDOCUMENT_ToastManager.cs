@@ -243,7 +243,7 @@ namespace ARStickyNotes.UI
 
         private void SetToastBackground(ToastType type)
         {
-            // Set background color dynamically - this is the ONLY inline style we set
+            // Set background color dynamically. Note: Multiple inline styles are set elsewhere (e.g., in EnsureToastUI).
             Color color;
             switch (type)
             {
