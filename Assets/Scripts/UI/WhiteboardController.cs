@@ -9,43 +9,88 @@ namespace ARStickyNotes.UI
 {
     public class WhiteboardController : MonoBehaviour
     {
-        [SerializeField] private GameObject NotePrefab;
+        /// <summary>
+        /// Reference to the Whiteboard prefab to be instantiated.
+        /// </summary>
+        [SerializeField]
+        public GameObject WhiteboardPrefab;
 
-        [SerializeField] private string NoteContainerName = "Root";
+        /// <summary>
+        /// Reference to the Note prefab to be instantiated.
+        /// </summary>
+        [SerializeField]
+        public GameObject NotePrefab;
 
-        [SerializeField] private Vector3 NoteInitialPosition = new(0.012f, 0.01f, -0.006f);
+        /// <summary>
+        /// Reference to the currently spawned whiteboard instance.
+        /// </summary>
+        private GameObject _spawnedWhiteboard;
 
-        //[SerializeField] private Quaternion NoteRotation = new(0, 90, 0, 1);
+        /// <summary>
+        /// Name of the container element where notes will be placed.
+        /// </summary>
+        [SerializeField]
+        public string NoteContainerName = "Root";
 
-        [SerializeField] private Vector3 NoteScale = new(0.001f, 0.001f, 0.001f);
+        /// <summary>
+        /// Initial position for the first note on the whiteboard.
+        /// </summary>
+        [SerializeField]
+        public Vector3 NoteInitialPosition = new(0.012f, 0.01f, -0.006f);
 
-        [SerializeField] private Vector3? NoteSize = new(0.004f, 0.01f, -0.004f);
+        /// <summary>
+        /// Scale to apply to each note on the whiteboard.
+        /// </summary>
+        [SerializeField]
+        public Vector3 NoteScale = new(0.001f, 0.001f, 0.001f);
 
-        [SerializeField] private int MaxRowCount = 2;
+        /// <summary>
+        /// Size of each note on the whiteboard. If null, it will be calculated from the NotePrefab.
+        /// </summary>
+        [SerializeField]
+        public Vector3? NoteSize = new(0.004f, 0.01f, -0.004f);
 
-        [SerializeField] private int MaxColumnCount = 5;
+        /// <summary>
+        /// Maximum number of rows of notes on the whiteboard.
+        /// </summary>
+        [SerializeField]
+        public int MaxRowCount = 2;
 
-        private int MaxVisibleCount = 0;
+        /// <summary>
+        /// Maximum number of columns of notes on the whiteboard.
+        /// </summary>
+        [SerializeField]
+        public int MaxColumnCount = 5;
 
-        private int CurrentNoteIndex = -1;
-        private List<Note> CurrentNotes = new();
-
+        /// <summary>
+        /// Event triggered when the whiteboard is enabled.
+        /// </summary>
         public static event Action EnableEvent;
 
-        private bool IsEnabled = false;
+        /// <summary>
+        /// Maximum number of visible notes on the whiteboard.
+        /// </summary>
+        private int _maxVisibleCount = 0;
+
+        /// <summary>
+        /// Index of the current note being processed.
+        /// </summary>
+        private int _currentNoteIndex = -1;
+        private List<Note> _currentNotes = new();
+        private bool _isEnabled = false;
 
         private void Update()
         {
-            if (IsEnabled && EnableEvent != null)
+            if (_isEnabled && EnableEvent != null)
             {
-                IsEnabled = false;
+                _isEnabled = false;
                 EnableEvent.Invoke();
             }
         }
 
         private void OnEnable()
         {
-            IsEnabled = true;
+            _isEnabled = true;
         }
         private Vector3 CalculateNotePosition(GameObject note, int index)
         {
@@ -99,11 +144,11 @@ namespace ARStickyNotes.UI
         }
         private void SetNotes()
         {
-            CurrentNoteIndex++;
-            for (var i = CurrentNoteIndex; i < MaxVisibleCount && i < CurrentNotes.Count; i++)
+            _currentNoteIndex++;
+            for (var i = _currentNoteIndex; i < _maxVisibleCount && i < _currentNotes.Count; i++)
             {
-                CurrentNoteIndex = i;
-                var note = CurrentNotes[CurrentNoteIndex];
+                _currentNoteIndex = i;
+                var note = _currentNotes[_currentNoteIndex];
                 var container = new ARSpawner().GetGameObject(NoteContainerName, false, true);
                 if (container == null)
                 {
@@ -116,7 +161,7 @@ namespace ARStickyNotes.UI
                 }
                 noteObject.name = "Note" + note.Id;
                 noteObject.transform.SetParent(container.transform, false);
-                noteObject.transform.localPosition = CalculateNotePosition(noteObject, CurrentNoteIndex);
+                noteObject.transform.localPosition = CalculateNotePosition(noteObject, _currentNoteIndex);
                 noteObject.transform.localScale = NoteScale;
                 SetNoteTitle(noteObject, note.Title);
             }
@@ -139,9 +184,9 @@ namespace ARStickyNotes.UI
         }
         public void LoadNotes(NoteList notes)
         {
-            MaxVisibleCount = MaxRowCount * MaxColumnCount;
-            CurrentNotes = notes.Items;
-            CurrentNoteIndex = -1;
+            _maxVisibleCount = MaxRowCount * MaxColumnCount;
+            _currentNotes = notes.Items;
+            _currentNoteIndex = -1;
             SetNotes();
         }
     }
