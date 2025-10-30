@@ -1,148 +1,149 @@
-.row {
-    flex-grow: 0;
-    background-color: rgb(255, 212, 42);
-    margin-top: 0;
-    margin-right: 0%;
-    margin-bottom: 0;
-    margin-left: 0%;
-    min-height: 100%;
-    max-height: none;
-    width: auto;
-    align-items: stretch;
-    align-self: stretch;
-    justify-content: flex-start;
-    align-content: flex-start;
-    flex-direction: row;
-    min-width: 100%;
-    padding-left: 0;
+.top-actions-element {
     display: flex;
-    padding-bottom: 0;
-    height: auto;
-    border-bottom-width: 0;
-    background-size: 100% 100%;
-    -unity-background-scale-mode: scale-and-crop;
-}
-
-.content {
-    flex-grow: 1;
-    width: auto;
-    flex-direction: column;
-    white-space: normal;
-    align-items: stretch;
-    justify-content: flex-start;
-    align-self: center;
-    min-height: auto;
-    max-height: none;
-    height: auto;
-}
-
-.title-label {
-    flex-direction: row;
-    align-self: flex-start;
-    align-items: center;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    align-content: flex-start;
-    margin-top: auto;
-    margin-left: 4%;
-    margin-bottom: auto;
-    margin-right: 4%;
-    max-width: none;
-    overflow: hidden;
-    padding-bottom: 0;
-    text-overflow: ellipsis;
-    -unity-font-style: normal;
-    flex-grow: 0;
-    min-width: auto;
-    width: 65%;
-    font-size: 10px;
-}
-
-.date-label {
-    flex-direction: row;
-    align-self: flex-start;
-    align-items: center;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    align-content: flex-start;
-    margin-top: auto;
-    margin-left: 4%;
-    margin-bottom: auto;
-    margin-right: 4%;
-    max-width: none;
-    overflow: hidden;
-    font-size: 10px;
-    padding-top: 0;
-}
-
-.delete-list-item-btn {
-    width: 10px;
-    height: auto;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0%;
-    padding-bottom: 2%;
-    background-color: rgba(188, 188, 188, 0);
-    border-left-color: rgba(55, 55, 55, 0);
-    border-right-color: rgba(55, 55, 55, 0);
-    border-top-color: rgba(55, 55, 55, 0);
-    border-bottom-color: rgba(55, 55, 55, 0);
-    transition-property: all;
-    transition-duration: 0s;
-    transition-timing-function: ease;
-    transition-delay: 0s;
-    display: flex;
-    margin-top: 0%;
-    margin-right: 4%;
-    margin-bottom: 0%;
-    margin-left: 0%;
-    background-size: 100% 100%;
-    scale: 2 2;
-    align-self: center;
-    justify-content: center;
     flex-direction: row-reverse;
-    flex-wrap: nowrap;
-    position: absolute;
-    left: auto;
-    right: 1px;
-    background-position-x: right 0;
-    -unity-slice-type: sliced;
-    -unity-text-align: middle-center;
-    background-image: url("project://database/Assets/Scenes/MainScene/Icons/delete.svg?fileID=7388822144124034973&guid=35f57cd302740f7499a9ca8f7c5d6a70&type=3#delete");
-    background-position: center;
-    -unity-background-scale-mode: scale-to-fit;
+    width: 100%;
+    height: 48px;
+    padding: 8px;
+    justify-content: flex-start;
     align-items: center;
-    align-content: flex-start;
-    top: auto;
-    bottom: 40%;
-    flex-grow: 0;
-    white-space: nowrap;
-    max-width: none;
-    min-width: auto;
-    min-height: auto;
-    max-height: 40px;
+    background-color: transparent;
+}
+
+.open-all-notes-btn,
+.close-all-notes-btn,
+.open-whiteboard-btn,
+.create-note-from-list-btn,
+.delete-note-btn,
+.save-note-btn {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+    background-color: transparent;
+    border-width: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.open-all-notes-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/hamburger-notes.svg?fileID=7388822144124034973&guid=cc7be6a876c5f42cc86d42a648620e41&type=3#hamburger-notes");
+}
+.close-all-notes-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/hamburger-notes-close.svg?fileID=7388822144124034973&guid=2fa5c78b8849443fab0721d63379796f&type=3#hamburger-notes-close");
+}
+.open-whiteboard-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/whiteboard.svg?fileID=7388822144124034973&guid=939a363b952851e479581cc597013b1f&type=3#whiteboard");
+}
+.create-note-from-list-btn,
+.create-note-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/create-note.svg?fileID=7388822144124034973&guid=3a28229ffa44e4ceb9770c01d159a09e&type=3#create-note");
+}
+.delete-note-btn,
+.delete-list-item-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/delete.svg?fileID=7388822144124034973&guid=f7e49557c7643421e85a5325baeef3e7&type=3#delete");
+}
+.save-note-btn {
+    background-image: url("project://database/Assets/Scenes/ARStickyNotes/Icons/save.svg?fileID=7388822144124034973&guid=f308d299435ec46d6970218868c15a82&type=3#save");
 }
 
 .notes-list-container {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
     width: 100%;
-    max-height: 40%;      /* or try max-height: 300px; */
-    min-height: 100px;
+    height: auto;
+    margin-top: 48px;
     background-color: transparent;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
+    justify-content: flex-start;
+    align-items: stretch;
     overflow: hidden;
+    padding-bottom: 60px;
 }
 
 .notes-list-view {
     flex-grow: 1;
-    height: 100%;
-    min-height: 0;
-    max-height: 100%;
-    overflow: scroll;
+    width: 100%;
+    background-color: transparent;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(255, 212, 42);
+    margin: 1px 0;
+    height: 48px;
+    width: 100%;
+    border-bottom-width: 1px;
+    border-bottom-color: #e0c200;
+    border-bottom-style: solid;
+}
+
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8px;
+    min-width: 0;
+    width: 90%;
+}
+
+.title-label {
+    font-size: 14px;
+    color: #222;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.date-label {
+    font-size: 12px;
+    color: #444;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.delete-list-item-btn {
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    background-color: transparent;
+    border-width: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+}
+
+.create-note-btn {
+    width: 48px;
+    height: 48px;
+    background-color: transparent;
+    border-width: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    -unity-background-scale-mode: scale-to-fit;
 }
