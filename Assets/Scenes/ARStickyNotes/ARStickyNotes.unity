@@ -683,7 +683,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a5e34da646e1c47af37db2361f2363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiDocument: {fileID: 75969488}
+  mainSceneUIDocument: {fileID: 75969488}
+  noteEditorUXML: {fileID: 9197481963319205126, guid: c6130b00348004077bf12d4bdc173c1e,
+    type: 3}
   noteManager: {fileID: 411876361}
   Whiteboard: {fileID: 2033142433167768597, guid: 3960330a295978d4f85f3d698aeb5ce3,
     type: 3}

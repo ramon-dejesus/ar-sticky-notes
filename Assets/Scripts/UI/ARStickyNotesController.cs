@@ -16,9 +16,14 @@ namespace ARStickyNotes.UI
         #region References
         [Header("UI References")]
         /// <summary>
-        /// Reference to the UIDocument containing the UI Toolkit layout.
+        /// Reference to the mainSceneUIDocument containing the mainScene UI Document layout.
         /// </summary>
-        [SerializeField] private UIDocument uiDocument;
+        [SerializeField] private UIDocument mainSceneUIDocument;
+
+        /// <summary>
+        /// Reference to the UXML asset for the note editor panel.
+        /// </summary>
+        [SerializeField] private VisualTreeAsset noteEditorUXML;
 
         [Header("Script References")]
         /// <summary>
@@ -81,19 +86,25 @@ namespace ARStickyNotes.UI
         /// Reference to the currently spawned whiteboard instance.
         /// </summary>
         private GameObject spawnedWhiteboard;
+
+        /// <summary>
+        /// Root VisualElement for the note editor panel.
+        /// </summary>  
+        private VisualElement noteEditorRoot;
+
         #endregion
 
         #region Supporting Functions
 
         /// <summary>
-        /// Initializes and binds UI Toolkit elements from the UIDocument.
+        /// Initializes and binds UI Toolkit elements from the mainSceneUIDocument.
         /// </summary>
         private void InitiateUIElements()
         {
             try
             {
 
-                var root = uiDocument.rootVisualElement;
+                var root = mainSceneUIDocument.rootVisualElement;
 
                 // Ensure names match UXML exactly (case-sensitive)
                 openAllNotesButton = root.Q<UnityEngine.UIElements.Button>("OpenAllNotesButton");
@@ -183,6 +194,22 @@ namespace ARStickyNotes.UI
 
                     deleteButton.userData = callback;
                     deleteButton.clicked += callback;
+                };
+
+                notesListView.itemsChosen += (IEnumerable<object> selectedItems) =>
+                {
+                    if (selectedItems == null)
+                        return;
+
+                    foreach (var obj in selectedItems)
+                    {
+                        var note = obj as Note;
+                        if (note != null)
+                        {
+                            ShowNoteEditor(note, NoteActionType.Edit);
+                            break;
+                        }
+                    }
                 };
 
                 notesListView.itemsSource = notes;
@@ -359,7 +386,7 @@ namespace ARStickyNotes.UI
         private void OpenCreateNotePanel()
         {
             // Implementation for opening the create note panel can be added here.
-            UIDOCUMENT_ToastNotifier.ShowInfoMessage("Create Note panel to be opened.");
+            ShowNoteEditor(null, NoteActionType.Insert);
         }
 
         /// <summary>
@@ -493,6 +520,84 @@ namespace ARStickyNotes.UI
             {
                 ErrorReporter.Report("Failed to load notes from storage.", ex);
             }
+        }
+
+        private void ShowNoteEditor(Note note = null, NoteActionType action = NoteActionType.Insert)
+        {
+            var root = mainSceneUIDocument.rootVisualElement;
+            if (noteEditorRoot != null)
+            {
+                root.Remove(noteEditorRoot);
+                noteEditorRoot = null;
+            }
+            noteEditorRoot = noteEditorUXML.CloneTree();
+            noteEditorRoot.style.position = Position.Absolute;
+            noteEditorRoot.style.top = 0;
+            noteEditorRoot.style.left = 0;
+            noteEditorRoot.style.right = 0;
+            noteEditorRoot.style.bottom = 0;
+            root.Add(noteEditorRoot);
+
+            var titleField = noteEditorRoot.Q<TextField>("NoteTitleField");
+            var contentField = noteEditorRoot.Q<TextField>("NoteContentField");
+            var saveButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("SaveNoteButton");
+            var deleteButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("DeleteNoteButton");
+            var cancelButton = noteEditorRoot.Q<UnityEngine.UIElements.Button>("CancelNoteButton");
+
+            // Populate fields if editing
+            if (action == NoteActionType.Edit && note != null)
+            {
+                titleField.value = note.Title;
+                contentField.value = note.Description;
+                deleteButton.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                titleField.value = "";
+                contentField.value = "";
+                deleteButton.style.display = DisplayStyle.None;
+            }
+
+            // Save logic
+            saveButton.clicked += () =>
+            {
+                if (action == NoteActionType.Insert)
+                {
+                    var newNote = noteManager.GetNewNote();
+                    newNote.Title = titleField.value;
+                    newNote.Description = contentField.value;
+                    newNote.CreatedAt = DateTime.Now;
+                    noteManager.CreateNote(newNote);
+                }
+                else if (action == NoteActionType.Edit && note != null)
+                {
+                    note.Title = titleField.value;
+                    note.Description = contentField.value;
+                    noteManager.UpdateNote(note);
+                }
+                root.Remove(noteEditorRoot);
+                noteEditorRoot = null;
+                LoadNotes();
+            };
+
+            // Delete logic (only for edit)
+            deleteButton.clicked += () =>
+            {
+                if (action == NoteActionType.Edit && note != null)
+                {
+                    noteManager.DeleteNote(note.Id);
+                    root.Remove(noteEditorRoot);
+                    noteEditorRoot = null;
+                    LoadNotes();
+                }
+            };
+
+            // Cancel logic
+            cancelButton.clicked += () =>
+            {
+                root.Remove(noteEditorRoot);
+                noteEditorRoot = null;
+            };
         }
         #endregion
 
