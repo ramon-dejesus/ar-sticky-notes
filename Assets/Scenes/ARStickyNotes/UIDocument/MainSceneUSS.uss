@@ -81,7 +81,7 @@
 }
 
 /* Remove default extra spacing from ListView items */
-.unity-list-view__item.
+.unity-list-view__item,
 .unity-collection-view__item {
     margin: 0;
     padding: 0;
