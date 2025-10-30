@@ -12,8 +12,8 @@
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    height: 8%;
-    min-height: 44px;
+    height: 10%;
+    min-height: 250px;
     margin-top: 2%;
     margin-left: 8%;
     margin-right: 8%;
@@ -30,7 +30,7 @@
     margin-left: 5%;
     margin-right: 0px;
     padding-right: 0px;
-    margin-bottom: 5%;
+    margin-bottom: 2%;
     background-color: transparent;
     border-width: 0;
     background-size: contain;
@@ -70,7 +70,7 @@
 /* Consolidate input styling; keep your sizes */
 .note-field .unity-text-field__input {
     margin: 2%;
-    font-size: 80px;
+    font-size: 60px;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 12px;
