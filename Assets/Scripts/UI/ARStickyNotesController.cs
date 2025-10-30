@@ -754,9 +754,9 @@ namespace ARStickyNotes.UI
                 SubscribeToEvents();
 
                 // Show an info toast
-                // UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Welcome to the AR Sticky Notes!");
-                // UIDOCUMENT_ToastNotifier.ShowErrorMessage("This is an error message example.");
-                // UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info message example.");
+                UIDOCUMENT_ToastNotifier.ShowSuccessMessage("Welcome to the AR Sticky Notes!");
+                UIDOCUMENT_ToastNotifier.ShowErrorMessage("This is an error message example.");
+                UIDOCUMENT_ToastNotifier.ShowInfoMessage("This is an info message example.");
             }
             catch (Exception ex)
             {

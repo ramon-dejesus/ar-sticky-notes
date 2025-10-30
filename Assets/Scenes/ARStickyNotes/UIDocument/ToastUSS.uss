@@ -1,48 +1,57 @@
+/* Root container for the toast notification */
 .toast-root {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 10px;
-    /* height: 180px; */
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    /* background-color will be set in C# */
+    left: 5%;
+    right: 5%;
+    top: 80px;
+    height: 140px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 12px;
 }
 
-.toast-top-row {
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
+/* Close button (X) - top right */
 .toast-close {
-    color: white;
-    background-color: rgba(0,0,0,0);
-    font-size: 32px;
-    width: 40px;
-    height: 40px;
-    margin-bottom: 8px;
-    margin-right: 0px;
-    align-self: flex-end;
-}
-
-.toast-message {
-    color: white;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    color: rgb(255, 255, 255);
     font-size: 28px;
-    -unity-font-style: bold;
-    margin-bottom: 24px;
-    margin-top: 0px;
-    flex-grow: 1;
+    -unity-text-align: middle-center;
+    padding: 0;
+    margin: 0;
 }
 
+/* Notification message text - middle left */
+.toast-message {
+    position: absolute;
+    left: 20px;
+    right: 70px;
+    top: 50px;
+    height: 40px;
+    color: rgb(255, 255, 255);
+    font-size: 32px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    white-space: normal;
+    margin: 0;
+    padding: 0;
+}
+
+/* Counter text - bottom right */
 .toast-counter {
-    color: white;
-    font-size: 20px;
-    align-self: flex-end;
-    margin-bottom: 0px;
+    position: absolute;
+    right: 20px;
+    bottom: 15px;
+    height: 25px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 22px;
+    -unity-text-align: middle-right;
+    margin: 0;
+    padding: 0;
 }

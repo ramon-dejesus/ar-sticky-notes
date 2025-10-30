@@ -142,26 +142,95 @@ namespace ARStickyNotes.UI
                     if (toastClose == null)
                         throw new Exception("toast-close Button not found in ToastUXML.");
 
+                    // Change button text to simple "X" for better Android compatibility
+                    toastClose.text = "X";
+
                     toastClose.clicked += HandleManualDismiss;
 
-                    // Add to rootVisualElement if not already present
+                    // Add to rootVisualElement
                     if (!root.Contains(toastRoot))
                         root.Add(toastRoot);
                     else
                     {
-                        // Remove and re-add to bring to front
                         root.Remove(toastRoot);
                         root.Add(toastRoot);
                     }
 
-                    // Force overlay positioning in C# (in case USS is overridden)
+                    // Apply safe area padding for notch/camera cutout on Android
+                    var safeArea = Screen.safeArea;
+                    float topSafeAreaOffset = Screen.height - (safeArea.y + safeArea.height);
+                    
+                    // Force USS to apply by manually setting critical positioning
                     toastRoot.style.position = Position.Absolute;
-                    toastRoot.style.top = 16f;
-                    toastRoot.style.left = 0f;
-                    toastRoot.style.right = 0f;
-                    //toastRoot.style.height = 180f;
-
+                    toastRoot.style.left = new StyleLength(new Length(5, LengthUnit.Percent));
+                    toastRoot.style.right = new StyleLength(new Length(5, LengthUnit.Percent));
+                    toastRoot.style.top = new StyleLength(Mathf.Max(topSafeAreaOffset + 20, 80)); // Account for safe area
+                    toastRoot.style.height = new StyleLength(new Length(15, LengthUnit.Percent));
+                    toastRoot.style.paddingLeft = new StyleLength(20);
+                    toastRoot.style.paddingRight = new StyleLength(20);
+                    toastRoot.style.paddingTop = new StyleLength(20);
+                    toastRoot.style.paddingBottom = new StyleLength(20);
+                    toastRoot.style.borderTopLeftRadius = new StyleLength(12);
+                    toastRoot.style.borderTopRightRadius = new StyleLength(12);
+                    toastRoot.style.borderBottomLeftRadius = new StyleLength(12);
+                    toastRoot.style.borderBottomRightRadius = new StyleLength(12);
                     toastRoot.style.display = DisplayStyle.None;
+                    
+                    // Force child element positioning - Close button with better Android visibility
+                    toastClose.style.position = Position.Absolute;
+                    toastClose.style.top = new StyleLength(8);
+                    toastClose.style.right = new StyleLength(8);
+                    toastClose.style.width = new StyleLength(60);
+                    toastClose.style.height = new StyleLength(60);
+                    toastClose.style.fontSize = new StyleLength(48);
+                    toastClose.style.color = Color.white;
+                    toastClose.style.backgroundColor = new Color(0, 0, 0, 0.5f); // Darker background for better contrast
+                    toastClose.style.borderTopWidth = 2;
+                    toastClose.style.borderBottomWidth = 2;
+                    toastClose.style.borderLeftWidth = 2;
+                    toastClose.style.borderRightWidth = 2;
+                    toastClose.style.borderTopColor = Color.white;
+                    toastClose.style.borderBottomColor = Color.white;
+                    toastClose.style.borderLeftColor = Color.white;
+                    toastClose.style.borderRightColor = Color.white;
+                    toastClose.style.borderTopLeftRadius = new StyleLength(30);
+                    toastClose.style.borderTopRightRadius = new StyleLength(30);
+                    toastClose.style.borderBottomLeftRadius = new StyleLength(30);
+                    toastClose.style.borderBottomRightRadius = new StyleLength(30);
+                    toastClose.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    toastClose.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    toastClose.style.paddingLeft = 0;
+                    toastClose.style.paddingRight = 0;
+                    toastClose.style.paddingTop = 0;
+                    toastClose.style.paddingBottom = 0;
+                    toastClose.style.marginLeft = 0;
+                    toastClose.style.marginRight = 0;
+                    toastClose.style.marginTop = 0;
+                    toastClose.style.marginBottom = 0;
+                    
+                    toastMessage.style.position = Position.Absolute;
+                    toastMessage.style.left = 20;
+                    toastMessage.style.right = 90; // More space for larger button
+                    toastMessage.style.top = 50;
+                    toastMessage.style.height = 40;
+                    toastMessage.style.fontSize = 40;
+                    toastMessage.style.color = Color.white;
+                    toastMessage.style.unityFontStyleAndWeight = FontStyle.Bold;
+                    toastMessage.style.unityTextAlign = TextAnchor.MiddleLeft;
+                    toastMessage.style.whiteSpace = WhiteSpace.Normal;
+                    
+                    toastCounter.style.position = Position.Absolute;
+                    toastCounter.style.right = 20;
+                    toastCounter.style.bottom = 15;
+                    toastCounter.style.height = 30;
+                    toastCounter.style.fontSize = 40;
+                    toastCounter.style.color = new Color(1, 1, 1, 0.9f);
+                    toastCounter.style.unityTextAlign = TextAnchor.MiddleRight;
+                    
+                    // Debug: Verify button text and safe area
+                    Debug.Log($"Toast close button text: '{toastClose.text}'");
+                    Debug.Log($"Safe area: {safeArea}, Top offset: {topSafeAreaOffset}");
+                    Debug.Log($"Toast root classes: {string.Join(", ", toastRoot.GetClasses())}");
                 }
                 catch (Exception ex)
                 {
@@ -178,21 +247,18 @@ namespace ARStickyNotes.UI
 
         private void SetToastBackground(ToastType type)
         {
-            // Set background color dynamically
+            // Set background color dynamically - this is the ONLY inline style we set
             Color color;
             switch (type)
             {
                 case ToastType.Success:
-                    //hex #34c759 // Green
                     color = new Color(0.2039f, 0.7843f, 0.349f, 0.95f); // Green
                     break;
                 case ToastType.Error:
-                    //hex #ff5e51 // Orange-Red
                     color = new Color(1f, 0.3686f, 0.3176f, 0.95f); // Orange-Red
                     break;
                 case ToastType.Info:
                 default:
-                    //hex #0ab5ff // Blue
                     color = new Color(0f, 0.7098f, 1f, 0.95f); // Blue
                     break;
             }
