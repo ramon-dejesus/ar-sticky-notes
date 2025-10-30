@@ -6,7 +6,7 @@ public class ConfigurePanelSettings : MonoBehaviour
 {
     [SerializeField] UIDocument uiDocument;
     [SerializeField] PanelSettings panelSettings;
-    [SerializeField] Vector2Int referenceResolution = new Vector2Int(1080, 1920);
+    [SerializeField] readonly Vector2Int referenceResolution = new Vector2Int(1080, 1920);
     [SerializeField, Range(0f, 1f)] private float match = 0.5f;
 
     void Awake()
