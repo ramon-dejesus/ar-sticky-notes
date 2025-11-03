@@ -69,13 +69,10 @@ namespace ARStickyNotes.UI
         /// Button to launch whiteboard view of notes.
         /// </summary>
         private UnityEngine.UIElements.Button openWhiteboardButton;
-        #endregion        
 
-        #region Fields and Data Objects        
-        /// <summary>
-        /// List of notes loaded from the NoteManager.
-        /// </summary>
-        private List<Note> notes = new List<Note>();
+        #endregion     
+
+        #region Fields and Data Objects   
 
         /// <summary>
         /// Root VisualElement for the note editor panel.
@@ -151,7 +148,7 @@ namespace ARStickyNotes.UI
 
                 notesListView.bindItem = (element, i) =>
                 {
-                    var note = notes[i];
+                    var note = noteManager.GetNotes().Items[i];
                     var titleLabel = element.Q<Label>("titleLabel");
                     var dateLabel = element.Q<Label>("dateLabel");
                     var deleteButton = element.Q<UnityEngine.UIElements.Button>("deleteButton");
@@ -233,7 +230,7 @@ namespace ARStickyNotes.UI
                     }
                 };
 
-                notesListView.itemsSource = notes;
+                notesListView.itemsSource = noteManager.GetNotes().Items;
 
                 var scrollView = notesListView.Q<ScrollView>();
                 if (scrollView != null)
@@ -392,7 +389,6 @@ namespace ARStickyNotes.UI
         {
             if (allNotesVisualElement == null)
                 return;
-
             // Toggle visibility
             if (allNotesVisualElement.style.display == DisplayStyle.Flex)
             {
@@ -479,6 +475,7 @@ namespace ARStickyNotes.UI
             });
         }
 
+
         /// <summary>
         /// Shows the whiteboard.
         /// </summary>
@@ -507,6 +504,9 @@ namespace ARStickyNotes.UI
             }
         }
 
+        /// <summary>
+        /// Callback when a note on the whiteboard is clicked.
+        /// </summary>
         public void OnWhiteboardNoteClicked(Note note)
         {
             HideWhiteboard();
@@ -535,7 +535,7 @@ namespace ARStickyNotes.UI
         }
 
         /// <summary>
-        /// Toggles the whiteboard: shows/spawns if hidden, hides if visible.
+        /// Toggles the whiteboard: shows if hidden, hides if visible.
         /// </summary>
         public void OpenOrHideWhiteboard()
         {
@@ -567,11 +567,9 @@ namespace ARStickyNotes.UI
         {
             try
             {
-                var noteList = noteManager.GetNotes();
-                notes = noteList?.Items ?? new List<Note>();
                 if (notesListView != null)
                 {
-                    notesListView.itemsSource = notes;
+                    notesListView.itemsSource = noteManager.GetNotes().Items;
                     notesListView.RefreshItems();
                 }
             }
@@ -587,9 +585,9 @@ namespace ARStickyNotes.UI
         /// <param name="note"></param>
         /// <param name="action"></param>
         private void ShowNoteEditor(
-        Note note = null,
-        NoteActionType action = NoteActionType.Insert,
-        Action<NoteEditorResult, Note> onComplete = null)
+    Note note = null,
+    NoteActionType action = NoteActionType.Insert,
+    Action<NoteEditorResult, Note> onComplete = null)
         {
             var root = mainSceneUIDocument.rootVisualElement;
             if (noteEditorRoot != null)
@@ -655,12 +653,12 @@ namespace ARStickyNotes.UI
                     noteManager.DeleteNote(note.Id);
                     CloseNoteEditor();
                     onComplete?.Invoke(NoteEditorResult.Deleted, note);
-                }                
+                }
             };
 
             // Cancel logic
             cancelButton.clicked += () =>
-            {   
+            {
                 // Simply close the editor without saving            
                 CloseNoteEditor();
                 onComplete?.Invoke(NoteEditorResult.Cancelled, null);

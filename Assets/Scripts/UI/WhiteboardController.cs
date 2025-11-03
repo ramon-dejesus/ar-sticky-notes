@@ -13,53 +13,45 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Reference to the Whiteboard prefab to be instantiated.
         /// </summary>
-        [SerializeField]
-        public GameObject WhiteboardPrefab;
+        [SerializeField] public GameObject WhiteboardPrefab;
 
         /// <summary>
         /// Reference to the Note prefab to be instantiated.
         /// </summary>
-        [SerializeField]
-        public GameObject NotePrefab;
-        #endregion      
+        [SerializeField] public GameObject NotePrefab;
+        #endregion
 
         #region References
         [Header("UI References")]
         /// <summary>
         /// Name of the container element where notes will be placed.
         /// </summary>
-        [SerializeField]
-        public string NoteContainerName = "Root";
+        [SerializeField] public string NoteContainerName = "Root";
 
         /// <summary>
         /// Initial position for the first note on the whiteboard.
         /// </summary>
-        [SerializeField]
-        public Vector3 NoteInitialPosition = new(0.012f, 0.01f, -0.006f);
+        [SerializeField] public Vector3 NoteInitialPosition = new(0.012f, 0.01f, -0.006f);
 
         /// <summary>
         /// Scale to apply to each note on the whiteboard.
         /// </summary>
-        [SerializeField]
-        public Vector3 NoteScale = new(0.001f, 0.001f, 0.001f);
+        [SerializeField] public Vector3 NoteScale = new(0.001f, 0.001f, 0.001f);
 
         /// <summary>
         /// Size of each note on the whiteboard. If null, it will be calculated from the NotePrefab.
         /// </summary>
-        [SerializeField]
-        public Vector3? NoteSize = new(0.004f, 0.01f, -0.004f);
+        [SerializeField] public Vector3? NoteSize = new(0.004f, 0.01f, -0.004f);
 
         /// <summary>
         /// Maximum number of rows of notes on the whiteboard.
         /// </summary>
-        [SerializeField]
-        public int MaxRowCount = 2;
+        [SerializeField] public int MaxRowCount = 2;
 
         /// <summary>
         /// Maximum number of columns of notes on the whiteboard.
         /// </summary>
-        [SerializeField]
-        public int MaxColumnCount = 5;
+        [SerializeField] public int MaxColumnCount = 5;
         #endregion
 
         #region Events
