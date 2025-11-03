@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5216423134258071416}
   - component: {fileID: -4764839170850333993}
   - component: {fileID: -4632483126983565794}
-  - component: {fileID: 4871507141004395103}
   m_Layer: 0
   m_Name: Whiteboard
   m_TagString: Untagged
@@ -184,25 +183,6 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
---- !u!114 &4871507141004395103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2033142433167768597}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f4bfab5197c80b48b83a18e5608c5d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NotePrefab: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
-    type: 3}
-  NoteContainerName: Root
-  NoteInitialPosition: {x: 0.012, y: 0.01, z: -0.006}
-  NoteScale: {x: 0.001, y: 0.001, z: 0.001}
-  MaxRowCount: 3
-  MaxColumnCount: 5
 --- !u!1001 &5685032892049414870
 PrefabInstance:
   m_ObjectHideFlags: 0

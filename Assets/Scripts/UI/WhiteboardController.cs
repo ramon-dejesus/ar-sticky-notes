@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using TMPro;
@@ -9,6 +8,8 @@ namespace ARStickyNotes.UI
 {
     public class WhiteboardController : MonoBehaviour
     {
+        #region Prefab References
+        [Header("Prefab References")]
         /// <summary>
         /// Reference to the Whiteboard prefab to be instantiated.
         /// </summary>
@@ -20,12 +21,10 @@ namespace ARStickyNotes.UI
         /// </summary>
         [SerializeField]
         public GameObject NotePrefab;
+        #endregion      
 
-        /// <summary>
-        /// Reference to the currently spawned whiteboard instance.
-        /// </summary>
-        private GameObject _spawnedWhiteboard;
-
+        #region References
+        [Header("UI References")]
         /// <summary>
         /// Name of the container element where notes will be placed.
         /// </summary>
@@ -61,11 +60,37 @@ namespace ARStickyNotes.UI
         /// </summary>
         [SerializeField]
         public int MaxColumnCount = 5;
+        #endregion
+
+        #region Events
+        /// <summary>
+        /// Event triggered when a note is clicked.
+        /// </summary>
+        public event Action<Note> NoteClicked;
+        #endregion
+
+        #region Fields and Data Objects
 
         /// <summary>
-        /// Event triggered when the whiteboard is enabled.
+        /// Indicates whether the whiteboard is currently visible.
         /// </summary>
-        public static event Action EnableEvent;
+        public bool IsVisible
+        {
+            get
+            {
+                return _spawnedWhiteboard != null && _spawnedWhiteboard.activeSelf;
+            }
+        }
+
+        /// <summary>
+        /// The list of notes currently displayed on the whiteboard.
+        /// </summary>
+        public NoteList CurrentNotes { get; set; } = null;
+
+        /// <summary>
+        /// Reference to the currently spawned whiteboard instance.
+        /// </summary>
+        private GameObject _spawnedWhiteboard;
 
         /// <summary>
         /// Maximum number of visible notes on the whiteboard.
@@ -76,22 +101,7 @@ namespace ARStickyNotes.UI
         /// Index of the current note being processed.
         /// </summary>
         private int _currentNoteIndex = -1;
-        private List<Note> _currentNotes = new();
-        private bool _isEnabled = false;
-
-        private void Update()
-        {
-            if (_isEnabled && EnableEvent != null)
-            {
-                _isEnabled = false;
-                EnableEvent.Invoke();
-            }
-        }
-
-        private void OnEnable()
-        {
-            _isEnabled = true;
-        }
+        #endregion
         private Vector3 CalculateNotePosition(GameObject note, int index)
         {
             if (NoteSize == null)
@@ -101,21 +111,18 @@ namespace ARStickyNotes.UI
                 {
                     if (note.GetComponentInChildren<Renderer>() != null)
                     {
-                        Debug.Log("Calculating note size from child renderer.");
                         renderer = note.GetComponentInChildren<Renderer>();
                         Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<Collider>() != null)
                     {
-                        Debug.Log("Calculating note size from collider.");
                         Collider collider = note.GetComponentInChildren<Collider>();
                         Bounds objectBounds = collider.bounds; // Or GetComponent<Collider>().bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<RectTransform>() != null)
                     {
-                        Debug.Log("Calculating note size from RectTransform.");
                         RectTransform rectTransform = note.GetComponentInChildren<RectTransform>();
                         NoteSize = rectTransform.rect.size;
                     }
@@ -126,7 +133,6 @@ namespace ARStickyNotes.UI
                 }
                 else
                 {
-                    Debug.Log("Calculating note size from renderer.");
                     Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
                     NoteSize = objectBounds.size;
                 }
@@ -142,19 +148,25 @@ namespace ARStickyNotes.UI
             position.z -= row * NoteSize.Value.z;
             return position;
         }
-        private void SetNotes()
+        private void LoadNotes()
         {
+            if (NotePrefab == null)
+            {
+                throw new System.Exception("Note prefab reference is missing.");
+            }
             _currentNoteIndex++;
-            for (var i = _currentNoteIndex; i < _maxVisibleCount && i < _currentNotes.Count; i++)
+            CurrentNotes ??= new NoteList();
+            var items = CurrentNotes.Items;
+            for (var i = _currentNoteIndex; i < _maxVisibleCount && i < items.Count; i++)
             {
                 _currentNoteIndex = i;
-                var note = _currentNotes[_currentNoteIndex];
+                var note = items[_currentNoteIndex];
                 var container = new ARSpawner().GetGameObject(NoteContainerName, false, true);
                 if (container == null)
                 {
                     throw new System.Exception("Could not find container for notes");
                 }
-                var noteObject = Instantiate(NotePrefab, transform);
+                var noteObject = Instantiate(NotePrefab, _spawnedWhiteboard.transform);
                 if (noteObject == null)
                 {
                     throw new System.Exception("Could not instantiate note prefab");
@@ -164,6 +176,16 @@ namespace ARStickyNotes.UI
                 noteObject.transform.localPosition = CalculateNotePosition(noteObject, _currentNoteIndex);
                 noteObject.transform.localScale = NoteScale;
                 SetNoteTitle(noteObject, note.Title);
+                // var collider = noteObject.GetComponent<Collider>();
+                // if (collider != null)
+                // {
+                //     var whiteboardController = this;
+                //     var clickHandler = noteObject.AddComponent<NoteClickHandler>();
+                //     clickHandler.OnClick += () =>
+                //     {
+                //         whiteboardController.NoteClicked?.Invoke(note);
+                //     };
+                // }
             }
         }
         private void SetNoteTitle(GameObject noteObject, string title)
@@ -182,12 +204,56 @@ namespace ARStickyNotes.UI
                 }
             }
         }
-        public void LoadNotes(NoteList notes)
+        private void LoadWhiteboard()
         {
-            _maxVisibleCount = MaxRowCount * MaxColumnCount;
-            _currentNotes = notes.Items;
-            _currentNoteIndex = -1;
-            SetNotes();
+            if (WhiteboardPrefab == null)
+            {
+                throw new System.Exception("Whiteboard prefab reference is missing.");
+            }
+            _spawnedWhiteboard = new ARSpawner().SpawnGameObject(WhiteboardPrefab);
+            LoadNotes();
+        }
+
+        /// <summary>
+        /// Shows or hides the whiteboard.
+        /// <param name="show">If true, shows the whiteboard; if false, hides it.</param>
+        /// </summary>
+        private void ShowWhiteboard(bool show = true)
+        {
+            if (show)
+            {
+                _maxVisibleCount = MaxRowCount * MaxColumnCount;
+                _currentNoteIndex = -1;
+                LoadWhiteboard();
+                //NoteClicked.Invoke();
+            }
+            else if (_spawnedWhiteboard != null)
+            {
+                new ARSpawner().DestroyGameObject(_spawnedWhiteboard);
+                _spawnedWhiteboard = null;
+            }
+        }
+
+        /// <summary>
+        /// Toggles the visibility of the whiteboard.
+        /// </summary>
+        public void ShowOrHideWhiteboard()
+        {
+            ShowWhiteboard(!IsVisible);
+        }
+    }
+
+    /// <summary>
+    /// Simple component that invokes an Action when the GameObject is clicked.
+    /// Works with 3D objects that have a Collider by using OnMouseDown.
+    /// </summary>
+    public class NoteClickHandler : MonoBehaviour
+    {
+        public event Action OnClick;
+
+        private void OnMouseDown()
+        {
+            OnClick?.Invoke();
         }
     }
 }

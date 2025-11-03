@@ -55,7 +55,7 @@ namespace ARStickyNotes.Utilities
         /// Destroys the AR ray interactor and all XRRayInteractors in the scene
         /// to clean up resources.
         /// </summary>
-        private void DestroyGameObject(GameObject obj)
+        public void DestroyGameObject(GameObject obj)
         {
             if (obj != null)
             {

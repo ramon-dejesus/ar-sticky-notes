@@ -30,6 +30,11 @@ namespace ARStickyNotes.UI
         /// Reference to the NoteManager responsible for note operations.
         /// </summary>
         [SerializeField] private NoteManager noteManager;
+
+        /// <summary>
+        /// The controller for managing the whiteboard.
+        /// </summary>
+        [SerializeField] private WhiteboardController whiteboardController;
         #endregion
 
         #region UI Elements
@@ -64,28 +69,13 @@ namespace ARStickyNotes.UI
         /// Button to launch whiteboard view of notes.
         /// </summary>
         private UnityEngine.UIElements.Button openWhiteboardButton;
+        #endregion        
 
-        #endregion
-
-        #region Prefab References
-        [Header("Prefab References")]
-        /// <summary>
-        /// Reference to the Whiteboard prefab to be instantiated.
-        /// </summary>
-        [SerializeField]
-        private GameObject Whiteboard;
-        #endregion
-
-        #region Fields and Data Objects
+        #region Fields and Data Objects        
         /// <summary>
         /// List of notes loaded from the NoteManager.
         /// </summary>
         private List<Note> notes = new List<Note>();
-
-        /// <summary>
-        /// Reference to the currently spawned whiteboard instance.
-        /// </summary>
-        private GameObject spawnedWhiteboard;
 
         /// <summary>
         /// Root VisualElement for the note editor panel.
@@ -390,6 +380,7 @@ namespace ARStickyNotes.UI
         {
             if (allNotesVisualElement == null)
                 return;
+
             // Toggle visibility
             if (allNotesVisualElement.style.display == DisplayStyle.Flex)
             {
@@ -405,7 +396,7 @@ namespace ARStickyNotes.UI
             else
             {
                 // If whiteboard is open, hide/destroy it
-                HideOrDestroyWhiteboard(false);
+                HideWhiteboard();
 
                 // Currently hidden, so show it
                 ShowNotesMenu();
@@ -476,92 +467,59 @@ namespace ARStickyNotes.UI
             });
         }
 
-
         /// <summary>
-        /// Shows the whiteboard: spawns if needed, or just makes visible if hidden.
+        /// Shows the whiteboard.
         /// </summary>
-        public void ShowOrSpawnWhiteboard()
-        {
-            // Hide all notes panel visibility
-            HideNotesMenu();
-
-            // Update button states
-            // Hide create note button, hide close all notes button, and show open all notes button
-            HideCreateNoteButton();
-            HideCloseAllNotesButton();
-            ShowOpenAllNotesButton();
-
-            if (spawnedWhiteboard == null)
-            {
-                try
-                {
-                    if (Whiteboard == null)
-                    {
-                        throw new System.Exception("Whiteboard reference is missing.");
-                    }
-                    WhiteboardController.EnableEvent += OnWhiteboardActivated;
-                    spawnedWhiteboard = new ARSpawner().SpawnGameObject(Whiteboard);
-                    //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
-                }
-                catch (System.Exception ex)
-                {
-                    ErrorReporter.Report("An error occurred while spawning the whiteboard.", ex);
-                }
-            }
-            else if (!spawnedWhiteboard.activeSelf)
-            {
-                spawnedWhiteboard.SetActive(true);
-                //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard shown.");
-            }
-            else
-            {
-                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard is already visible.");
-            }
-        }
-        public void OnWhiteboardActivated()
+        public void ShowWhiteboard()
         {
             try
             {
-                if (spawnedWhiteboard != null)
+                // Hide all notes panel visibility
+                HideNotesMenu();
+
+                // Update button states
+                // Hide create note button, hide close all notes button, and show open all notes button
+                HideCreateNoteButton();
+                HideCloseAllNotesButton();
+                ShowOpenAllNotesButton();
+                if (whiteboardController.CurrentNotes == null)
                 {
-                    spawnedWhiteboard.GetComponent<WhiteboardController>().LoadNotes(noteManager.GetNotes());
+                    whiteboardController.CurrentNotes = noteManager.GetNotes();
+                    whiteboardController.NoteClicked += OnWhiteboardNoteClicked;
                 }
+                whiteboardController.ShowOrHideWhiteboard();
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                ErrorReporter.Report("Failed to load notes onto whiteboard upon activation.", ex);
+                ErrorReporter.Report("An error occurred while showing the whiteboard.", ex);
             }
         }
-        /// <summary>
-        /// Hides or destroys the spawned whiteboard, if present.
-        /// </summary>
-        /// <param name="destroy">If true, destroys the whiteboard. Otherwise, just hides it.</param>
-        public void HideOrDestroyWhiteboard(bool destroy = false)
-        {
-            if (spawnedWhiteboard != null)
-            {
-                if (destroy)
-                {
-                    Destroy(spawnedWhiteboard);
-                    spawnedWhiteboard = null;
-                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard destroyed.");
-                }
-                else if (spawnedWhiteboard.activeSelf)
-                {
-                    spawnedWhiteboard.SetActive(false);
-                }
-                else
-                {
-                    // Whiteboard is already hidden
-                }
-            }
-            else
-            {
-                // UIDOCUMENT_ToastNotifier.ShowInfoMessage("No whiteboard to hide or destroy.");
-            }
 
-            // Show create note button again
-            ShowCreateNoteButton();
+        public void OnWhiteboardNoteClicked(Note note)
+        {
+            HideWhiteboard();
+            ShowNoteEditor(note, NoteActionType.Edit, (result, affectedNote) =>
+            {
+                ShowNoteEditorNotification(result, affectedNote);
+                ShowWhiteboard();
+            });
+        }
+
+        /// <summary>
+        /// Hides the spawned whiteboard, if present.
+        /// </summary>
+        public void HideWhiteboard()
+        {
+            try
+            {
+                whiteboardController.ShowOrHideWhiteboard();
+                // Show create note button again
+                ShowCreateNoteButton();
+            }
+            catch (System.Exception ex)
+            {
+                ErrorReporter.Report("An error occurred while hiding the whiteboard.", ex);
+            }
         }
 
         /// <summary>
@@ -569,13 +527,24 @@ namespace ARStickyNotes.UI
         /// </summary>
         public void OpenOrHideWhiteboard()
         {
-            if (spawnedWhiteboard == null || !spawnedWhiteboard.activeSelf)
+            try
             {
-                ShowOrSpawnWhiteboard();
+                if (whiteboardController == null)
+                {
+                    throw new Exception("WhiteboardController reference is missing.");
+                }
+                if (!whiteboardController.IsVisible)
+                {
+                    ShowWhiteboard();
+                }
+                else
+                {
+                    HideWhiteboard();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                HideOrDestroyWhiteboard(false); // Only hide, do not destroy
+                ErrorReporter.Report("An error occurred while the whiteboard.", ex);
             }
         }
 
@@ -606,9 +575,9 @@ namespace ARStickyNotes.UI
         /// <param name="note"></param>
         /// <param name="action"></param>
         private void ShowNoteEditor(
-    Note note = null,
-    NoteActionType action = NoteActionType.Insert,
-    Action<NoteEditorResult, Note> onComplete = null)
+        Note note = null,
+        NoteActionType action = NoteActionType.Insert,
+        Action<NoteEditorResult, Note> onComplete = null)
         {
             var root = mainSceneUIDocument.rootVisualElement;
             if (noteEditorRoot != null)
