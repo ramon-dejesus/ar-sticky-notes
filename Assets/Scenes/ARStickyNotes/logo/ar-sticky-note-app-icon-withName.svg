@@ -1,0 +1,30 @@
+<svg width="2048" height="2048" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background (transparent) -->
+  <rect width="2048" height="2048" fill="none"/>
+  
+  <!-- Sticky Note Icon -->
+  <!-- Replace this group with your actual sticky note icon -->
+  <g id="sticky-note-icon" transform="translate(1024, 900)">
+    <!-- Placeholder: Yellow rectangle with folded corner -->
+    <rect x="-400" y="-400" width="800" height="800" fill="#FFD700" rx="40"/>
+    <path d="M 400,-400 L 400,200 L 200,400 Z" fill="#FFA500"/>
+    
+    <!-- Add three black horizontal lines for note lines -->
+    <line x1="-300" y1="-150" x2="300" y2="-150" stroke="#000" stroke-width="20" stroke-linecap="round"/>
+    <line x1="-300" y1="0" x2="300" y2="0" stroke="#000" stroke-width="20" stroke-linecap="round"/>
+    <line x1="-300" y1="150" x2="300" y2="150" stroke="#000" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Text -->
+  <text 
+    x="1024" 
+    y="1600" 
+    font-family="Arial, sans-serif" 
+    font-size="140" 
+    font-weight="bold" 
+    fill="#000000" 
+    text-anchor="middle"
+    letter-spacing="8">
+    AR STICKY NOTES
+  </text>
+</svg>
