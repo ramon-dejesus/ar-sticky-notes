@@ -229,9 +229,21 @@ namespace ARStickyNotes.UI
                         }
                     }
                 };
-
+                notesListView.makeNoneElement = () =>
+                {
+                    // // Create a new Label or other VisualElement
+                    var emptyMessageLabel = new Label("No notes available.");
+                    emptyMessageLabel.AddToClassList("title-label");
+                    emptyMessageLabel.style.marginBottom = 0;
+                    emptyMessageLabel.style.marginTop = 0;
+                    emptyMessageLabel.style.marginLeft = 0;
+                    emptyMessageLabel.style.marginRight = 0;
+                    emptyMessageLabel.style.fontSize = 30;
+                    emptyMessageLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    emptyMessageLabel.style.backgroundColor = new Color(1f, 1f, 1f, 0.5f);
+                    return emptyMessageLabel;
+                };
                 notesListView.itemsSource = noteManager.GetNotes().Items;
-
                 var scrollView = notesListView.Q<ScrollView>();
                 if (scrollView != null)
                 {
@@ -524,7 +536,10 @@ namespace ARStickyNotes.UI
         {
             try
             {
-                whiteboardController.ShowOrHideWhiteboard();
+                if (whiteboardController.IsVisible)
+                {
+                    whiteboardController.ShowOrHideWhiteboard();
+                }
                 // Show create note button again
                 ShowCreateNoteButton();
             }
@@ -545,13 +560,13 @@ namespace ARStickyNotes.UI
                 {
                     throw new Exception("WhiteboardController reference is missing.");
                 }
-                if (!whiteboardController.IsVisible)
+                if (whiteboardController.IsVisible)
                 {
-                    ShowWhiteboard();
+                    HideWhiteboard();
                 }
                 else
                 {
-                    HideWhiteboard();
+                    ShowWhiteboard();
                 }
             }
             catch (System.Exception ex)
