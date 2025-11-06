@@ -94,6 +94,8 @@ namespace ARStickyNotes.UI
         /// </summary>
         private int _currentNoteIndex = -1;
         #endregion
+
+        #region Supporting Functions
         private Vector3 CalculateNotePosition(GameObject note, int index)
         {
             if (NoteSize == null)
@@ -168,16 +170,6 @@ namespace ARStickyNotes.UI
                 noteObject.transform.localPosition = CalculateNotePosition(noteObject, _currentNoteIndex);
                 noteObject.transform.localScale = NoteScale;
                 SetNoteTitle(noteObject, note.Title);
-                // var collider = noteObject.GetComponent<Collider>();
-                // if (collider != null)
-                // {
-                //     var whiteboardController = this;
-                //     var clickHandler = noteObject.AddComponent<NoteClickHandler>();
-                //     clickHandler.OnClick += () =>
-                //     {
-                //         whiteboardController.NoteClicked?.Invoke(note);
-                //     };
-                // }
             }
         }
         private void SetNoteTitle(GameObject noteObject, string title)
@@ -196,6 +188,10 @@ namespace ARStickyNotes.UI
                 }
             }
         }
+
+        /// <summary>
+        /// Loads the whiteboard and its notes.
+        /// </summary>
         private void LoadWhiteboard()
         {
             if (WhiteboardPrefab == null)
@@ -207,19 +203,21 @@ namespace ARStickyNotes.UI
         }
 
         /// <summary>
-        /// Shows or hides the whiteboard.
-        /// <param name="show">If true, shows the whiteboard; if false, hides it.</param>
+        /// Shows the whiteboard.
         /// </summary>
-        private void ShowWhiteboard(bool show = true)
+        public void Show()
         {
-            if (show)
-            {
-                _maxVisibleCount = MaxRowCount * MaxColumnCount;
-                _currentNoteIndex = -1;
-                LoadWhiteboard();
-                //NoteClicked.Invoke();
-            }
-            else if (_spawnedWhiteboard != null)
+            _maxVisibleCount = MaxRowCount * MaxColumnCount;
+            _currentNoteIndex = -1;
+            LoadWhiteboard();
+        }
+
+        /// <summary>
+        /// Hides the whiteboard.
+        /// </summary>
+        public void Hide()
+        {
+            if (_spawnedWhiteboard != null)
             {
                 new ARSpawner().DestroyGameObject(_spawnedWhiteboard);
                 _spawnedWhiteboard = null;
@@ -229,23 +227,17 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Toggles the visibility of the whiteboard.
         /// </summary>
-        public void ShowOrHideWhiteboard()
+        public void ShowOrHide()
         {
-            ShowWhiteboard(!IsVisible);
+            if (IsVisible)
+            {
+                Hide();
+            }
+            else
+            {
+                Show();
+            }
         }
-    }
-
-    /// <summary>
-    /// Simple component that invokes an Action when the GameObject is clicked.
-    /// Works with 3D objects that have a Collider by using OnMouseDown.
-    /// </summary>
-    public class NoteClickHandler : MonoBehaviour
-    {
-        public event Action OnClick;
-
-        private void OnMouseDown()
-        {
-            OnClick?.Invoke();
-        }
+        #endregion
     }
 }

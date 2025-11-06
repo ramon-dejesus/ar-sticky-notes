@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using ARStickyNotes.Models;
 using ARStickyNotes.Services;
@@ -95,7 +94,6 @@ namespace ARStickyNotes.UI
         {
             try
             {
-
                 var root = mainSceneUIDocument.rootVisualElement;
 
                 // Ensure names match UXML exactly (case-sensitive)
@@ -508,7 +506,7 @@ namespace ARStickyNotes.UI
                     whiteboardController.CurrentNotes = noteManager.GetNotes();
                     whiteboardController.NoteClicked += OnWhiteboardNoteClicked;
                 }
-                whiteboardController.ShowOrHideWhiteboard();
+                whiteboardController.Show();
             }
             catch (System.Exception ex)
             {
@@ -536,10 +534,7 @@ namespace ARStickyNotes.UI
         {
             try
             {
-                if (whiteboardController.IsVisible)
-                {
-                    whiteboardController.ShowOrHideWhiteboard();
-                }
+                whiteboardController.Hide();
                 // Show create note button again
                 ShowCreateNoteButton();
             }
@@ -716,7 +711,6 @@ namespace ARStickyNotes.UI
                     break;
             }
         }
-        #endregion
 
         /// <summary>
         /// Unity Start method. Binds UI elements and loads notes.
@@ -739,5 +733,6 @@ namespace ARStickyNotes.UI
                 ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
             }
         }
+        #endregion        
     }
 }
