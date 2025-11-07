@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using ARStickyNotes.Models;
 using ARStickyNotes.Services;
@@ -30,6 +29,11 @@ namespace ARStickyNotes.UI
         /// Reference to the NoteManager responsible for note operations.
         /// </summary>
         [SerializeField] private NoteManager noteManager;
+
+        /// <summary>
+        /// The controller for managing the whiteboard.
+        /// </summary>
+        [SerializeField] private WhiteboardController whiteboardController;
         #endregion
 
         #region UI Elements
@@ -65,27 +69,9 @@ namespace ARStickyNotes.UI
         /// </summary>
         private UnityEngine.UIElements.Button openWhiteboardButton;
 
-        #endregion
+        #endregion     
 
-        #region Prefab References
-        [Header("Prefab References")]
-        /// <summary>
-        /// Reference to the Whiteboard prefab to be instantiated.
-        /// </summary>
-        [SerializeField]
-        private GameObject Whiteboard;
-        #endregion
-
-        #region Fields and Data Objects
-        /// <summary>
-        /// List of notes loaded from the NoteManager.
-        /// </summary>
-        private List<Note> notes = new List<Note>();
-
-        /// <summary>
-        /// Reference to the currently spawned whiteboard instance.
-        /// </summary>
-        private GameObject spawnedWhiteboard;
+        #region Fields and Data Objects   
 
         /// <summary>
         /// Root VisualElement for the note editor panel.
@@ -108,7 +94,6 @@ namespace ARStickyNotes.UI
         {
             try
             {
-
                 var root = mainSceneUIDocument.rootVisualElement;
 
                 // Ensure names match UXML exactly (case-sensitive)
@@ -161,7 +146,7 @@ namespace ARStickyNotes.UI
 
                 notesListView.bindItem = (element, i) =>
                 {
-                    var note = notes[i];
+                    var note = noteManager.GetNotes().Items[i];
                     var titleLabel = element.Q<Label>("titleLabel");
                     var dateLabel = element.Q<Label>("dateLabel");
                     var deleteButton = element.Q<UnityEngine.UIElements.Button>("deleteButton");
@@ -169,10 +154,10 @@ namespace ARStickyNotes.UI
                     titleLabel.text = note.Title ?? "(Untitled)";
                     dateLabel.text = note.CreatedAt.ToString("yyyy-MM-dd HH:mm");
 
-                    #if UNITY_2022_2_OR_NEWER
+#if UNITY_2022_2_OR_NEWER
                     deleteButton.clicked -= (Action)deleteButton.userData;
                     deleteButton.userData = null;
-                    #endif
+#endif
                     if (deleteButton.userData is Action prevAction)
                     {
                         deleteButton.clicked -= prevAction;
@@ -233,18 +218,30 @@ namespace ARStickyNotes.UI
                                 ShowOpenAllNotesButton();
 
                                 // Show Show Whiteboard button after editing
-                                DisplayShowWhiteboardButton();                                
-                                
+                                DisplayShowWhiteboardButton();
+
                                 //  Refresh notes list
-                                LoadNotes(); 
+                                LoadNotes();
                             });
                             break;
                         }
                     }
                 };
-
-                notesListView.itemsSource = notes;
-
+                notesListView.makeNoneElement = () =>
+                {
+                    // // Create a new Label or other VisualElement
+                    var emptyMessageLabel = new Label("No notes available.");
+                    emptyMessageLabel.AddToClassList("title-label");
+                    emptyMessageLabel.style.marginBottom = 0;
+                    emptyMessageLabel.style.marginTop = 0;
+                    emptyMessageLabel.style.marginLeft = 0;
+                    emptyMessageLabel.style.marginRight = 0;
+                    emptyMessageLabel.style.fontSize = 30;
+                    emptyMessageLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+                    emptyMessageLabel.style.backgroundColor = new Color(1f, 1f, 1f, 0.5f);
+                    return emptyMessageLabel;
+                };
+                notesListView.itemsSource = noteManager.GetNotes().Items;
                 var scrollView = notesListView.Q<ScrollView>();
                 if (scrollView != null)
                 {
@@ -417,7 +414,7 @@ namespace ARStickyNotes.UI
             else
             {
                 // If whiteboard is open, hide/destroy it
-                HideOrDestroyWhiteboard(false);
+                HideWhiteboard();
 
                 // Currently hidden, so show it
                 ShowNotesMenu();
@@ -490,104 +487,86 @@ namespace ARStickyNotes.UI
 
 
         /// <summary>
-        /// Shows the whiteboard: spawns if needed, or just makes visible if hidden.
+        /// Shows the whiteboard.
         /// </summary>
-        public void ShowOrSpawnWhiteboard()
-        {
-            // Hide all notes panel visibility
-            HideNotesMenu();
-
-            // Update button states
-            // Hide create note button, hide close all notes button, and show open all notes button
-            HideCreateNoteButton();
-            HideCloseAllNotesButton();
-            ShowOpenAllNotesButton();
-
-            if (spawnedWhiteboard == null)
-            {
-                try
-                {
-                    if (Whiteboard == null)
-                    {
-                        throw new System.Exception("Whiteboard reference is missing.");
-                    }
-                    WhiteboardController.EnableEvent += OnWhiteboardActivated;
-                    spawnedWhiteboard = new ARSpawner().SpawnGameObject(Whiteboard);
-                    //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard spawned. Tap on it to add notes.");
-                }
-                catch (System.Exception ex)
-                {
-                    ErrorReporter.Report("An error occurred while spawning the whiteboard.", ex);
-                }
-            }
-            else if (!spawnedWhiteboard.activeSelf)
-            {
-                spawnedWhiteboard.SetActive(true);
-                //UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard shown.");
-            }
-            else
-            {
-                UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard is already visible.");
-            }
-        }
-        public void OnWhiteboardActivated()
+        public void ShowWhiteboard()
         {
             try
             {
-                if (spawnedWhiteboard != null)
+                // Hide all notes panel visibility
+                HideNotesMenu();
+
+                // Update button states
+                // Hide create note button, hide close all notes button, and show open all notes button
+                HideCreateNoteButton();
+                HideCloseAllNotesButton();
+                ShowOpenAllNotesButton();
+                if (whiteboardController.CurrentNotes == null)
                 {
-                    spawnedWhiteboard.GetComponent<WhiteboardController>().LoadNotes(noteManager.GetNotes());
+                    whiteboardController.CurrentNotes = noteManager.GetNotes();
+                    whiteboardController.NoteClicked += OnWhiteboardNoteClicked;
                 }
+                whiteboardController.Show();
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                ErrorReporter.Report("Failed to load notes onto whiteboard upon activation.", ex);
+                ErrorReporter.Report("An error occurred while showing the whiteboard.", ex);
             }
         }
+
         /// <summary>
-        /// Hides or destroys the spawned whiteboard, if present.
+        /// Callback when a note on the whiteboard is clicked.
         /// </summary>
-        /// <param name="destroy">If true, destroys the whiteboard. Otherwise, just hides it.</param>
-        public void HideOrDestroyWhiteboard(bool destroy = false)
+        public void OnWhiteboardNoteClicked(Note note)
         {
-            if (spawnedWhiteboard != null)
+            HideWhiteboard();
+            ShowNoteEditor(note, NoteActionType.Edit, (result, affectedNote) =>
             {
-                if (destroy)
-                {
-                    Destroy(spawnedWhiteboard);
-                    spawnedWhiteboard = null;
-                    UIDOCUMENT_ToastNotifier.ShowInfoMessage("Whiteboard destroyed.");
-                }
-                else if (spawnedWhiteboard.activeSelf)
-                {
-                    spawnedWhiteboard.SetActive(false);
-                }
-                else
-                {
-                    // Whiteboard is already hidden
-                }
-            }
-            else
-            {
-                // UIDOCUMENT_ToastNotifier.ShowInfoMessage("No whiteboard to hide or destroy.");
-            }
-
-            // Show create note button again
-            ShowCreateNoteButton();
+                ShowNoteEditorNotification(result, affectedNote);
+                ShowWhiteboard();
+            });
         }
 
         /// <summary>
-        /// Toggles the whiteboard: shows/spawns if hidden, hides if visible.
+        /// Hides the spawned whiteboard, if present.
+        /// </summary>
+        public void HideWhiteboard()
+        {
+            try
+            {
+                whiteboardController.Hide();
+                // Show create note button again
+                ShowCreateNoteButton();
+            }
+            catch (System.Exception ex)
+            {
+                ErrorReporter.Report("An error occurred while hiding the whiteboard.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Toggles the whiteboard: shows if hidden, hides if visible.
         /// </summary>
         public void OpenOrHideWhiteboard()
         {
-            if (spawnedWhiteboard == null || !spawnedWhiteboard.activeSelf)
+            try
             {
-                ShowOrSpawnWhiteboard();
+                if (whiteboardController == null)
+                {
+                    throw new Exception("WhiteboardController reference is missing.");
+                }
+                if (whiteboardController.IsVisible)
+                {
+                    HideWhiteboard();
+                }
+                else
+                {
+                    ShowWhiteboard();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                HideOrDestroyWhiteboard(false); // Only hide, do not destroy
+                ErrorReporter.Report("An error occurred while the whiteboard.", ex);
             }
         }
 
@@ -598,11 +577,9 @@ namespace ARStickyNotes.UI
         {
             try
             {
-                var noteList = noteManager.GetNotes();
-                notes = noteList?.Items ?? new List<Note>();
                 if (notesListView != null)
                 {
-                    notesListView.itemsSource = notes;
+                    notesListView.itemsSource = noteManager.GetNotes().Items;
                     notesListView.RefreshItems();
                 }
             }
@@ -686,12 +663,12 @@ namespace ARStickyNotes.UI
                     noteManager.DeleteNote(note.Id);
                     CloseNoteEditor();
                     onComplete?.Invoke(NoteEditorResult.Deleted, note);
-                }                
+                }
             };
 
             // Cancel logic
             cancelButton.clicked += () =>
-            {   
+            {
                 // Simply close the editor without saving            
                 CloseNoteEditor();
                 onComplete?.Invoke(NoteEditorResult.Cancelled, null);
@@ -714,7 +691,7 @@ namespace ARStickyNotes.UI
                 onNoteEditorClosed = null;
             }
         }
-        
+
         private void ShowNoteEditorNotification(NoteEditorResult result, Note affectedNote)
         {
             switch (result)
@@ -734,7 +711,6 @@ namespace ARStickyNotes.UI
                     break;
             }
         }
-        #endregion
 
         /// <summary>
         /// Unity Start method. Binds UI elements and loads notes.
@@ -757,5 +733,6 @@ namespace ARStickyNotes.UI
                 ErrorReporter.Report("Failed to initialize the data binding UI.", ex);
             }
         }
+        #endregion        
     }
 }
