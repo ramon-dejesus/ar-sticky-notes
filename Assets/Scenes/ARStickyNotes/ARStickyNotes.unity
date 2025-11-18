@@ -187,7 +187,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 75969488}
   panelSettings: {fileID: 11400000, guid: 16f6b254532da44c590c957d7115d913, type: 2}
-  referenceResolution: {x: 1080, y: 1920}
   match: 0.5
 --- !u!114 &75969490
 MonoBehaviour:

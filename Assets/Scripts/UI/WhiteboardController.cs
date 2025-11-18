@@ -3,6 +3,8 @@ using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace ARStickyNotes.UI
 {
@@ -165,15 +167,30 @@ namespace ARStickyNotes.UI
                 {
                     throw new System.Exception("Could not instantiate note prefab");
                 }
-                noteObject.name = "Note" + note.Id;
+                noteObject.name = "Note" + i.ToString();
                 noteObject.transform.SetParent(container.transform, false);
                 noteObject.transform.localPosition = CalculateNotePosition(noteObject, _currentNoteIndex);
                 noteObject.transform.localScale = NoteScale;
                 SetNoteTitle(noteObject, note.Title);
+                SetNoteClick(noteObject, note);
             }
         }
+
+        /// <summary>
+        /// Sets the title text of the note.
+        /// </summary>
         private void SetNoteTitle(GameObject noteObject, string title)
         {
+            // var tmp1 = GetComponentInChildren<Canvas>();
+            // if (tmp1 != null)
+            // {
+            //     tmp1.worldCamera = Camera.main;
+            // }
+            // var tmp = noteObject.GetComponentInChildren<Canvas>();
+            // if (tmp != null)
+            // {
+            //     tmp.worldCamera = Camera.main;
+            // }
             var txt = noteObject.GetComponentInChildren<TextMeshPro>();
             if (txt != null)
             {
@@ -186,6 +203,17 @@ namespace ARStickyNotes.UI
                 {
                     txt2.text = title;
                 }
+            }
+        }
+
+        private void SetNoteClick(GameObject noteObject, Note item)
+        {
+            if (NoteClicked != null)
+            {
+                noteObject.GetComponent<TouchableObjectController>().Clicked += () =>
+                {
+                    NoteClicked?.Invoke(item);
+                };
             }
         }
 
