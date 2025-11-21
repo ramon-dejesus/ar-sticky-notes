@@ -520,9 +520,15 @@ namespace ARStickyNotes.UI
         public void OnWhiteboardNoteClicked(Note note)
         {
             HideWhiteboard();
+            HideNotesMenu();
+            HideCreateNoteButton();
+            HideOpenAllNotesButton();
+            HideShowWhiteboardButton();
+            HideCloseAllNotesButton();
             ShowNoteEditor(note, NoteActionType.Edit, (result, affectedNote) =>
             {
                 ShowNoteEditorNotification(result, affectedNote);
+                DisplayShowWhiteboardButton();
                 ShowWhiteboard();
             });
         }

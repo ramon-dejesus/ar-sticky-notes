@@ -3,6 +3,8 @@ using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace ARStickyNotes.UI
 {
@@ -96,6 +98,10 @@ namespace ARStickyNotes.UI
         #endregion
 
         #region Supporting Functions
+
+        /// <summary>
+        /// Calculates the position for a note based on its index and initial position.
+        /// </summary>
         private Vector3 CalculateNotePosition(GameObject note, int index)
         {
             if (NoteSize == null)
@@ -106,13 +112,13 @@ namespace ARStickyNotes.UI
                     if (note.GetComponentInChildren<Renderer>() != null)
                     {
                         renderer = note.GetComponentInChildren<Renderer>();
-                        Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
+                        Bounds objectBounds = renderer.bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<Collider>() != null)
                     {
                         Collider collider = note.GetComponentInChildren<Collider>();
-                        Bounds objectBounds = collider.bounds; // Or GetComponent<Collider>().bounds;
+                        Bounds objectBounds = collider.bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<RectTransform>() != null)
@@ -127,7 +133,7 @@ namespace ARStickyNotes.UI
                 }
                 else
                 {
-                    Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
+                    Bounds objectBounds = renderer.bounds;
                     NoteSize = objectBounds.size;
                 }
             }
@@ -142,6 +148,10 @@ namespace ARStickyNotes.UI
             position.z -= row * NoteSize.Value.z;
             return position;
         }
+
+        /// <summary>
+        /// Loads the notes onto the whiteboard.
+        /// </summary>
         private void LoadNotes()
         {
             if (NotePrefab == null)
@@ -165,13 +175,18 @@ namespace ARStickyNotes.UI
                 {
                     throw new System.Exception("Could not instantiate note prefab");
                 }
-                noteObject.name = "Note" + note.Id;
+                noteObject.name = "Note" + i.ToString();
                 noteObject.transform.SetParent(container.transform, false);
                 noteObject.transform.localPosition = CalculateNotePosition(noteObject, _currentNoteIndex);
                 noteObject.transform.localScale = NoteScale;
                 SetNoteTitle(noteObject, note.Title);
+                SetNoteClick(noteObject, note);
             }
         }
+
+        /// <summary>
+        /// Sets the title text of the note.
+        /// </summary>
         private void SetNoteTitle(GameObject noteObject, string title)
         {
             var txt = noteObject.GetComponentInChildren<TextMeshPro>();
@@ -186,6 +201,20 @@ namespace ARStickyNotes.UI
                 {
                     txt2.text = title;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets up the click event for the note.
+        /// </summary>
+        private void SetNoteClick(GameObject noteObject, Note item)
+        {
+            if (NoteClicked != null)
+            {
+                noteObject.GetComponent<TouchableObjectController>().Clicked += () =>
+                {
+                    NoteClicked?.Invoke(item);
+                };
             }
         }
 
