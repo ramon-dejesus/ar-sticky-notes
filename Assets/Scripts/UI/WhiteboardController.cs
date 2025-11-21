@@ -108,13 +108,13 @@ namespace ARStickyNotes.UI
                     if (note.GetComponentInChildren<Renderer>() != null)
                     {
                         renderer = note.GetComponentInChildren<Renderer>();
-                        Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
+                        Bounds objectBounds = renderer.bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<Collider>() != null)
                     {
                         Collider collider = note.GetComponentInChildren<Collider>();
-                        Bounds objectBounds = collider.bounds; // Or GetComponent<Collider>().bounds;
+                        Bounds objectBounds = collider.bounds;
                         NoteSize = objectBounds.size;
                     }
                     else if (note.GetComponentInChildren<RectTransform>() != null)
@@ -129,7 +129,7 @@ namespace ARStickyNotes.UI
                 }
                 else
                 {
-                    Bounds objectBounds = renderer.bounds; // Or GetComponent<Collider>().bounds;
+                    Bounds objectBounds = renderer.bounds;
                     NoteSize = objectBounds.size;
                 }
             }
@@ -181,16 +181,6 @@ namespace ARStickyNotes.UI
         /// </summary>
         private void SetNoteTitle(GameObject noteObject, string title)
         {
-            // var tmp1 = GetComponentInChildren<Canvas>();
-            // if (tmp1 != null)
-            // {
-            //     tmp1.worldCamera = Camera.main;
-            // }
-            // var tmp = noteObject.GetComponentInChildren<Canvas>();
-            // if (tmp != null)
-            // {
-            //     tmp.worldCamera = Camera.main;
-            // }
             var txt = noteObject.GetComponentInChildren<TextMeshPro>();
             if (txt != null)
             {
