@@ -98,6 +98,10 @@ namespace ARStickyNotes.UI
         #endregion
 
         #region Supporting Functions
+
+        /// <summary>
+        /// Calculates the position for a note based on its index and initial position.
+        /// </summary>
         private Vector3 CalculateNotePosition(GameObject note, int index)
         {
             if (NoteSize == null)
@@ -144,6 +148,10 @@ namespace ARStickyNotes.UI
             position.z -= row * NoteSize.Value.z;
             return position;
         }
+
+        /// <summary>
+        /// Loads the notes onto the whiteboard.
+        /// </summary>
         private void LoadNotes()
         {
             if (NotePrefab == null)
@@ -196,6 +204,9 @@ namespace ARStickyNotes.UI
             }
         }
 
+        /// <summary>
+        /// Sets up the click event for the note.
+        /// </summary>
         private void SetNoteClick(GameObject noteObject, Note item)
         {
             if (NoteClicked != null)
