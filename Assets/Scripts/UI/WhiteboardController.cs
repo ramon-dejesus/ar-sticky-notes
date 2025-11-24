@@ -41,7 +41,7 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Initial position for the first note on the whiteboard.
         /// </summary>
-        [SerializeField] public Vector3 NoteInitialPosition = new(0.012f, 0.01f, -0.006f);
+        [SerializeField] public Vector3 InitialPosition = new(0.0125f, 0.01f, -0.006f);
 
         /// <summary>
         /// Scale to apply to each note on the whiteboard.
@@ -54,14 +54,19 @@ namespace ARStickyNotes.UI
         [SerializeField] public Vector3? NoteSize = new(0.004f, 0.01f, -0.004f);
 
         /// <summary>
+        /// Size of each pagination button on the whiteboard. If null, it will be calculated from the button prefab.
+        /// </summary>
+        [SerializeField] public Vector3? PaginationButtonSize = new(0.004f, 0.01f, -0.004f);
+
+        /// <summary>
         /// Maximum number of rows of notes on the whiteboard.
         /// </summary>
-        [SerializeField] public int MaxRowCount = 2;
+        [SerializeField] public int MaxRowCount = 3;
 
         /// <summary>
         /// Maximum number of columns of notes on the whiteboard.
         /// </summary>
-        [SerializeField] public int MaxColumnCount = 5;
+        [SerializeField] public int MaxColumnCount = 7;
 
         /// <summary>
         /// Scale to apply to each pagination button on the whiteboard.
@@ -109,8 +114,8 @@ namespace ARStickyNotes.UI
         /// </summary>
         private int _currentNoteIndex = -1;
 
-        private string _previousButtonName = Guid.NewGuid().ToString("N");
-        private string _nextButtonName = Guid.NewGuid().ToString("N");
+        private readonly string _previousButtonName = "WhiteboardPrevious"; //Guid.NewGuid().ToString("N");
+        private readonly string _nextButtonName = "WhiteboardNext"; //Guid.NewGuid().ToString("N");
         #endregion
 
         #region Supporting Functions
@@ -167,7 +172,7 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Loads the notes onto the whiteboard.
         /// </summary>
-        private void LoadNotes()
+        private void LoadNotes(int skipCount = 0)
         {
             if (NotePrefab == null)
             {
@@ -175,6 +180,8 @@ namespace ARStickyNotes.UI
             }
             CurrentNotes ??= new NoteList();
             ClearNotes();
+            _currentNoteIndex += skipCount;
+            _currentNoteIndex = _currentNoteIndex < -1 ? -1 : _currentNoteIndex;
             for (var i = 0; i < _maxVisibleCount && (_currentNoteIndex + 1) < CurrentNotes.Items.Count; i++)
             {
                 _currentNoteIndex++;
@@ -249,7 +256,7 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Calculates the position for a note based on its index and initial position.
         /// </summary>
-        private Vector3 CalculatePosition(GameObject note, int index, Vector3? size = null)
+        private Vector3 CalculatePosition(GameObject note, int index, Vector3? size = null, int columnCount = 0)
         {
             if (size == null)
             {
@@ -263,9 +270,10 @@ namespace ARStickyNotes.UI
             {
                 throw new System.Exception("Could not determine size.");
             }
-            var row = index / MaxColumnCount;
-            var column = index % MaxColumnCount;
-            var position = NoteInitialPosition;
+            columnCount = columnCount > 0 ? columnCount : MaxColumnCount;
+            var row = index / columnCount;
+            var column = index % columnCount;
+            var position = InitialPosition;
             position.x -= column * size.Value.x;
             position.z -= row * size.Value.z;
             return position;
@@ -314,11 +322,14 @@ namespace ARStickyNotes.UI
         /// </summary>
         private void LoadPaginationButtons()
         {
-            ClearPaginationButtons();
             if (CurrentNotes.Items.Count > 0 && PreviousPrefab != null && NextPrefab != null)
             {
                 LoadPreviousButton();
                 LoadNextButton();
+            }
+            else
+            {
+                ClearPaginationButtons();
             }
         }
 
@@ -341,31 +352,28 @@ namespace ARStickyNotes.UI
             {
                 throw new System.Exception("Could not find container.");
             }
-            if (_currentNoteIndex + 1 > _maxVisibleCount)
+            var btn = new ARSpawner().GetGameObject(_previousButtonName, false, true);
+            if (btn == null)
             {
-                var prev = Instantiate(PreviousPrefab, _spawnedWhiteboard.transform);
-                if (prev == null)
+                btn = Instantiate(PreviousPrefab, _spawnedWhiteboard.transform);
+                if (btn == null)
                 {
                     throw new System.Exception("Could not instantiate the previous button.");
                 }
-                prev.name = _previousButtonName;
-                prev.transform.SetParent(container.transform, false);
-                prev.transform.localPosition = CalculatePosition(prev, _currentNoteIndex);
-                prev.transform.localScale = PaginationButtonScale;
-                if (prev.GetComponent<TouchableObjectController>() == null)
+                btn.name = _previousButtonName;
+                btn.transform.SetParent(container.transform, false);
+                btn.transform.localScale = PaginationButtonScale;
+                btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount, PaginationButtonSize);
+                if (btn.GetComponent<TouchableObjectController>() == null)
                 {
-                    prev.AddComponent<TouchableObjectController>();
+                    btn.AddComponent<TouchableObjectController>();
                 }
-                prev.GetComponent<TouchableObjectController>().Clicked += () =>
+                btn.GetComponent<TouchableObjectController>().Clicked += () =>
                 {
-                    _currentNoteIndex -= _maxVisibleCount * 2;
-                    LoadNotes();
+                    LoadNotes(_maxVisibleCount * -2);
                 };
             }
-            else
-            {
-                new ARSpawner().InactivateGameObject(_previousButtonName);
-            }
+            btn.SetActive(_currentNoteIndex + 1 > _maxVisibleCount);
         }
 
         /// <summary>>
@@ -374,30 +382,28 @@ namespace ARStickyNotes.UI
         private void LoadNextButton()
         {
             var container = new ARSpawner().GetGameObject(ContainerName, false, true);
-            if (_currentNoteIndex + 1 < CurrentNotes.Items.Count)
+            var btn = new ARSpawner().GetGameObject(_nextButtonName, false, true);
+            if (btn == null)
             {
-                var next = Instantiate(NextPrefab, _spawnedWhiteboard.transform);
-                if (next == null)
+                btn = Instantiate(NextPrefab, _spawnedWhiteboard.transform);
+                if (btn == null)
                 {
                     throw new System.Exception("Could not instantiate the next button.");
                 }
-                next.name = _nextButtonName;
-                next.transform.SetParent(container.transform, false);
-                next.transform.localPosition = CalculatePosition(next, _currentNoteIndex);
-                next.transform.localScale = PaginationButtonScale;
-                if (next.GetComponent<TouchableObjectController>() == null)
+                btn.name = _nextButtonName;
+                btn.transform.SetParent(container.transform, false);
+                btn.transform.localScale = PaginationButtonScale;
+                btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount + MaxColumnCount - 1, PaginationButtonSize);
+                if (btn.GetComponent<TouchableObjectController>() == null)
                 {
-                    next.AddComponent<TouchableObjectController>();
+                    btn.AddComponent<TouchableObjectController>();
                 }
-                next.GetComponent<TouchableObjectController>().Clicked += () =>
+                btn.GetComponent<TouchableObjectController>().Clicked += () =>
                 {
                     LoadNotes();
                 };
             }
-            else
-            {
-                new ARSpawner().InactivateGameObject(_nextButtonName);
-            }
+            btn.SetActive(_currentNoteIndex + 1 < CurrentNotes.Items.Count);
         }
         #endregion
     }

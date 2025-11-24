@@ -739,10 +739,10 @@ MonoBehaviour:
   NextPrefab: {fileID: 4324846654072462837, guid: b1fc8adc697864d4994dd497bcadb6e8,
     type: 3}
   ContainerName: Root
-  NoteInitialPosition: {x: 0.012, y: 0.01, z: -0.006}
+  InitialPosition: {x: 0.0125, y: 0.01, z: -0.006}
   NoteScale: {x: 0.001, y: 0.001, z: 0.001}
-  MaxRowCount: 1
-  MaxColumnCount: 1
+  MaxRowCount: 3
+  MaxColumnCount: 7
   PaginationButtonScale: {x: 0.001, y: 0.001, z: 0.001}
 --- !u!1 &694620218
 GameObject:
