@@ -741,7 +741,7 @@ MonoBehaviour:
   ContainerName: Root
   InitialPosition: {x: 0.0125, y: 0.01, z: -0.006}
   NoteScale: {x: 0.001, y: 0.001, z: 0.001}
-  MaxRowCount: 3
+  MaxRowCount: 4
   MaxColumnCount: 7
   PaginationButtonScale: {x: 0.001, y: 0.001, z: 0.001}
 --- !u!1 &694620218

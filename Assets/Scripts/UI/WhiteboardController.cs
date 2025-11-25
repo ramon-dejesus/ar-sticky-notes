@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using TMPro;
@@ -61,7 +63,7 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Maximum number of rows of notes on the whiteboard.
         /// </summary>
-        [SerializeField] public int MaxRowCount = 3;
+        [SerializeField] public int MaxRowCount = 4;
 
         /// <summary>
         /// Maximum number of columns of notes on the whiteboard.
@@ -72,17 +74,28 @@ namespace ARStickyNotes.UI
         /// Scale to apply to each pagination button on the whiteboard.
         /// </summary>
         [SerializeField] public Vector3 PaginationButtonScale = new(0.001f, 0.001f, 0.001f);
-        #endregion
 
+        /// <summary>
+        /// Position of the Previous button on the whiteboard. If null, it will be calculated.
+        /// </summary>
+        [SerializeField] public Vector3? PreviousButtonPosition = new(0.018f, 0.01f, 0f);
+
+        /// <summary>
+        /// Position of the Next button on the whiteboard. If null, it will be calculated.
+        /// </summary>
+        [SerializeField] public Vector3? NextButtonPosition = new(-0.018f, 0.01f, 0f);
+        #endregion
         #region Events
         /// <summary>
         /// Event triggered when a note is clicked.
         /// </summary>
         public event Action<Note> NoteClicked;
         #endregion
-
         #region Fields and Data Objects
-
+        /// <summary>
+        /// ID of the note that was clicked.
+        /// </summary>
+        private string _clickedNoteId = "";
         /// <summary>
         /// Indicates whether the whiteboard is currently visible.
         /// </summary>
@@ -114,10 +127,16 @@ namespace ARStickyNotes.UI
         /// </summary>
         private int _currentNoteIndex = -1;
 
-        private readonly string _previousButtonName = "WhiteboardPrevious"; //Guid.NewGuid().ToString("N");
-        private readonly string _nextButtonName = "WhiteboardNext"; //Guid.NewGuid().ToString("N");
-        #endregion
+        /// <summary>
+        /// Unique name for the Previous button instance.
+        /// </summary>
+        private readonly string _previousButtonName = Guid.NewGuid().ToString("N");
 
+        /// <summary>
+        /// Unique name for the Next button instance.
+        /// </summary>
+        private readonly string _nextButtonName = Guid.NewGuid().ToString("N");
+        #endregion
         #region Supporting Functions
         /// <summary>
         /// Shows the whiteboard.
@@ -125,7 +144,12 @@ namespace ARStickyNotes.UI
         public void Show()
         {
             _maxVisibleCount = MaxRowCount * MaxColumnCount;
-            _currentNoteIndex = -1;
+            _currentNoteIndex = _clickedNoteId == "" ? -1 : _currentNoteIndex;
+            var tmpIndex = CurrentNotes != null ? GetSortedNotes().FindIndex(o => o.Id == _clickedNoteId) : _currentNoteIndex;
+            _currentNoteIndex = tmpIndex == -1 ? _currentNoteIndex : tmpIndex;
+            _currentNoteIndex = _currentNoteIndex == -1 ? 0 : CalculateFirstRowIndex(_currentNoteIndex);
+            _clickedNoteId = "";
+            _currentNoteIndex -= 1;
             LoadWhiteboard();
         }
 
@@ -138,21 +162,6 @@ namespace ARStickyNotes.UI
             {
                 new ARSpawner().DestroyGameObject(_spawnedWhiteboard);
                 _spawnedWhiteboard = null;
-            }
-        }
-
-        /// <summary>
-        /// Toggles the visibility of the whiteboard.
-        /// </summary>
-        public void ShowOrHide()
-        {
-            if (IsVisible)
-            {
-                Hide();
-            }
-            else
-            {
-                Show();
             }
         }
 
@@ -170,6 +179,27 @@ namespace ARStickyNotes.UI
         }
 
         /// <summary>
+        /// Retrieves the sorted list of notes.
+        /// </summary>
+        private List<Note> GetSortedNotes()
+        {
+            return CurrentNotes == null ? new List<Note>() : CurrentNotes.Items.OrderBy(o => o.Title).ToList();
+        }
+
+        /// <summary>
+        /// Calculates the first row index based on the current index.
+        /// </summary>
+        private int CalculateFirstRowIndex(int index)
+        {
+            while (index % _maxVisibleCount != 0 && _currentNoteIndex >= 0)
+            {
+                index--;
+            }
+            ;
+            return index;
+        }
+
+        /// <summary>
         /// Loads the notes onto the whiteboard.
         /// </summary>
         private void LoadNotes(int skipCount = 0)
@@ -178,14 +208,15 @@ namespace ARStickyNotes.UI
             {
                 throw new System.Exception("Note prefab reference is missing.");
             }
-            CurrentNotes ??= new NoteList();
             ClearNotes();
+            CurrentNotes ??= new NoteList();
             _currentNoteIndex += skipCount;
-            _currentNoteIndex = _currentNoteIndex < -1 ? -1 : _currentNoteIndex;
-            for (var i = 0; i < _maxVisibleCount && (_currentNoteIndex + 1) < CurrentNotes.Items.Count; i++)
+            _currentNoteIndex = _currentNoteIndex < -1 || _currentNoteIndex >= CurrentNotes.Items.Count ? -1 : _currentNoteIndex;
+            var items = GetSortedNotes();
+            for (var i = 0; i < _maxVisibleCount && (_currentNoteIndex + 1) < items.Count; i++)
             {
                 _currentNoteIndex++;
-                var note = CurrentNotes.Items[_currentNoteIndex];
+                var note = items[_currentNoteIndex];
                 var container = new ARSpawner().GetGameObject(ContainerName, false, true);
                 if (container == null)
                 {
@@ -312,6 +343,7 @@ namespace ARStickyNotes.UI
                 }
                 noteObject.GetComponent<TouchableObjectController>().Clicked += () =>
                 {
+                    _clickedNoteId = item.Id;
                     NoteClicked?.Invoke(item);
                 };
             }
@@ -363,7 +395,7 @@ namespace ARStickyNotes.UI
                 btn.name = _previousButtonName;
                 btn.transform.SetParent(container.transform, false);
                 btn.transform.localScale = PaginationButtonScale;
-                btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount, PaginationButtonSize);
+                btn.transform.localPosition = PreviousButtonPosition ?? CalculatePosition(btn, _maxVisibleCount + MaxColumnCount, PaginationButtonSize);
                 if (btn.GetComponent<TouchableObjectController>() == null)
                 {
                     btn.AddComponent<TouchableObjectController>();
@@ -393,7 +425,7 @@ namespace ARStickyNotes.UI
                 btn.name = _nextButtonName;
                 btn.transform.SetParent(container.transform, false);
                 btn.transform.localScale = PaginationButtonScale;
-                btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount + MaxColumnCount - 1, PaginationButtonSize);
+                btn.transform.localPosition = NextButtonPosition ?? CalculatePosition(btn, _maxVisibleCount + (MaxColumnCount * 2) - 1, PaginationButtonSize);
                 if (btn.GetComponent<TouchableObjectController>() == null)
                 {
                     btn.AddComponent<TouchableObjectController>();
