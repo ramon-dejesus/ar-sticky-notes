@@ -168,6 +168,11 @@ namespace ARStickyNotes.UI
                         try
                         {
                             noteManager.DeleteNote(note.Id);
+                            
+                            // Notify user of deletion
+                            ShowNoteEditorNotification(NoteEditorResult.Deleted, note);
+
+                            // Refresh notes list
                             LoadNotes();
                         }
                         catch (Exception ex)
@@ -212,16 +217,22 @@ namespace ARStickyNotes.UI
                                 ShowNoteEditorNotification(result, affectedNote);
 
                                 // Show create note button after editing
-                                ShowCreateNoteButton();
+                                //ShowCreateNoteButton();
 
                                 // Show Open All Notes button after editing
-                                ShowOpenAllNotesButton();
+                                //ShowOpenAllNotesButton();
 
                                 // Show Show Whiteboard button after editing
                                 DisplayShowWhiteboardButton();
 
+                                // Show Close All Notes button after editing
+                                ShowCloseAllNotesButton();
+
                                 //  Refresh notes list
                                 LoadNotes();
+
+                                // Show notes menu again
+                                ShowNotesMenu();
                             });
                             break;
                         }
@@ -668,6 +679,8 @@ namespace ARStickyNotes.UI
                 {
                     noteManager.DeleteNote(note.Id);
                     CloseNoteEditor();
+
+                    // Invoke callback
                     onComplete?.Invoke(NoteEditorResult.Deleted, note);
                 }
             };
