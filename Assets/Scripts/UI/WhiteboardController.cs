@@ -68,7 +68,7 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Maximum number of rows of notes on the whiteboard.
         /// </summary>
-        [SerializeField] public int MaxRowCount = 3;
+        [SerializeField] public int MaxRowCount = 2;
 
         /// <summary>
         /// Maximum number of columns of notes on the whiteboard.
@@ -125,13 +125,13 @@ namespace ARStickyNotes.UI
         /// <summary>
         /// Unique name for the Previous button instance.
         /// </summary>
-        private readonly string _previousButtonName = "PreviousButton_" + Guid.NewGuid().ToString("N");
+        private readonly string _previousButtonName = "PreviousButton" + Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// Unique name for the Next button instance.
         /// </summary>
-        private readonly string _nextButtonName = "NextButton_" + Guid.NewGuid().ToString("N");
-        private readonly string _counterName = "Counter_" + Guid.NewGuid().ToString("N");
+        private readonly string _nextButtonName = "NextButton" + Guid.NewGuid().ToString("N");
+        private readonly string _counterName = "Counter" + Guid.NewGuid().ToString("N");
         #endregion
         #region Supporting Functions
         /// <summary>
