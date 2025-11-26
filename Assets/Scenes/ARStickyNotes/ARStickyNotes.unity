@@ -738,10 +738,12 @@ MonoBehaviour:
     type: 3}
   NextPrefab: {fileID: 4324846654072462837, guid: b1fc8adc697864d4994dd497bcadb6e8,
     type: 3}
+  CounterPrefab: {fileID: 7363107466059953400, guid: 5c0d235e2d32b3f4a8ba3e326f4e795e,
+    type: 3}
   ContainerName: Root
   InitialPosition: {x: 0.0125, y: 0.01, z: -0.006}
   NoteScale: {x: 0.001, y: 0.001, z: 0.001}
-  MaxRowCount: 4
+  MaxRowCount: 2
   MaxColumnCount: 7
   PaginationButtonScale: {x: 0.001, y: 0.001, z: 0.001}
 --- !u!1 &694620218
