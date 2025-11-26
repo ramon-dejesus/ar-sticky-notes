@@ -3,6 +3,7 @@ using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using ARStickyNotes.UI;
+using System.Linq;
 
 namespace ARStickyNotes.Services
 {
@@ -123,6 +124,17 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
+        /// Retrieves the sorted list of notes.
+        /// </summary>
+        private void SortNotes()
+        {
+            if (Notes != null && Notes.Items != null)
+            {
+                Notes.Items = Notes.Items.OrderBy(o => o.Title).ToList();
+            }
+        }
+
+        /// <summary>
         /// Loads the notes from local storage, or initializes a new list if none found.
         /// </summary>
         /// <returns>The loaded or newly created list of notes.</returns>
@@ -139,7 +151,10 @@ namespace ARStickyNotes.Services
                     Notes ??= new NoteList();
                 }
                 if (Notes.Items == null)
+                {
                     Notes.Items = new System.Collections.Generic.List<Note>();
+                }
+                SortNotes();
                 return Notes;
             }
             catch (Exception ex)
@@ -154,6 +169,7 @@ namespace ARStickyNotes.Services
         /// </summary>
         private void SaveNotes()
         {
+            SortNotes();
             Storage.SaveObject(GetNotesFilename(), Notes);
         }
 

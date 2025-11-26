@@ -1,13 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
-using UnityUtils;
-using ARStickyNotes.UI;
 using UnityEngine.InputSystem;
 
 namespace ARStickyNotes.UI
