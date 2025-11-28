@@ -171,6 +171,12 @@ namespace ARStickyNotes.UI
                 throw new System.Exception("Whiteboard prefab reference is missing.");
             }
             _spawnedWhiteboard = new ARSpawner().SpawnGameObject(WhiteboardPrefab);
+            var touchable = _spawnedWhiteboard.GetComponent<TouchableObjectController>();
+            if (touchable == null)
+            {
+                touchable = _spawnedWhiteboard.AddComponent<TouchableObjectController>();
+            }
+            touchable.EnableDragging("DraggableObject");
             LoadNotes();
         }
 
