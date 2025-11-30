@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using ARStickyNotes.Utilities;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace ARStickyNotes.Models
@@ -110,7 +111,9 @@ namespace ARStickyNotes.Models
         {
             while (_isDragging)
             {
-                transform.position = WorldPosition + PositionOffset;
+                //transform.position = WorldPosition + PositionOffset;
+                var tmp = WorldPosition + PositionOffset;
+                transform.position = new Vector3(tmp.x, tmp.y, transform.position.z);
                 yield return null;
             }
         }

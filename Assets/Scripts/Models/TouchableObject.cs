@@ -42,7 +42,12 @@ namespace ARStickyNotes.Models
         /// <summary>
         /// Current screen position of the pointer.
         /// </summary>
-        private Vector3 _screenPosition;
+        private Vector3 _screenPosition = Vector3.zero;
+
+        /// <summary>
+        /// Initial position of the object.
+        /// </summary>
+        private Vector3 _initialPosition = Vector3.zero;
 
         /// <summary>
         /// The offset between the object's position and the cursor's position.
@@ -56,8 +61,7 @@ namespace ARStickyNotes.Models
         {
             get
             {
-                float z = _initialCamera.WorldToScreenPoint(transform.position).z;
-                return _initialCamera.ScreenToWorldPoint(_screenPosition + new Vector3(0, 0, z));
+                return _initialCamera.ScreenToWorldPoint(_screenPosition + new Vector3(0, 0, _initialPosition.z));
             }
         }
 
@@ -106,6 +110,7 @@ namespace ARStickyNotes.Models
                 LoadCollider();
                 LoadRigidbody();
                 LoadInput();
+                _initialPosition = _initialCamera.WorldToScreenPoint(transform.position); //transform.position;
             }
             catch (Exception ex)
             {

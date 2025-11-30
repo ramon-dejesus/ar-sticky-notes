@@ -171,15 +171,27 @@ namespace ARStickyNotes.UI
                 throw new System.Exception("Whiteboard prefab reference is missing.");
             }
             _spawnedWhiteboard = new ARSpawner().SpawnGameObject(WhiteboardPrefab);
+            LoadNotes();
+            EnableDragging();
+        }
+
+        /// <summary>
+        /// Enable dragging functionality.
+        /// </summary>
+        private void EnableDragging()
+        {
             if (!_spawnedWhiteboard.TryGetComponent<DraggableObject>(out var tmp))
             {
                 tmp = _spawnedWhiteboard.AddComponent<DraggableObject>();
             }
             tmp.ChangeLayerMask("Whiteboard");
             tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
-            LoadNotes();
         }
 
+        /// <summary>
+        /// Get Layer Mask Precedence for Whiteboard objects.
+        /// </summary>
+        /// <returns></returns>
         private List<string> GetLayerMaskPrecedence()
         {
             var tmp = new List<string>
