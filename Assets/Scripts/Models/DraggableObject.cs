@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using UnityEngine;
+using ARStickyNotes.Utilities;
 using UnityEngine.InputSystem;
 
 namespace ARStickyNotes.Models
@@ -7,102 +8,112 @@ namespace ARStickyNotes.Models
     /// <summary>
     /// Allows an object to be dragged and dropped using the mouse or touch input.
     /// </summary>
-    public class DraggableObject : MonoBehaviour
+    public class DraggableObject : TouchableObject
     {
-        /// <summary>
-        /// The input action for pressing.
-        /// </summary>
-        [SerializeField] private InputAction press;
-
-        /// <summary>
-        /// The input action for the cursor's position on the screen.
-        /// </summary>
-        [SerializeField] private InputAction screenPos;
-
-        /// <summary>
-        /// The current position of the cursor in screen space.
-        /// </summary>
-        private Vector3 CursorScreenPosition;
-
+        #region Fields and Data Objects
         /// <summary>
         /// Indicates whether the object is currently being dragged.
         /// </summary>
-        private bool IsDragging = false;
-
-        /// <summary>
-        /// The offset between the object's position and the cursor's position.
-        /// </summary>
-        private Vector3 PositionOffset;
-
-        /// <summary>
-        /// The world position of the object.
-        /// </summary>
-        private Vector3 WorldPosition
+        private bool _isDragging = false;
+        #endregion
+        #region Supporting Functions
+        protected new void Start()
         {
-            get
+            try
             {
-                float z = Camera.main.WorldToScreenPoint(transform.position).z;
-                return Camera.main.ScreenToWorldPoint(CursorScreenPosition + new Vector3(0, 0, z));
+                base.Start();
+                SubscribeToDragEvents();
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to initialize the DraggableObject.", ex);
             }
         }
 
         /// <summary>
-        /// Indicates whether the object is currently being clicked.
+        /// Cleans up input actions on destruction.
         /// </summary>
-        private bool IsClickedOn
+        protected new void OnDestroy()
         {
-            get
+            try
             {
-                Ray ray = Camera.main.ScreenPointToRay(CursorScreenPosition);
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    return hit.transform == transform;
-                }
-                return false;
+                base.OnDestroy();
+                UnsubscribeFromDragEvents();
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Failed to clean up the DraggableObject.", ex);
             }
         }
 
-        private void Awake()
+        /// <summary>
+        /// Subscribes to the drag related events.
+        /// </summary>
+        private void SubscribeToDragEvents()
         {
-            LoadEvents();
+            TouchAction.performed -= OnTouched;
+            TouchAction.performed += OnDragStart;
+            TouchAction.canceled += OnDragEnd;
         }
 
         /// <summary>
-        /// Loads the input events for dragging.
+        /// Unsubscribes to the drag related events.
         /// </summary>
-        private void LoadEvents()
+        private void UnsubscribeFromDragEvents()
         {
-            screenPos.Enable();
-            press.Enable();
-            screenPos.performed += context =>
+            TouchAction.performed -= OnDragStart;
+            TouchAction.canceled -= OnDragEnd;
+        }
+
+        /// <summary>
+        /// Handles the start of dragging on the object.
+        /// </summary>
+        private void OnDragStart(InputAction.CallbackContext context)
+        {
+            try
             {
-                CursorScreenPosition = context.ReadValue<Vector2>();
-            };
-            press.performed += _ =>
-            {
-                if (IsClickedOn)
+                if (IsTouched())
                 {
-                    IsDragging = true;
+                    _isDragging = true;
                     PositionOffset = transform.position - WorldPosition;
                     StartCoroutine(Drag());
                 }
-            };
-            press.canceled += _ =>
+            }
+            catch (Exception ex)
             {
-                IsDragging = false;
-            };
+                ErrorReporter.Report("Error when dragging the object. ", ex);
+            }
         }
-
+        /// <summary>
+        /// Handles the cancel event when the dragging is released.
+        /// </summary>
+        private void OnDragEnd(InputAction.CallbackContext context)
+        {
+            try
+            {
+                var name = context.action.name.Replace("TouchAction_", "");
+                if (new ARSpawner().GetGameObject(name, false, true) != null)
+                {
+                    _isDragging = false;
+                    StopCoroutine(Drag());
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report("Error when dragging ends in the object.", ex);
+            }
+        }
         /// <summary>
         /// Drags the object while the mouse/touch is held down.
         /// </summary>
         private IEnumerator Drag()
         {
-            while (IsDragging)
+            while (_isDragging)
             {
                 transform.position = WorldPosition + PositionOffset;
                 yield return null;
             }
         }
+        #endregion
     }
 }
