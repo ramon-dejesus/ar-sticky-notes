@@ -77,7 +77,7 @@ namespace ARStickyNotes.Models
         }
 
         /// <summary>
-        /// Handles the start of dragging on the object.
+        /// Handles the start of dragging actions on the object.
         /// </summary>
         private void OnDragStart(InputAction.CallbackContext context)
         {
@@ -85,7 +85,6 @@ namespace ARStickyNotes.Models
             {
                 if (IsTouched())
                 {
-                    Debug.Log(GetTriggeredInputActionBinding(context));
                     _isDragging = true;
                     _positionOffset = transform.position - WorldPositions[0];
                     StartCoroutine(Drag());
@@ -97,7 +96,7 @@ namespace ARStickyNotes.Models
             }
         }
         /// <summary>
-        /// Handles the cancel event when the dragging is released.
+        /// Handles the end of dragging actions on the object.
         /// </summary>
         private void OnDragEnd(InputAction.CallbackContext context)
         {
@@ -115,6 +114,7 @@ namespace ARStickyNotes.Models
                 ErrorReporter.Report("Error when dragging ends in the object.", ex);
             }
         }
+
         /// <summary>
         /// Drags the object while the mouse/touch is held down.
         /// </summary>
