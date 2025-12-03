@@ -23,16 +23,15 @@ namespace ARStickyNotes.Models
         [SerializeField] public List<string> LayerMaskPrecedence = new();
         #endregion
         #region Fields and Data Objects
+        /// <summary>
+        /// Input actions for detecting touch.
+        /// </summary>
+        protected InputAction TouchAction;
 
         /// <summary>
-        /// Input action for detecting touch.
+        /// Input actions for tracking touch position.
         /// </summary>
-        protected InputAction TouchAction = new(type: InputActionType.Button, interactions: "Press");
-
-        /// <summary>
-        /// Input action for tracking pointer position.
-        /// </summary>
-        protected InputAction PositionAction = new(type: InputActionType.Value, expectedControlType: "Vector2");
+        protected InputAction PositionAction;
 
         /// <summary>
         /// Initial camera reference for raycasting.
@@ -40,30 +39,19 @@ namespace ARStickyNotes.Models
         private Camera _initialCamera;
 
         /// <summary>
-        /// Current screen position of the pointer.
-        /// </summary>
-        private Vector3 _screenPosition = Vector3.zero;
-
-        /// <summary>
         /// Initial position of the object.
         /// </summary>
         private Vector3 _initialPosition = Vector3.zero;
 
         /// <summary>
-        /// The offset between the object's position and the cursor's position.
+        /// The world positions of touch actions. The default behavior is that it will store 10 positions.
         /// </summary>
-        protected Vector3 PositionOffset;
+        protected List<Vector3> WorldPositions = new();
 
         /// <summary>
-        /// The world position of the object.
+        /// The screen positions of touch actions. The default behavior is that it will store 10 positions.
         /// </summary>
-        protected Vector3 WorldPosition
-        {
-            get
-            {
-                return _initialCamera.ScreenToWorldPoint(_screenPosition + new Vector3(0, 0, _initialPosition.z));
-            }
-        }
+        protected List<Vector3> ScreenPositions = new();
 
         /// <summary>
         /// Reference to the mesh object for collision detection.
@@ -198,9 +186,10 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void LoadTouch()
         {
+
             TouchAction = new InputAction(name: "TouchAction_" + gameObject.name, type: InputActionType.Button, interactions: "Press");
             TouchAction.AddBinding("<Mouse>/leftButton");
-            TouchAction.AddBinding("<Touchscreen>/press");
+            TouchAction.AddBinding("<Touchscreen>/touch0/tap");
             TouchAction.performed += OnTouched;
             TouchAction.Enable();
         }
@@ -224,6 +213,16 @@ namespace ARStickyNotes.Models
         }
 
         /// <summary>
+        /// Returns the Input Action binding full name/path that was triggered.
+        /// </summary>
+        protected string GetTriggeredInputActionBinding(InputAction.CallbackContext context)
+        {
+            var bindingIndex = context.action.GetBindingIndexForControl(context.control);
+            var binding = context.action.bindings[bindingIndex];
+            return binding.effectivePath;
+        }
+
+        /// <summary>
         /// Loads the input action for tracking pointer position.
         /// </summary>
         private void LoadPosition()
@@ -231,10 +230,75 @@ namespace ARStickyNotes.Models
             _initialCamera = Camera.main;
             PositionAction = new InputAction(name: "PositionAction_" + gameObject.name, type: InputActionType.Value, expectedControlType: "Vector2");
             PositionAction.AddBinding("<Mouse>/position");
-            PositionAction.AddBinding("<Touchscreen>/position");
+            PositionAction.AddBinding("<Touchscreen>/touch0/position");
+            PositionAction.AddBinding("<Touchscreen>/touch1/position");
+            PositionAction.AddBinding("<Touchscreen>/touch2/position");
+            PositionAction.AddBinding("<Touchscreen>/touch3/position");
+            PositionAction.AddBinding("<Touchscreen>/touch4/position");
+            PositionAction.AddBinding("<Touchscreen>/touch5/position");
+            PositionAction.AddBinding("<Touchscreen>/touch6/position");
+            PositionAction.AddBinding("<Touchscreen>/touch7/position");
+            PositionAction.AddBinding("<Touchscreen>/touch8/position");
+            PositionAction.AddBinding("<Touchscreen>/touch9/position");
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            WorldPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
+            ScreenPositions.Add(Vector3.zero);
             PositionAction.performed += context =>
             {
-                _screenPosition = context.ReadValue<Vector2>();
+                var index = 0;
+                switch (GetTriggeredInputActionBinding(context))
+                {
+                    case "<Touchscreen>/touch0/position":
+                        index = 0;
+                        break;
+                    case "<Touchscreen>/touch1/position":
+                        index = 1;
+                        break;
+                    case "<Touchscreen>/touch2/position":
+                        index = 2;
+                        break;
+                    case "<Touchscreen>/touch3/position":
+                        index = 3;
+                        break;
+                    case "<Touchscreen>/touch4/position":
+                        index = 4;
+                        break;
+                    case "<Touchscreen>/touch5/position":
+                        index = 5;
+                        break;
+                    case "<Touchscreen>/touch6/position":
+                        index = 6;
+                        break;
+                    case "<Touchscreen>/touch7/position":
+                        index = 7;
+                        break;
+                    case "<Touchscreen>/touch8/position":
+                        index = 8;
+                        break;
+                    case "<Touchscreen>/touch9/position":
+                        index = 9;
+                        break;
+                }
+                var position = (Vector3)context.ReadValue<Vector2>();
+                ScreenPositions[index] = position;
+                WorldPositions[index] = _initialCamera.ScreenToWorldPoint(position + new Vector3(0, 0, _initialPosition.z));
             };
             PositionAction.Enable();
         }
@@ -247,6 +311,7 @@ namespace ARStickyNotes.Models
             LoadTouch();
             LoadPosition();
         }
+
         /// <summary>
         /// Checks if the object has been touched based on the current pointer position.
         /// </summary>
@@ -256,7 +321,7 @@ namespace ARStickyNotes.Models
             {
                 return false;
             }
-            var ray = _initialCamera.ScreenPointToRay(_screenPosition);
+            var ray = _initialCamera.ScreenPointToRay(ScreenPositions[0]);
             foreach (var name in LayerMaskPrecedence)
             {
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask(name)))

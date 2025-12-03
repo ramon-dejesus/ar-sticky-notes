@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using ARStickyNotes.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +17,11 @@ namespace ARStickyNotes.Models
         /// Indicates whether the object is currently being dragged.
         /// </summary>
         private bool _isDragging = false;
+
+        /// <summary>
+        /// The offset between the object's position and the cursor's position.
+        /// </summary>
+        private Vector3 _positionOffset;
         #endregion
         #region Supporting Functions
         protected new void Start()
@@ -52,9 +58,13 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void SubscribeToDragEvents()
         {
+            TouchAction = new InputAction(name: TouchAction.name, type: InputActionType.Button, interactions: "hold(duration=0.5)");
+            TouchAction.AddBinding("<Mouse>/leftButton");
+            TouchAction.AddBinding("<Touchscreen>/press");
             TouchAction.performed -= OnTouched;
             TouchAction.performed += OnDragStart;
             TouchAction.canceled += OnDragEnd;
+            TouchAction.Enable();
         }
 
         /// <summary>
@@ -75,8 +85,9 @@ namespace ARStickyNotes.Models
             {
                 if (IsTouched())
                 {
+                    Debug.Log(GetTriggeredInputActionBinding(context));
                     _isDragging = true;
-                    PositionOffset = transform.position - WorldPosition;
+                    _positionOffset = transform.position - WorldPositions[0];
                     StartCoroutine(Drag());
                 }
             }
@@ -111,9 +122,9 @@ namespace ARStickyNotes.Models
         {
             while (_isDragging)
             {
-                //transform.position = WorldPosition + PositionOffset;
-                var tmp = WorldPosition + PositionOffset;
-                transform.position = new Vector3(tmp.x, tmp.y, transform.position.z);
+                transform.position = WorldPositions[0] + _positionOffset;
+                // var tmp = WorldPosition + PositionOffset;
+                // transform.position = new Vector3(tmp.x, tmp.y, transform.position.z);
                 yield return null;
             }
         }
