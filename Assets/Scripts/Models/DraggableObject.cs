@@ -50,8 +50,9 @@ namespace ARStickyNotes.Models
         {
             try
             {
-                base.Start();
+                MaxTouchCount = 2;
                 SubscribeToDragEvents();
+                base.Start();
             }
             catch (Exception ex)
             {
@@ -86,7 +87,6 @@ namespace ARStickyNotes.Models
             TouchAction.AddBinding("<Touchscreen>/touch1/press");
             //TouchAction.AddBinding("<Touchscreen>/touch*/press");
             //TouchAction.AddBinding("<Touchscreen>/press");
-            TouchAction.performed -= OnTouched;
             TouchAction.performed += OnDragStart;
             TouchAction.canceled += OnDragEnd;
             TouchAction.Enable();
@@ -139,24 +139,38 @@ namespace ARStickyNotes.Models
         {
             try
             {
-                var name = context.action.name.Replace("TouchAction_", "");
-                if (new ARSpawner().GetGameObject(name, false, true) != null)
+                switch (GetTriggeredInputActionBinding(context))
                 {
-                    switch (GetTriggeredInputActionBinding(context))
-                    {
-                        case "<Mouse>/leftButton":
-                            _draggingType = 0;
-                            StopCoroutine(Drag());
-                            break;
-                        case "<Touchscreen>/touch0/press":
-                            _draggingType = 0;
-                            StopCoroutine(Drag());
-                            break;
-                        case "<Touchscreen>/touch1/press":
-                            _draggingType = 1;
-                            break;
-                    }
+                    case "<Mouse>/leftButton":
+                        _draggingType = 0;
+                        StopCoroutine(Drag());
+                        break;
+                    case "<Touchscreen>/touch0/press":
+                        _draggingType = 0;
+                        StopCoroutine(Drag());
+                        break;
+                    case "<Touchscreen>/touch1/press":
+                        _draggingType = 1;
+                        break;
                 }
+                // var name = context.action.name.Replace("TouchAction_", "");
+                // if (new ARSpawner().GetGameObject(name, false, true) != null)
+                // {
+                //     switch (GetTriggeredInputActionBinding(context))
+                //     {
+                //         case "<Mouse>/leftButton":
+                //             _draggingType = 0;
+                //             StopCoroutine(Drag());
+                //             break;
+                //         case "<Touchscreen>/touch0/press":
+                //             _draggingType = 0;
+                //             StopCoroutine(Drag());
+                //             break;
+                //         case "<Touchscreen>/touch1/press":
+                //             _draggingType = 1;
+                //             break;
+                //     }
+                // }
             }
             catch (Exception ex)
             {
