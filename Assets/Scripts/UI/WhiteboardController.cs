@@ -359,7 +359,7 @@ namespace ARStickyNotes.UI
                 }
                 tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
                 tmp.ChangeLayerMask("StickyNote");
-                tmp.Touched += () =>
+                tmp.TouchEvents[0] = () =>
                 {
                     _clickedNoteId = item.Id;
                     NoteClicked?.Invoke(item);
@@ -422,7 +422,7 @@ namespace ARStickyNotes.UI
                 }
                 tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
                 tmp.ChangeLayerMask("WhiteboardButton");
-                tmp.Touched += () =>
+                tmp.TouchEvents[0] = () =>
                 {
                     LoadNotes(_maxVisibleCount * -2);
                 };
@@ -454,7 +454,7 @@ namespace ARStickyNotes.UI
                 }
                 tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
                 tmp.ChangeLayerMask("WhiteboardButton");
-                tmp.Touched += () =>
+                tmp.TouchEvents[0] = () =>
                 {
                     LoadNotes();
                 };

@@ -39,18 +39,12 @@ namespace ARStickyNotes.Models
         /// 2 = multi-touch dragging
         /// </summary>
         private int _draggingType = 0;
-
-        /// <summary>
-        /// The offset between the object's position and the cursor's position.
-        /// </summary>
-        private Vector3 _positionOffset;
         #endregion
         #region Supporting Functions
         protected new void Start()
         {
             try
             {
-                MaxTouchCount = 2;
                 SubscribeToDragEvents();
                 base.Start();
             }
@@ -68,7 +62,6 @@ namespace ARStickyNotes.Models
             try
             {
                 base.OnDestroy();
-                UnsubscribeFromDragEvents();
             }
             catch (Exception ex)
             {
@@ -81,101 +74,67 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void SubscribeToDragEvents()
         {
-            TouchAction = new InputAction(name: TouchAction.name, type: InputActionType.Button, interactions: "hold(duration=0.5)");
-            TouchAction.AddBinding("<Mouse>/leftButton");
-            TouchAction.AddBinding("<Touchscreen>/touch0/press");
-            TouchAction.AddBinding("<Touchscreen>/touch1/press");
-            //TouchAction.AddBinding("<Touchscreen>/touch*/press");
-            //TouchAction.AddBinding("<Touchscreen>/press");
-            TouchAction.performed += OnDragStart;
-            TouchAction.canceled += OnDragEnd;
-            TouchAction.Enable();
-        }
-
-        /// <summary>
-        /// Unsubscribes to the drag related events.
-        /// </summary>
-        private void UnsubscribeFromDragEvents()
-        {
-            TouchAction.performed -= OnDragStart;
-            TouchAction.canceled -= OnDragEnd;
-        }
-
-        /// <summary>
-        /// Handles the start of dragging actions on the object.
-        /// </summary>
-        private void OnDragStart(InputAction.CallbackContext context)
-        {
-            try
+            //TouchAction = new InputAction(name: TouchAction.name, type: InputActionType.Button, interactions: "hold(duration=0.5)");
+            TouchActions[0] = new InputAction(type: InputActionType.Button, interactions: "Press");
+            TouchActions[0].AddBinding("<Mouse>/leftButton");
+            TouchActions[0].AddBinding("<Touchscreen>/touch0/press");
+            TouchActions[0].performed += (context) =>
             {
-
-                if (IsTouched())
+                try
                 {
-                    switch (GetTriggeredInputActionBinding(context))
+                    if (IsTouched())
                     {
-                        case "<Mouse>/leftButton":
-                            _draggingType = 1;
-                            break;
-                        case "<Touchscreen>/touch0/press":
-                            _draggingType = 1;
-                            break;
-                        case "<Touchscreen>/touch1/press":
-                            _draggingType = 2;
-                            break;
-                    }
-                    StartCoroutine(Drag());
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorReporter.Report("Error when dragging the object. ", ex);
-            }
-        }
-
-        /// <summary>
-        /// Handles the end of dragging actions on the object.
-        /// </summary>
-        private void OnDragEnd(InputAction.CallbackContext context)
-        {
-            try
-            {
-                switch (GetTriggeredInputActionBinding(context))
-                {
-                    case "<Mouse>/leftButton":
-                        _draggingType = 0;
-                        StopCoroutine(Drag());
-                        break;
-                    case "<Touchscreen>/touch0/press":
-                        _draggingType = 0;
-                        StopCoroutine(Drag());
-                        break;
-                    case "<Touchscreen>/touch1/press":
                         _draggingType = 1;
-                        break;
+                        StartCoroutine(Drag());
+                    }
                 }
-                // var name = context.action.name.Replace("TouchAction_", "");
-                // if (new ARSpawner().GetGameObject(name, false, true) != null)
-                // {
-                //     switch (GetTriggeredInputActionBinding(context))
-                //     {
-                //         case "<Mouse>/leftButton":
-                //             _draggingType = 0;
-                //             StopCoroutine(Drag());
-                //             break;
-                //         case "<Touchscreen>/touch0/press":
-                //             _draggingType = 0;
-                //             StopCoroutine(Drag());
-                //             break;
-                //         case "<Touchscreen>/touch1/press":
-                //             _draggingType = 1;
-                //             break;
-                //     }
-                // }
-            }
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    ErrorReporter.Report("Error when dragging the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                }
+            };
+            TouchActions[0].canceled += (context) =>
             {
-                ErrorReporter.Report("Error when dragging ends in the object.", ex);
-            }
+                try
+                {
+                    _draggingType = 0;
+                    StopCoroutine(Drag());
+                }
+                catch (Exception ex)
+                {
+                    ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                }
+            };
+            TouchActions[0].Enable();
+            TouchActions[1] = new InputAction(type: InputActionType.Button, interactions: "Press");
+            TouchActions[1].AddBinding("<Touchscreen>/touch1/press");
+            TouchActions[1].performed += (context) =>
+            {
+                try
+                {
+                    if (IsTouched(0))
+                    {
+                        UIDOCUMENT_ToastNotifier.Show(GetTriggeredInputActionBinding(context));
+                        _draggingType = 2;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorReporter.Report("Error when dragging the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                }
+            };
+            TouchActions[1].canceled += (context) =>
+            {
+                try
+                {
+                    _draggingType = 1;
+                }
+                catch (Exception ex)
+                {
+                    ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                }
+            };
+            TouchActions[1].Enable();
         }
 
         /// <summary>
@@ -190,7 +149,8 @@ namespace ARStickyNotes.Models
             {
                 if (_draggingType == 1)
                 {
-                    transform.position = WorldPositions[0] + _positionOffset;
+                    //transform.position = WorldPositions[0] + PositionOffsets[0];
+                    transform.position = WorldPositions[0];
                     previousDistance = null;
                     previousSecondPosition = null;
                     previousRotationDistance = null;
