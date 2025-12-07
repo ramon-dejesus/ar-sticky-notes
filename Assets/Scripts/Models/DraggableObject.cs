@@ -114,7 +114,6 @@ namespace ARStickyNotes.Models
                 {
                     if (IsTouched(0))
                     {
-                        UIDOCUMENT_ToastNotifier.Show(GetTriggeredInputActionBinding(context));
                         _draggingType = 2;
                     }
                 }
