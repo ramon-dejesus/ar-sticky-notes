@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using ARStickyNotes.Utilities;
 using UnityEngine;
@@ -39,6 +40,11 @@ namespace ARStickyNotes.Models
         /// 2 = multi-touch dragging
         /// </summary>
         private int _draggingType = 0;
+
+        /// <summary>
+        /// The offsets between the object's position and the cursor's position.
+        /// </summary>
+        protected Dictionary<int, Vector3> PositionOffsets = new();
         #endregion
         #region Supporting Functions
         protected new void Start()
@@ -75,7 +81,7 @@ namespace ARStickyNotes.Models
         private void SubscribeToDragEvents()
         {
             //TouchAction = new InputAction(name: TouchAction.name, type: InputActionType.Button, interactions: "hold(duration=0.5)");
-            TouchActions[0] = new InputAction(type: InputActionType.Button, interactions: "Press");
+            TouchActions[0] = new InputAction(type: InputActionType.Button, interactions: "hold(duration=0.1)");
             TouchActions[0].AddBinding("<Mouse>/leftButton");
             TouchActions[0].AddBinding("<Touchscreen>/touch0/press");
             TouchActions[0].performed += (context) =>
@@ -84,6 +90,13 @@ namespace ARStickyNotes.Models
                 {
                     if (IsTouched())
                     {
+                        if (!PositionOffsets.ContainsKey(0))
+                        {
+                            var x = transform.position.x - WorldPositions[0].x;
+                            var y = transform.position.y - WorldPositions[0].y;
+                            var z = transform.position.z - WorldPositions[0].z;
+                            PositionOffsets[0] = new Vector3(x, y, z);
+                        }
                         _draggingType = 1;
                         StartCoroutine(Drag());
                     }
@@ -105,14 +118,13 @@ namespace ARStickyNotes.Models
                     ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
                 }
             };
-            TouchActions[0].Enable();
-            TouchActions[1] = new InputAction(type: InputActionType.Button, interactions: "Press");
+            TouchActions[1] = new InputAction(type: InputActionType.Button, interactions: "hold(duration=0.1)");
             TouchActions[1].AddBinding("<Touchscreen>/touch1/press");
             TouchActions[1].performed += (context) =>
             {
                 try
                 {
-                    if (IsTouched(0))
+                    if (IsTouched())
                     {
                         _draggingType = 2;
                     }
@@ -133,6 +145,7 @@ namespace ARStickyNotes.Models
                     ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
                 }
             };
+            TouchActions[0].Enable();
             TouchActions[1].Enable();
         }
 
@@ -156,7 +169,7 @@ namespace ARStickyNotes.Models
                 }
                 else if (_draggingType == 2)
                 {
-                    var distance = Vector3.Distance(ScreenPositions[0], ScreenPositions[1]);
+                    var distance = (float)Math.Round(Vector3.Distance(ScreenPositions[0], ScreenPositions[1]), 0);
                     previousDistance ??= distance;
                     if (distance > previousDistance)
                     {
@@ -172,7 +185,7 @@ namespace ARStickyNotes.Models
                         {
                             previousSecondPosition = ScreenPositions[1];
                         }
-                        var rotationDistance = Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]);
+                        var rotationDistance = (float)Math.Round(Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]), 2);
                         previousRotationDistance ??= rotationDistance;
                         if (rotationDistance > previousRotationDistance)
                         {
@@ -207,6 +220,7 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void Rotate(int direction = 1)
         {
+            return;
             var amount = RotationRate * direction;
             var targetRotation = transform.localRotation;
             var newRotation = new Quaternion(targetRotation.x + amount, targetRotation.y + amount, targetRotation.z + amount, targetRotation.w);

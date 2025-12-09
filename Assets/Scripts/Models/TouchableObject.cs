@@ -51,11 +51,6 @@ namespace ARStickyNotes.Models
         protected Dictionary<int, Vector3> WorldPositions = new();
 
         /// <summary>
-        /// The offsets between the object's position and the cursor's position.
-        /// </summary>
-        protected Dictionary<int, Vector3> PositionOffsets = new();
-
-        /// <summary>
         /// The screen positions of touch actions.
         /// </summary>
         protected Dictionary<int, Vector3> ScreenPositions = new();
@@ -248,7 +243,6 @@ namespace ARStickyNotes.Models
                         {
                             ScreenPositions[item.Key] = (Vector3)context.ReadValue<Vector2>();
                             WorldPositions[item.Key] = _initialCamera.ScreenToWorldPoint(ScreenPositions[item.Key] + new Vector3(0, 0, _initialPosition.z));
-                            PositionOffsets[item.Key] = transform.position - WorldPositions[item.Key];
                         }
                         catch (Exception ex)
                         {
