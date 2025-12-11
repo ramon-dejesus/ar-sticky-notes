@@ -1,11 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using ARStickyNotes.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityUtils;
 
 namespace ARStickyNotes.Models
 {
@@ -171,11 +169,11 @@ namespace ARStickyNotes.Models
                 {
                     var distance = (float)Math.Round(Vector3.Distance(ScreenPositions[0], ScreenPositions[1]), 0);
                     previousDistance ??= distance;
-                    if (distance > previousDistance)
+                    if ((distance - previousDistance) > 1)
                     {
                         Rescale();
                     }
-                    else if (distance < previousDistance)
+                    else if ((distance - previousDistance) < -1)
                     {
                         Rescale(-1);
                     }
@@ -185,15 +183,15 @@ namespace ARStickyNotes.Models
                         {
                             previousSecondPosition = ScreenPositions[1];
                         }
-                        var rotationDistance = (float)Math.Round(Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]), 2);
+                        var rotationDistance = (float)Math.Round(Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]), 0);
                         previousRotationDistance ??= rotationDistance;
-                        if (rotationDistance > previousRotationDistance)
+                        if ((rotationDistance - previousRotationDistance) > 1)
                         {
-                            Rotate();
+                            //Rotate();
                         }
-                        else if (rotationDistance < previousRotationDistance)
+                        else if ((rotationDistance - previousRotationDistance) < -1)
                         {
-                            Rotate(-1);
+                            //Rotate(-1);
                         }
                         previousSecondPosition = ScreenPositions[1];
                         previousRotationDistance = rotationDistance;
@@ -220,7 +218,6 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void Rotate(int direction = 1)
         {
-            return;
             var amount = RotationRate * direction;
             var targetRotation = transform.localRotation;
             var newRotation = new Quaternion(targetRotation.x + amount, targetRotation.y + amount, targetRotation.z + amount, targetRotation.w);
