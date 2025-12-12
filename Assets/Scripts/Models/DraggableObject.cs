@@ -96,6 +96,7 @@ namespace ARStickyNotes.Models
                             PositionOffsets[0] = new Vector3(x, y, z);
                         }
                         _draggingType = 1;
+                        StopCoroutine(Drag());
                         StartCoroutine(Drag());
                     }
                 }
@@ -109,7 +110,6 @@ namespace ARStickyNotes.Models
                 try
                 {
                     _draggingType = 0;
-                    StopCoroutine(Drag());
                 }
                 catch (Exception ex)
                 {
@@ -169,29 +169,28 @@ namespace ARStickyNotes.Models
                 {
                     var distance = (float)Math.Round(Vector3.Distance(ScreenPositions[0], ScreenPositions[1]), 0);
                     previousDistance ??= distance;
-                    if ((distance - previousDistance) > 1)
+                    var distanceDiff = distance - previousDistance;
+                    if (distanceDiff > 1)
                     {
                         Rescale();
                     }
-                    else if ((distance - previousDistance) < -1)
+                    else if (distanceDiff < -1)
                     {
                         Rescale(-1);
                     }
                     else
                     {
-                        if (previousSecondPosition == null)
-                        {
-                            previousSecondPosition = ScreenPositions[1];
-                        }
+                        previousSecondPosition = previousSecondPosition == null ? ScreenPositions[1] : previousSecondPosition;
                         var rotationDistance = (float)Math.Round(Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]), 0);
                         previousRotationDistance ??= rotationDistance;
-                        if ((rotationDistance - previousRotationDistance) > 1)
+                        var rotationDistanceDiff = rotationDistance - previousRotationDistance;
+                        if (rotationDistanceDiff > 1)
                         {
-                            //Rotate();
+                            Rotate();
                         }
-                        else if ((rotationDistance - previousRotationDistance) < -1)
+                        else if (rotationDistanceDiff < -1)
                         {
-                            //Rotate(-1);
+                            Rotate(-1);
                         }
                         previousSecondPosition = ScreenPositions[1];
                         previousRotationDistance = rotationDistance;
@@ -220,7 +219,7 @@ namespace ARStickyNotes.Models
         {
             var amount = RotationRate * direction;
             var targetRotation = transform.localRotation;
-            var newRotation = new Quaternion(targetRotation.x + amount, targetRotation.y + amount, targetRotation.z + amount, targetRotation.w);
+            var newRotation = new Quaternion(targetRotation.x, targetRotation.y, targetRotation.z + amount, targetRotation.w);
             transform.localRotation = Quaternion.Slerp(targetRotation, newRotation, Time.deltaTime * ChangeSpeed);
         }
         #endregion
