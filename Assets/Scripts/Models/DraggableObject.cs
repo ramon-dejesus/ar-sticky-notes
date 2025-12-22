@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using ARStickyNotes.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,7 +13,6 @@ namespace ARStickyNotes.Models
     {
         #region References
         [Header("UI References")]
-
         /// <summary>
         /// Change speed of the different interactions.
         /// </summary>
@@ -24,11 +22,6 @@ namespace ARStickyNotes.Models
         /// Rate of rescale.
         /// </summary>
         [SerializeField] public float RescaleRate = 0.1f;
-
-        /// <summary>
-        /// Rate of rotation.
-        /// </summary>
-        [SerializeField] public float RotationRate = 1f;
         #endregion
         #region Fields and Data Objects
         /// <summary>
@@ -40,9 +33,9 @@ namespace ARStickyNotes.Models
         private int _draggingType = 0;
 
         /// <summary>
-        /// The offsets between the object's position and the cursor's position.
+        /// Indicates the distance between the touch positions.
         /// </summary>
-        protected Dictionary<int, Vector3> PositionOffsets = new();
+        private float? _distanceBetweenPositions = null;
         #endregion
         #region Supporting Functions
         protected new void Start()
@@ -78,7 +71,6 @@ namespace ARStickyNotes.Models
         /// </summary>
         private void SubscribeToDragEvents()
         {
-            //TouchAction = new InputAction(name: TouchAction.name, type: InputActionType.Button, interactions: "hold(duration=0.5)");
             TouchActions[0] = new InputAction(type: InputActionType.Button, interactions: "hold(duration=0.1)");
             TouchActions[0].AddBinding("<Mouse>/leftButton");
             TouchActions[0].AddBinding("<Touchscreen>/touch0/press");
@@ -88,15 +80,7 @@ namespace ARStickyNotes.Models
                 {
                     if (IsTouched())
                     {
-                        if (!PositionOffsets.ContainsKey(0))
-                        {
-                            var x = transform.position.x - WorldPositions[0].x;
-                            var y = transform.position.y - WorldPositions[0].y;
-                            var z = transform.position.z - WorldPositions[0].z;
-                            PositionOffsets[0] = new Vector3(x, y, z);
-                        }
                         _draggingType = 1;
-                        StopCoroutine(Drag());
                         StartCoroutine(Drag());
                     }
                 }
@@ -129,18 +113,19 @@ namespace ARStickyNotes.Models
                 }
                 catch (Exception ex)
                 {
-                    ErrorReporter.Report("Error when dragging the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                    ErrorReporter.Report("Error when starting dragging the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
                 }
             };
             TouchActions[1].canceled += (context) =>
             {
                 try
                 {
+                    _distanceBetweenPositions = null;
                     _draggingType = 1;
                 }
                 catch (Exception ex)
                 {
-                    ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ". ", ex);
+                    ErrorReporter.Report("Error when dragging ends in the object at " + GetTriggeredInputActionBinding(context) + ".", ex);
                 }
             };
             TouchActions[0].Enable();
@@ -152,50 +137,15 @@ namespace ARStickyNotes.Models
         /// </summary>
         private IEnumerator Drag()
         {
-            float? previousDistance = null;
-            Vector3? previousSecondPosition = null;
-            float? previousRotationDistance = null;
             while (_draggingType > 0)
             {
                 if (_draggingType == 1)
                 {
-                    //transform.position = WorldPositions[0] + PositionOffsets[0];
                     transform.position = WorldPositions[0];
-                    previousDistance = null;
-                    previousSecondPosition = null;
-                    previousRotationDistance = null;
                 }
                 else if (_draggingType == 2)
                 {
-                    var distance = (float)Math.Round(Vector3.Distance(ScreenPositions[0], ScreenPositions[1]), 0);
-                    previousDistance ??= distance;
-                    var distanceDiff = distance - previousDistance;
-                    if (distanceDiff > 1)
-                    {
-                        Rescale();
-                    }
-                    else if (distanceDiff < -1)
-                    {
-                        Rescale(-1);
-                    }
-                    else
-                    {
-                        previousSecondPosition = previousSecondPosition == null ? ScreenPositions[1] : previousSecondPosition;
-                        var rotationDistance = (float)Math.Round(Vector3.Distance((Vector3)previousSecondPosition, ScreenPositions[1]), 0);
-                        previousRotationDistance ??= rotationDistance;
-                        var rotationDistanceDiff = rotationDistance - previousRotationDistance;
-                        if (rotationDistanceDiff > 1)
-                        {
-                            Rotate();
-                        }
-                        else if (rotationDistanceDiff < -1)
-                        {
-                            Rotate(-1);
-                        }
-                        previousSecondPosition = ScreenPositions[1];
-                        previousRotationDistance = rotationDistance;
-                    }
-                    previousDistance = distance;
+                    Rescale();
                 }
                 yield return null;
             }
@@ -204,23 +154,28 @@ namespace ARStickyNotes.Models
         /// <summary>
         /// Rescale the object.
         /// </summary>
-        private void Rescale(int direction = 1)
+        private void Rescale()
         {
-            var amount = RescaleRate * direction;
-            var targetScale = transform.localScale;
-            var newScale = new Vector3(targetScale.x + amount, targetScale.y + amount, targetScale.z + amount);
-            transform.localScale = Vector3.Slerp(targetScale, newScale, Time.deltaTime * ChangeSpeed);
-        }
-
-        /// <summary>
-        /// Rotate the object.
-        /// </summary>
-        private void Rotate(int direction = 1)
-        {
-            var amount = RotationRate * direction;
-            var targetRotation = transform.localRotation;
-            var newRotation = new Quaternion(targetRotation.x, targetRotation.y, targetRotation.z + amount, targetRotation.w);
-            transform.localRotation = Quaternion.Slerp(targetRotation, newRotation, Time.deltaTime * ChangeSpeed);
+            var direction = 0;
+            var distance = (float)Math.Round(Vector3.Distance(ScreenPositions[0], ScreenPositions[1]), 0);
+            _distanceBetweenPositions = _distanceBetweenPositions == null ? distance : _distanceBetweenPositions;
+            var distanceDiff = distance - _distanceBetweenPositions;
+            if (distanceDiff > 1)
+            {
+                direction = 1;
+            }
+            else if (distanceDiff < -1)
+            {
+                direction = -1;
+            }
+            _distanceBetweenPositions = distance;
+            if (direction != 0)
+            {
+                var amount = RescaleRate * direction;
+                var targetScale = transform.localScale;
+                var newScale = new Vector3(targetScale.x + amount, targetScale.y + amount, targetScale.z + amount);
+                transform.localScale = Vector3.Slerp(targetScale, newScale, Time.deltaTime * ChangeSpeed);
+            }
         }
         #endregion
     }

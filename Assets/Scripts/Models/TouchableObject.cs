@@ -228,7 +228,6 @@ namespace ARStickyNotes.Models
             _initialCamera = Camera.main;
             if (PositionActions.Count == 0)
             {
-                //PositionAction = new(type: InputActionType.PassThrough, expectedControlType: "Vector2");
                 foreach (var item in TouchActions)
                 {
                     PositionActions[item.Key] = new(type: InputActionType.Value, expectedControlType: "Vector2");
