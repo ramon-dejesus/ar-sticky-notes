@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5216423134258071416}
   - component: {fileID: -4764839170850333993}
   - component: {fileID: -4632483126983565794}
-  - component: {fileID: 4871507141004395103}
   m_Layer: 0
   m_Name: Whiteboard
   m_TagString: Untagged
@@ -27,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2033142433167768597}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0917287, y: 0, z: 0}
+  m_LocalRotation: {x: -0.14812617, y: 0.29553983, z: -0.09681532, w: -0.938798}
+  m_LocalPosition: {x: -1.9172866, y: -0.15758562, z: 1.5897633}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -69,7 +68,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2033142433167768597}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
   m_Name: 
@@ -159,7 +158,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 1
+  m_ThrowOnDetach: 0
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -184,24 +183,6 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
---- !u!114 &4871507141004395103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2033142433167768597}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f4bfab5197c80b48b83a18e5608c5d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NotePrefab: {fileID: 7363107466059953400, guid: be3d97997af0a5b4a851322b917de875,
-    type: 3}
-  NoteContainerName: Root
-  NoteInitialPosition: {x: 0.012, y: 0.01, z: -0.006}
-  NoteRotation: {x: 0, y: 90, z: 0, w: 1}
-  NoteScale: {x: 0.001, y: 0.001, z: 0.001}
 --- !u!1001 &5685032892049414870
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -219,6 +200,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Root
+      objectReference: {fileID: 0}
+    - target: {fileID: -723522225951079222, guid: c3569d8f86cb53244bc4f8a1da15c677,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2259651201424232592, guid: c3569d8f86cb53244bc4f8a1da15c677,
         type: 3}

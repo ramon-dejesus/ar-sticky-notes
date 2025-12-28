@@ -1,0 +1,17 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="project://database/Assets/Scenes/ARStickyNotes/UIDocument/MainSceneUSS.uss?fileID=7433441132597879392&amp;guid=00d1dfe5125084cfc9d6a14431ca76e4&amp;type=3#MainSceneUSS" />
+    <ui:VisualElement name="TopActionsElement" class="top-actions-element">
+        <ui:Button name="OpenAllNotesButton" class="open-all-notes-btn" enabled="false"/>
+        <ui:Button name="CloseAllNotesButton" class="close-all-notes-btn" enabled="false"/>
+        <ui:Button name="OpenWhiteboardButton" class="open-whiteboard-btn" enabled="false"/>
+        <ui:Button name="CreateNoteFromListButton" class="create-note-from-list-btn" enabled="false"/>
+        <ui:Button name="DeleteNoteButton" class="delete-note-btn" enabled="false"/>
+        <ui:Button name="SaveNoteButton" class="save-note-btn" enabled="false"/>
+    </ui:VisualElement>
+    <ui:VisualElement class="notes-list-container" name="AllNotesVisualElement" enabled="false">
+        <ui:ListView class="notes-list-view" virtualization-method="DynamicHeight" name="NotesListView" fixed-item-height="48" />
+    </ui:VisualElement>
+    <ui:VisualElement name="BottomBar" class="bottom-bar">
+        <ui:Button name="CreateNoteButton" class="create-note-btn" enabled="false"/>
+    </ui:VisualElement>
+</ui:UXML>

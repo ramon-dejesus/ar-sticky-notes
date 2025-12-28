@@ -6,7 +6,7 @@
     xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
 >
     <ui:Style src="ToastUSS.uss"/>
-    <!-- Toast Root: background color will be set dynamically in C# based on toast type -->
+    <!-- Toast Root: background color will be set dynamically in C# based on toast types -->
     <ui:VisualElement name="toast-root" class="toast-root">
         <!-- Top row: Close button -->
         <ui:VisualElement class="toast-top-row">
