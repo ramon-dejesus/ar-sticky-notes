@@ -172,6 +172,35 @@ namespace ARStickyNotes.UI
             }
             _spawnedWhiteboard = new ARSpawner().SpawnGameObject(WhiteboardPrefab);
             LoadNotes();
+            EnableDragging();
+        }
+
+        /// <summary>
+        /// Enable dragging functionality.
+        /// </summary>
+        private void EnableDragging()
+        {
+            if (!_spawnedWhiteboard.TryGetComponent<DraggableObject>(out var tmp))
+            {
+                tmp = _spawnedWhiteboard.AddComponent<DraggableObject>();
+            }
+            tmp.ChangeLayerMask("Whiteboard");
+            tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
+        }
+
+        /// <summary>
+        /// Get Layer Mask Precedence for Whiteboard objects.
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetLayerMaskPrecedence()
+        {
+            var tmp = new List<string>
+            {
+                "WhiteboardButton",
+                "StickyNote",
+                "Whiteboard"
+            };
+            return tmp;
         }
 
         /// <summary>
@@ -324,11 +353,13 @@ namespace ARStickyNotes.UI
         {
             if (NoteClicked != null)
             {
-                if (noteObject.GetComponent<TouchableObjectController>() == null)
+                if (!noteObject.TryGetComponent<TouchableObject>(out var tmp))
                 {
-                    noteObject.AddComponent<TouchableObjectController>();
+                    tmp = noteObject.AddComponent<TouchableObject>();
                 }
-                noteObject.GetComponent<TouchableObjectController>().Clicked += () =>
+                tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
+                tmp.ChangeLayerMask("StickyNote");
+                tmp.TouchEvents[0] = () =>
                 {
                     _clickedNoteId = item.Id;
                     NoteClicked?.Invoke(item);
@@ -385,11 +416,13 @@ namespace ARStickyNotes.UI
                 btn.transform.SetParent(container.transform, false);
                 btn.transform.localScale = PaginationButtonScale;
                 btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount + MaxColumnCount, PaginationButtonSize);
-                if (btn.GetComponent<TouchableObjectController>() == null)
+                if (!btn.TryGetComponent<TouchableObject>(out var tmp))
                 {
-                    btn.AddComponent<TouchableObjectController>();
+                    tmp = btn.AddComponent<TouchableObject>();
                 }
-                btn.GetComponent<TouchableObjectController>().Clicked += () =>
+                tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
+                tmp.ChangeLayerMask("WhiteboardButton");
+                tmp.TouchEvents[0] = () =>
                 {
                     LoadNotes(_maxVisibleCount * -2);
                 };
@@ -415,11 +448,13 @@ namespace ARStickyNotes.UI
                 btn.transform.SetParent(container.transform, false);
                 btn.transform.localScale = PaginationButtonScale;
                 btn.transform.localPosition = CalculatePosition(btn, _maxVisibleCount + (MaxColumnCount * 2) - 1, PaginationButtonSize);
-                if (btn.GetComponent<TouchableObjectController>() == null)
+                if (!btn.TryGetComponent<TouchableObject>(out var tmp))
                 {
-                    btn.AddComponent<TouchableObjectController>();
+                    tmp = btn.AddComponent<TouchableObject>();
                 }
-                btn.GetComponent<TouchableObjectController>().Clicked += () =>
+                tmp.LayerMaskPrecedence = GetLayerMaskPrecedence();
+                tmp.ChangeLayerMask("WhiteboardButton");
+                tmp.TouchEvents[0] = () =>
                 {
                     LoadNotes();
                 };
