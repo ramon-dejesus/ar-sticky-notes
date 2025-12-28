@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using ARStickyNotes.Models;
 using ARStickyNotes.Utilities;
+using ARStickyNotes.UI;
+using System.Linq;
 
 namespace ARStickyNotes.Services
 {
@@ -30,7 +32,7 @@ namespace ARStickyNotes.Services
             try
             {
                 // Show a toast message to indicate the test is running
-                ToastNotifier.Show("Testing NoteManager");
+                UGUI_ToastNotifier.Show("Testing NoteManager");
 
                 Debug.Log(PreloadNotes());
                 Debug.Log(PreloadNotes(true));
@@ -122,6 +124,17 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
+        /// Retrieves the sorted list of notes.
+        /// </summary>
+        private void SortNotes()
+        {
+            if (Notes != null && Notes.Items != null)
+            {
+                Notes.Items = Notes.Items.OrderBy(o => o.Title).ToList();
+            }
+        }
+
+        /// <summary>
         /// Loads the notes from local storage, or initializes a new list if none found.
         /// </summary>
         /// <returns>The loaded or newly created list of notes.</returns>
@@ -138,7 +151,10 @@ namespace ARStickyNotes.Services
                     Notes ??= new NoteList();
                 }
                 if (Notes.Items == null)
+                {
                     Notes.Items = new System.Collections.Generic.List<Note>();
+                }
+                SortNotes();
                 return Notes;
             }
             catch (Exception ex)
@@ -153,6 +169,7 @@ namespace ARStickyNotes.Services
         /// </summary>
         private void SaveNotes()
         {
+            SortNotes();
             Storage.SaveObject(GetNotesFilename(), Notes);
         }
 
@@ -252,6 +269,23 @@ namespace ARStickyNotes.Services
         }
 
         /// <summary>
+        /// Adds a new note to the list, then saves.
+        /// </summary>
+        /// <param name="item">The note to add.</param>
+        /// <exception cref="Exception">Wraps any storage-related exception.</exception>
+        public void CreateNote(Note item)
+        {
+            try
+            {
+                UpdateNote(item);
+            }
+            catch (Exception ex)
+            {
+                ErrorReporter.Report($"An error occurred while new a note with ID: {item?.Id}.", ex);
+            }
+        }
+
+        /// <summary>
         /// Updates an existing note in the list or adds it if it doesn't exist, then saves.
         /// </summary>
         /// <param name="item">The note to update or add.</param>
@@ -279,7 +313,5 @@ namespace ARStickyNotes.Services
                 ErrorReporter.Report($"An error occurred while updating a note with ID: {item?.Id}.", ex);
             }
         }
-
-
     }
 }
