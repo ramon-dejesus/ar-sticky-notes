@@ -66,8 +66,7 @@ LICENSE.md             # Open-source license (MIT)
 
 ## 🛠️ Tech Stack
 
-- **Unity** (2022.3+ LTS)
-- **AR Foundation** (ARCore & ARKit backend)
+- **Unity** (6.3 LTS (6000.3.2f1) or later)
 - **C#** for development
 - **GitHub Projects** for code task tracking
 - **Draw.io** for UI/UX wireframes (by Gabe)
